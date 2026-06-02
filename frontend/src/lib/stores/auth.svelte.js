@@ -1,0 +1,32 @@
+import { get, post } from '$lib/api.js';
+
+/** Shared auth state (Svelte 5 runes module). */
+export const auth = $state({
+	user: /** @type {{id:number, username:string}|null} */ (null),
+	ready: false
+});
+
+export async function loadUser() {
+	try {
+		auth.user = await get('/auth/me');
+	} catch {
+		auth.user = null;
+	} finally {
+		auth.ready = true;
+	}
+}
+
+/** @param {string} username @param {string} password */
+export async function login(username, password) {
+	auth.user = await post('/auth/login', { username, password });
+}
+
+/** @param {string} username @param {string} password */
+export async function register(username, password) {
+	auth.user = await post('/auth/register', { username, password });
+}
+
+export async function logout() {
+	await post('/auth/logout');
+	auth.user = null;
+}
