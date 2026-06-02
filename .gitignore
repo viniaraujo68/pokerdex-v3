@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.db
+*.db-wal
+*.db-shm
+.env
+
+# Node / SvelteKit
+node_modules/
+.svelte-kit/
+build/
+.output/
+dist/
+*.log
+
+# Editor / OS / tooling
+.DS_Store
+.vscode/
+.idea/
+.claude/
+
+# Personal legacy data (contains real names/amounts — keep out of the public repo)
+players.json
+nights.json
