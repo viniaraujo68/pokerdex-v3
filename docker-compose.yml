@@ -1,3 +1,7 @@
+# Pokerdex app stack. No TLS/ports here — the shared edge proxy (deploy/edge)
+# fronts it on port 80, and Cloudflare provides HTTPS. Both services join the
+# external "web" network so the edge can reach them by alias.
+# Create the network once:  docker network create web
 services:
   backend:
     build: ./backend
@@ -9,36 +13,27 @@ services:
       POKERDEX_SESSION_TTL_DAYS: "30"
     volumes:
       - pokerdex_data:/data
-    expose:
-      - "8000"
+    networks:
+      web:
+        aliases:
+          - pokerdex-backend
 
   frontend:
     build: ./frontend
     restart: unless-stopped
     environment:
       PORT: "3000"
-    expose:
-      - "3000"
+      ORIGIN: https://${POKERDEX_DOMAIN:-pokerdex.rastrovin.org}
     depends_on:
       - backend
+    networks:
+      web:
+        aliases:
+          - pokerdex-frontend
 
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    environment:
-      DOMAIN: ${DOMAIN:?defina DOMAIN no arquivo .env}
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - frontend
-      - backend
+networks:
+  web:
+    external: true
 
 volumes:
   pokerdex_data:
-  caddy_data:
-  caddy_config:
