@@ -1,0 +1,26 @@
+# Shared edge proxy that fronts every app on the VPS on port 80.
+# Independent of the app stacks, so restarting an app never drops the others.
+# Needs the external network:  docker network create web
+services:
+  edge:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      POKERDEX_DOMAIN: ${POKERDEX_DOMAIN:?defina no .env}
+      RASTRO_DOMAIN: ${RASTRO_DOMAIN:?defina no .env}
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - edge_data:/data
+      - edge_config:/config
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+
+volumes:
+  edge_data:
+  edge_config:

@@ -1,0 +1,22 @@
+# Edge reverse proxy — HTTP only. TLS is handled by Cloudflare (orange cloud,
+# SSL "Flexible"), so the origin speaks plain HTTP on port 80. Routes by Host.
+{
+	auto_https off
+}
+
+# Pokerdex
+http://{$POKERDEX_DOMAIN} {
+	encode gzip
+	handle /api/* {
+		reverse_proxy pokerdex-backend:8000
+	}
+	handle {
+		reverse_proxy pokerdex-frontend:3000
+	}
+}
+
+# Rastro (existing app — now behind the shared proxy)
+http://{$RASTRO_DOMAIN} {
+	encode gzip
+	reverse_proxy rastro-frontend:80
+}

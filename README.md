@@ -46,23 +46,39 @@ alembic revision --autogenerate -m "descrição"
 alembic upgrade head
 ```
 
-## Deploy na VPS (Docker Compose)
+## Deploy na VPS (Docker Compose + Cloudflare)
 
-Pré-requisitos: Docker + Compose na VPS, e um domínio com registro A apontando pro IP.
+HTTPS é provido pelo **Cloudflare** (proxy laranja, SSL "Flexible"); o origin só fala
+HTTP na porta 80. Um **edge proxy** compartilhado (`deploy/edge`) escuta na 80 e roteia
+por subdomínio, então várias apps convivem na mesma VPS sem conflito de porta.
 
-```bash
-# 1. clonar e configurar o domínio
-git clone https://github.com/viniaraujo68/pokerdex-v3.git
-cd pokerdex-v3
-cp .env.example .env
-# edite .env e coloque DOMAIN=pokerdex.seudominio.com
-
-# 2. subir tudo (Caddy emite o HTTPS sozinho)
-docker compose up -d --build
+```
+Cloudflare (HTTPS) → VPS:80 → edge (Caddy http)
+    ├── pokerdex.seudominio.com → /api/* → backend:8000 · / → frontend:3000
+    └── (outras apps por subdomínio)
 ```
 
-Pronto — o app fica em `https://pokerdex.seudominio.com`. O SQLite vive no volume
-`pokerdex_data` (backup = `docker compose cp backend:/data/pokerdex.db ./backup.db`).
+**Passos** (Docker já instalado, subdomínio `pokerdex.…` proxied no Cloudflare):
+
+```bash
+# rede compartilhada do edge (uma vez só)
+docker network create web
+
+# app Pokerdex (sem portas/TLS próprios — fica atrás do edge)
+git clone https://github.com/viniaraujo68/pokerdex-v3.git
+cd pokerdex-v3
+docker compose up -d --build
+
+# edge proxy (porta 80, roteia os subdomínios)
+cd deploy/edge
+cp .env.example .env     # ajuste POKERDEX_DOMAIN / RASTRO_DOMAIN
+docker compose up -d
+```
+
+No Cloudflare: registro `pokerdex` (A/CNAME) **proxied (laranja)**, SSL/TLS = **Flexible**.
+
+O SQLite vive no volume `pokerdex_data`
+(backup = `docker compose cp backend:/data/pokerdex.db ./backup.db`).
 
 ### Importar o histórico antigo (opcional)
 
