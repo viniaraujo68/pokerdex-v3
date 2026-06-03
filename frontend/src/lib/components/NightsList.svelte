@@ -41,6 +41,21 @@
 		placeFilter !== '' || dateFrom !== '' || dateTo !== '' || selectedPlayers.size > 0
 	);
 
+	// Client-side pagination: render in chunks to keep the DOM light.
+	const PAGE = 20;
+	let shown = $state(PAGE);
+
+	// Reset pagination whenever the filters change.
+	$effect(() => {
+		placeFilter;
+		dateFrom;
+		dateTo;
+		selectedPlayers;
+		shown = PAGE;
+	});
+
+	const paged = $derived(filtered.slice(0, shown));
+
 	function togglePlayer(id) {
 		const next = new Set(selectedPlayers);
 		next.has(id) ? next.delete(id) : next.add(id);
@@ -108,10 +123,15 @@
 		<div class="card empty">Nenhuma noite com esses filtros.</div>
 	{:else}
 		<div class="stack">
-			{#each filtered as night (night.id)}
+			{#each paged as night (night.id)}
 				<NightCard {night} {editable} {onEdit} {onDelete} />
 			{/each}
 		</div>
+		{#if filtered.length > shown}
+			<button class="btn btn-ghost more" onclick={() => (shown += PAGE)}>
+				Mostrar mais ({filtered.length - shown} restantes)
+			</button>
+		{/if}
 	{/if}
 {/if}
 
@@ -174,5 +194,9 @@
 		border-top: 1px solid var(--border-soft);
 		padding-top: 12px;
 		font-size: 0.9rem;
+	}
+	.more {
+		width: 100%;
+		margin-top: 4px;
 	}
 </style>
