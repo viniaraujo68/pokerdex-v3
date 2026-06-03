@@ -85,7 +85,7 @@
 				<div class="field">
 					<label for="g-name">Nome do grupo</label>
 					<!-- svelte-ignore a11y_autofocus -->
-				<input id="g-name" bind:value={name} placeholder="Sextodex" autofocus required />
+				<input id="g-name" bind:value={name} autofocus required />
 				</div>
 				<div class="field">
 					<label for="g-desc">Descrição <span class="faint">(opcional)</span></label>
