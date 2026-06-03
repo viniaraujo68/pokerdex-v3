@@ -48,15 +48,34 @@ alembic upgrade head
 
 ## Deploy na VPS (Docker Compose)
 
-1. Aponte seu domínio (A record) para o IP da VPS.
-2. Edite o domínio no `Caddyfile`.
-3. Suba tudo:
-   ```bash
-   docker compose up -d --build
-   ```
+Pré-requisitos: Docker + Compose na VPS, e um domínio com registro A apontando pro IP.
 
-Caddy cuida do HTTPS automaticamente. O SQLite fica no volume `pokerdex_data`
-(backup = copiar `/data/pokerdex.db`).
+```bash
+# 1. clonar e configurar o domínio
+git clone https://github.com/viniaraujo68/pokerdex-v3.git
+cd pokerdex-v3
+cp .env.example .env
+# edite .env e coloque DOMAIN=pokerdex.seudominio.com
+
+# 2. subir tudo (Caddy emite o HTTPS sozinho)
+docker compose up -d --build
+```
+
+Pronto — o app fica em `https://pokerdex.seudominio.com`. O SQLite vive no volume
+`pokerdex_data` (backup = `docker compose cp backend:/data/pokerdex.db ./backup.db`).
+
+### Importar o histórico antigo (opcional)
+
+1. Crie sua conta de dono pela interface (`/register`).
+2. Copie os backups e rode o import dentro do container do backend:
+   ```bash
+   docker compose cp players.json backend:/tmp/players.json
+   docker compose cp nights.json  backend:/tmp/nights.json
+   docker compose exec backend python scripts/import_legacy.py \
+     --players /tmp/players.json --nights /tmp/nights.json \
+     --owner SEU_USUARIO --group-name "Sextodex Legacy" --visibility public
+   ```
+   O script valida os totais contra o backup e aborta se algo não bater.
 
 ### Variáveis de ambiente (backend)
 
