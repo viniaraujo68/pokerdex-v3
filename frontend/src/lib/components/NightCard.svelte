@@ -73,7 +73,6 @@
 		font-weight: 700;
 		font-family: var(--font-display);
 		font-size: 1.05rem;
-		text-transform: capitalize;
 	}
 	.meta {
 		display: flex;

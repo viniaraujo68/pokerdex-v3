@@ -194,6 +194,19 @@
 	.head {
 		margin-bottom: 24px;
 	}
+	@media (max-width: 560px) {
+		.head {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 12px;
+		}
+		.head :global(.btn) {
+			width: 100%;
+		}
+		.search {
+			max-width: none;
+		}
+	}
 	.lbl {
 		font-size: 0.82rem;
 		font-weight: 600;

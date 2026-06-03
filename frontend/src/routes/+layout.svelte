@@ -104,7 +104,7 @@
 	.page {
 		padding-top: 32px;
 		padding-bottom: 64px;
-		min-height: calc(100vh - 64px - 60px);
+		flex: 1;
 	}
 	.foot {
 		border-top: 1px solid var(--border-soft);
@@ -114,6 +114,14 @@
 	}
 	@media (max-width: 560px) {
 		.user {
+			display: none;
+		}
+		.nav-actions {
+			gap: 6px;
+		}
+	}
+	@media (max-width: 400px) {
+		.brand-name {
 			display: none;
 		}
 	}

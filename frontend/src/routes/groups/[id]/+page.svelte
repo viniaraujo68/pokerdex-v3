@@ -129,6 +129,16 @@
 		display: inline-block;
 		margin-bottom: 8px;
 	}
+	@media (max-width: 560px) {
+		.head {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 12px;
+		}
+		.head :global(.btn) {
+			width: 100%;
+		}
+	}
 	.tabs {
 		display: flex;
 		gap: 4px;

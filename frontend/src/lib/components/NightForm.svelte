@@ -266,6 +266,17 @@
 		max-width: 320px;
 	}
 	@media (max-width: 600px) {
+		.meta-grid {
+			grid-template-columns: 1fr;
+		}
+		.newp {
+			max-width: none;
+		}
+		.addrow {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 10px;
+		}
 		.rhead {
 			display: none;
 		}
