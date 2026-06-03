@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
 COPY alembic ./alembic
 COPY alembic.ini .
+COPY scripts ./scripts
 
 # SQLite lives on the mounted volume.
 ENV POKERDEX_DATABASE_URL=sqlite:////data/pokerdex.db
