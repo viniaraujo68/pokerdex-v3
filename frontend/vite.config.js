@@ -7,7 +7,7 @@ export default defineConfig({
 		proxy: {
 			// In dev, forward API calls to the FastAPI backend (cookies preserved).
 			'/api': {
-				target: 'http://localhost:8000',
+				target: process.env.API_PROXY || 'http://localhost:8000',
 				changeOrigin: true
 			}
 		}
