@@ -30,3 +30,17 @@ export async function logout() {
 	await post('/auth/logout');
 	auth.user = null;
 }
+
+/** @param {string} currentPassword @param {string} newPassword */
+export async function changePassword(currentPassword, newPassword) {
+	await post('/auth/change-password', {
+		current_password: currentPassword,
+		new_password: newPassword
+	});
+}
+
+/** Kill every session for this user (this device included) and drop local auth state. */
+export async function logoutEverywhere() {
+	await post('/auth/logout-all');
+	auth.user = null;
+}
