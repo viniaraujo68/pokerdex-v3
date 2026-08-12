@@ -4,7 +4,9 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♠️</text></svg>" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="description" content="Pokerdex — registre as noites de poker do seu grupo" />
+		<!-- No <title>/<description> here on purpose: every route sets its own, localized, in
+		     `<svelte:head>`. A static one would come first in the head and win over the
+		     page's for crawlers — the public scoreboard would unfurl with generic copy. -->
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

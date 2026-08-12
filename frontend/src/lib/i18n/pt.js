@@ -1,0 +1,291 @@
+/** Dicionário pt-BR. Chaves planas, com namespace por pontos. */
+export default {
+	// ---------- comuns ----------
+	'common.cancel': 'Cancelar',
+	'common.save': 'Salvar',
+	'common.edit': 'Editar',
+	'common.delete': 'Excluir',
+	'common.close': 'Fechar',
+	'common.copy': 'Copiar',
+	'common.add': 'Adicionar',
+	'common.remove': 'Remover',
+	'common.saving': 'Salvando…',
+	'common.retry': 'Tentar de novo',
+	'common.name': 'Nome',
+	'common.description': 'Descrição',
+	'common.optional': '(opcional)',
+	'common.players': 'Participantes',
+	'common.emptyList': 'vazio',
+	'common.loading': 'Carregando…',
+
+	// ---------- header / footer ----------
+	'nav.explore': 'Explorar',
+	'nav.login': 'Entrar',
+	'nav.logout': 'Sair',
+	'nav.register': 'Criar conta',
+	'nav.account': 'Conta',
+	'nav.language': 'Idioma',
+	'nav.switchToPt': 'Mudar para português',
+	'nav.switchToEn': 'Mudar para inglês',
+	'footer.tagline': 'Pokerdex · noites de poker do seu grupo ♠ ♥ ♣ ♦',
+
+	// ---------- títulos das páginas (<title>, um por rota) ----------
+	'title.home': 'Pokerdex',
+	'title.myGroups': 'Meus grupos · Pokerdex',
+	'title.group': '{name} · Pokerdex',
+	'title.newNight': 'Nova noite · Pokerdex',
+	'title.newNightIn': 'Nova noite · {group} · Pokerdex',
+	'title.editNight': 'Editar noite · Pokerdex',
+	'title.editNightIn': 'Editar noite · {group} · Pokerdex',
+	'title.explore': 'Explorar · Pokerdex',
+	'title.login': 'Entrar · Pokerdex',
+	'title.register': 'Criar conta · Pokerdex',
+	'title.account': 'Conta · Pokerdex',
+	'title.public': '{name} · Pokerdex',
+	'title.error': 'Algo deu errado · Pokerdex',
+	'title.notFound': 'Página não encontrada · Pokerdex',
+
+	// ---------- home ----------
+	'home.tagline': 'As noites de poker do seu grupo, organizadas.',
+	'home.myGroups': 'Meus grupos',
+	'home.greeting': 'Olá, {name} 👋',
+	'home.newGroup': '+ Novo grupo',
+	'home.empty': 'Você ainda não tem grupos. Crie o primeiro! ♠',
+	'home.searchPlaceholder': '🔎 Buscar nos meus grupos…',
+	'home.noResults': 'Nenhum grupo encontrado para “{query}”.',
+
+	// ---------- grupo ----------
+	'group.create': 'Criar grupo',
+	'group.creating': 'Criando…',
+	'group.nameLabel': 'Nome do grupo',
+	'group.visibility': 'Visibilidade',
+	'group.public': 'Público',
+	'group.private': 'Privado',
+	'group.publicHint': 'Qualquer um com o link vê e aparece no Explorar',
+	'group.privateHint': 'Só os donos têm acesso',
+	'group.chipPublic': 'público',
+	'group.chipPrivate': 'privado',
+	'group.back': '← Meus grupos',
+	'group.newNight': '+ Nova noite',
+	'group.accessDenied': 'Você não tem acesso a este grupo.',
+	'group.refreshFailed': 'Não foi possível atualizar os dados: {message}',
+	'group.nightCount': { one: '{count} noite', other: '{count} noites' },
+	'group.playerCount': { one: '{count} participante', other: '{count} participantes' },
+	'group.unbalanced': {
+		one: '⚠️ {count} noite com pote aberto',
+		other: '⚠️ {count} noites com pote aberto'
+	},
+	'group.unbalancedGoTo': 'Ver na aba Noites',
+
+	// ---------- explorar ----------
+	'explore.title': 'Explorar grupos',
+	'explore.subtitle': 'Descubra placares públicos de outros grupos.',
+	'explore.searchPlaceholder': '🔎 Buscar grupos públicos pelo nome…',
+	'explore.noResults': 'Nenhum grupo público para “{query}”.',
+	'explore.empty': 'Nenhum grupo público ainda.',
+	'explore.searching': 'Buscando…',
+
+	// ---------- placar público ----------
+	'public.badge': 'placar público ♠',
+	'public.errorPrivate': 'Este grupo é privado. Você precisa de um link com token válido.',
+	'public.cta': 'Quer registrar as noites do seu grupo?',
+	'public.ctaLink': 'Conheça o Pokerdex',
+	// meta description / Open Graph — é o que aparece no card do WhatsApp/Discord
+	'public.metaCounts': '{nights} · {players}',
+	'public.metaTagline': 'Placar público no Pokerdex ♠',
+
+	// ---------- abas ----------
+	'tab.nights': 'Noites',
+	'tab.ranking': 'Ranking',
+	'tab.stats': 'Estatísticas',
+	'tab.settings': 'Config',
+	'tab.sections': 'Seções do grupo',
+
+	// ---------- noite ----------
+	'night.new': 'Nova noite',
+	'night.edit': 'Editar noite',
+	'night.backToGroup': '← Voltar ao grupo',
+	'night.date': 'Data',
+	'night.today': 'Hoje',
+	'night.yesterday': 'Ontem',
+	'night.otherDate': '📅 outra',
+	'night.place': 'Local',
+	'night.noPlace': 'sem local',
+	'night.placePlaceholder': 'Nome do local',
+	'night.addPlace': '+ Local',
+	'night.whoPlayed': 'Quem jogou?',
+	'night.sameTable': '↺ mesma mesa da última noite',
+	'night.atTable': { one: '{count} na mesa', other: '{count} na mesa' },
+	'night.noPlayersYet': 'Nenhum participante ainda — cadastre o primeiro abaixo.',
+	'night.amounts': 'Valores',
+	'night.standardBuyIn': 'buy-in padrão {amount}',
+	'night.rebuyTitle': 'Mais um buy-in de {amount}',
+	'night.rebuyMultiple': '{count}× · {amount}',
+	'night.invalidAmount': 'Valor inválido',
+	'night.fixAmounts': 'Corrija os valores marcados em vermelho antes de salvar.',
+	'night.fillRemainder': 'restante: {amount}?',
+	'night.toDistribute': 'a distribuir',
+	'night.potClosedShort': 'pote fechado',
+	'night.confirmUnbalanced': 'A diferença é de {amount} — salvar assim mesmo?',
+	'night.saveAnyway': 'Salvar assim mesmo',
+	'night.draftFound': 'Rascunho de {date} encontrado',
+	'night.draftRestore': 'Restaurar',
+	'night.draftDiscard': 'Descartar',
+	'night.leaveConfirm': 'Você tem alterações não salvas nesta noite. Sair sem salvar?',
+	'night.loadFailed': 'Não foi possível carregar esta noite: {message}',
+	'night.notLoaded': 'A noite não foi carregada — recarregue a página antes de salvar.',
+	'night.pot': 'Pote',
+	'night.buyInCol': 'Buy-in',
+	'night.cashOutCol': 'Cash-out',
+	'night.newPlayer': 'Novo participante…',
+	'night.potMismatch': '⚠️ O pote não fecha — diferença de {amount}',
+	'night.save': 'Salvar noite',
+	'night.saving': 'Salvando…',
+	'night.buyInInline': 'buy-in {amount}',
+	'night.cashOutInline': 'saiu {amount}',
+	'night.deleteConfirm': 'Excluir esta noite? As estatísticas serão recalculadas.',
+	'night.deleteFailed': 'Não foi possível excluir a noite: {message}',
+
+	// ---------- card da noite ----------
+	'card.settlement': 'Quem paga quem',
+	'card.editEntry': 'Editar valores de {name}',
+	'card.quickEditFailed': 'Não foi possível salvar: {message}',
+
+	// ---------- lista de noites / filtros ----------
+	'nights.empty': 'Nenhuma noite registrada ainda. 🃏',
+	'nights.noneWithFilters': 'Nenhuma noite com esses filtros.',
+	'nights.showMore': 'Mostrar mais ({remaining} restantes)',
+	'filters.place': 'Local',
+	'filters.allPlaces': 'Todos os locais',
+	'filters.from': 'De',
+	'filters.to': 'Até',
+	'filters.playersPresent': 'Participantes presentes',
+	'filters.andHint': 'mostrando noites em que todos os selecionados jogaram',
+	'filters.nightCount': {
+		one: '{shown} de {total} noite',
+		other: '{shown} de {total} noites'
+	},
+	'filters.clear': 'Limpar filtros',
+	'filters.title': 'Filtros',
+	'filters.activeCount': { one: '{count} ativo', other: '{count} ativos' },
+
+	// ---------- ranking ----------
+	'ranking.empty': 'Nenhum participante com noites registradas.',
+	'ranking.player': 'Participante',
+	'ranking.totalProfit': 'Lucro total',
+	'ranking.nights': 'Noites',
+	'ranking.avgPerNight': 'Média/noite',
+	'ranking.roi': 'ROI',
+	'ranking.sortBy': 'Ordenar:',
+	'ranking.sortByColumn': 'Ordenar por {column}',
+	'ranking.cardSub': {
+		one: '{count} noite · méd {avg} · ROI {roi}',
+		other: '{count} noites · méd {avg} · ROI {roi}'
+	},
+
+	// ---------- estatísticas ----------
+	'stats.evolution': 'Evolução do lucro',
+	'chart.empty': 'Sem dados para o gráfico ainda.',
+	'records.totalNights': 'Noites registradas',
+	'records.bestWin': 'Maior vitória numa noite',
+	'records.worstLoss': 'Maior derrota numa noite',
+
+	// ---------- configurações ----------
+	'settings.group': 'Grupo',
+	'settings.saveChanges': 'Salvar alterações',
+	'settings.publicLink': 'Link público',
+	'settings.publicLinkHint': 'Qualquer pessoa com este link vê o placar (somente leitura).',
+	'settings.privateLinkHint':
+		'Grupo privado: o link só funciona com o token abaixo. Gire o token para revogar links antigos.',
+	'settings.rotateToken': '🔄 Gerar novo token',
+	'settings.noLinkYet': 'Este grupo é privado e ainda não tem link de compartilhamento.',
+	'settings.generateLink': '🔗 Gerar link',
+	'settings.linkUnsavedHint':
+		'A visibilidade mudou e ainda não foi salva — o link abaixo reflete o estado salvo.',
+	'settings.options': 'Preferências deste grupo',
+	'settings.unbalancedOption': 'Mostrar aviso de potes que não fecham',
+	'settings.unbalancedOptionHint':
+		'Um aviso no topo do grupo conta as noites cujo pote não fecha. Noites importadas do histórico são ignoradas.',
+	'settings.playerPlaceholder': 'Nome do participante',
+	'settings.noPlayers': 'Nenhum participante ainda.',
+	'settings.reactivate': 'Reativar {name}',
+	'settings.inactiveHint':
+		'Participantes inativos ficam de fora de novas noites, mas seguem no histórico. Toque em ↺ para reativar.',
+	'settings.places': '📍 Locais',
+	'settings.addPlaceholder': 'Adicionar…',
+	'settings.dangerZone': 'Zona de perigo',
+	'settings.deleteWarningPre': 'Excluir o grupo apaga',
+	'settings.deleteWarningStrong': 'permanentemente',
+	'settings.deleteWarningPost':
+		'todas as noites, participantes e locais. Não dá pra desfazer.',
+	'settings.deleteGroup': 'Excluir grupo',
+	'settings.deleteConfirmPre': 'Isso vai apagar',
+	'settings.deleteConfirmPost':
+		'e tudo dentro dele para sempre. Para confirmar, digite o nome do grupo abaixo:',
+	'settings.deletePermanently': 'Excluir permanentemente',
+	'settings.deleting': 'Excluindo…',
+
+	// ---------- autenticação ----------
+	'auth.login': 'Entrar',
+	'auth.loginSubtitle': 'Acesse seus grupos.',
+	'auth.loggingIn': 'Entrando…',
+	'auth.register': 'Criar conta',
+	'auth.registerSubtitle': 'Crie sua conta e abra seu primeiro grupo.',
+	'auth.registering': 'Criando…',
+	'auth.username': 'Usuário',
+	'auth.password': 'Senha',
+	'auth.passwordTooShort': 'A senha precisa ter ao menos 6 caracteres.',
+	'auth.noAccount': 'Não tem conta?',
+	'auth.createOne': 'Criar uma',
+	'auth.hasAccount': 'Já tem conta?',
+
+	// ---------- conta ----------
+	'account.title': 'Conta',
+	'account.subtitle': 'Conectado como {name}.',
+	'account.changePassword': 'Alterar senha',
+	'account.currentPassword': 'Senha atual',
+	'account.newPassword': 'Nova senha',
+	'account.confirmPassword': 'Confirmar nova senha',
+	'account.passwordMismatch': 'As senhas não coincidem.',
+	'account.passwordChanged': 'Senha alterada ✓',
+	'account.sessions': 'Sessões',
+	'account.logoutAll': 'Sair de todos os dispositivos',
+	'account.logoutAllHint':
+		'Encerra a sessão em todos os aparelhos, inclusive neste. Você precisará entrar de novo.',
+
+	// ---------- feedback (toasts) ----------
+	'toast.nightSaved': 'Noite salva ✓',
+	'toast.nightDeleted': 'Noite excluída',
+	'toast.settingsSaved': 'Configurações salvas ✓',
+	'toast.participantAdded': 'Participante adicionado: {name}',
+	'toast.participantReactivated': 'Participante reativado: {name}',
+	'toast.placeAdded': 'Local adicionado: {name}',
+	'toast.linkCopied': 'Link copiado ✓',
+	'toast.copyFailed': 'Não foi possível copiar o link — copie manualmente.',
+	'toast.linkGenerated': 'Link de compartilhamento gerado ✓',
+	'toast.tokenRotated': 'Novo token gerado — os links antigos foram revogados.',
+
+	// ---------- erros ----------
+	'error.http': 'Erro {status}',
+	'error.title': 'Algo deu errado',
+	'error.body': 'Não conseguimos carregar esta página. Tente de novo em instantes.',
+	'error.notFoundTitle': 'Página não encontrada',
+	'error.notFoundBody': 'O link pode estar errado, ou o conteúdo não existe mais.',
+	'error.home': '← Voltar ao início',
+
+	// Mensagens vindas do backend, resolvidas por `detail.code`.
+	'apiError.username_taken': 'Este nome de usuário já está em uso.',
+	'apiError.invalid_credentials': 'Usuário ou senha inválidos.',
+	'apiError.participant_exists': 'Já existe um participante com esse nome neste grupo.',
+	'apiError.place_exists': 'Já existe um local com esse nome neste grupo.',
+	'apiError.participant_in_other_group': 'Esse participante não pertence a este grupo.',
+	'apiError.place_in_other_group': 'Esse local não pertence a este grupo.',
+	'apiError.duplicate_participant': 'O mesmo participante aparece duas vezes nesta noite.',
+	'apiError.place_in_use': 'Este local é usado por noites registradas e não pode ser excluído.',
+	'apiError.integrity_conflict': 'A operação conflita com dados que já existem.',
+	'apiError.rate_limited': 'Muitas tentativas. Aguarde um momento e tente de novo.',
+	'apiError.group_private': 'Este grupo é privado. Você precisa de um link com token válido.',
+
+	// ---------- dinheiro ----------
+	'money.placeholder': '0,00'
+};
