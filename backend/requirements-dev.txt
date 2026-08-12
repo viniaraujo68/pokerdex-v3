@@ -1,0 +1,7 @@
+# Test/dev-only dependencies. Install on top of requirements.txt:
+#   .venv/bin/pip install -r requirements-dev.txt
+-r requirements.txt
+
+pytest==9.1.1
+# starlette's TestClient is an httpx client under the hood; not pulled in by fastapi itself.
+httpx==0.28.1

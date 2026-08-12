@@ -16,5 +16,11 @@ class Settings(BaseSettings):
     # Comma-separated origins allowed in dev (prod is same-origin behind Caddy → none needed)
     cors_origins: str = "http://localhost:5173"
 
+    # Rate limiting (slowapi, keyed by client IP). Turn off in tests/benchmarks.
+    rate_limit_enabled: bool = True
+    rate_limit_login: str = "5/minute"
+    rate_limit_register: str = "3/minute"
+    rate_limit_public: str = "30/minute"
+
 
 settings = Settings()

@@ -24,6 +24,21 @@ services:
     environment:
       PORT: "3000"
       ORIGIN: https://${POKERDEX_DOMAIN:-pokerdex.rastrovin.org}
+      # The server-rendered public pages (/g/<slug>, /explorar) fetch the API from inside the
+      # network: for them "/api" is not same-origin, since this container serves only the app.
+      # The browser keeps using /api through the edge proxy.
+      POKERDEX_API_INTERNAL_URL: http://backend:8000
+      # Teaches adapter-node where the visitor's IP lives, which is what
+      # event.getClientAddress() returns. hooks.server.js passes that on as X-Forwarded-For
+      # on the internal /api calls, so the backend rate-limits per visitor instead of
+      # lumping every server-rendered page view into the frontend container's one bucket.
+      ADDRESS_HEADER: x-forwarded-for
+      # Depth counted from the *right* of the chain: 1 = the entry appended by the nearest
+      # trusted proxy, i.e. the shared edge proxy in deploy/edge. Cloudflare fronts that edge
+      # and appends its own entry, so if the edge is ever changed to pass Cloudflare's chain
+      # through untouched this needs to become 2 — as it stands the edge is the last hop that
+      # writes the header, so 1 is the correct (and the un-spoofable) choice.
+      XFF_DEPTH: "1"
     depends_on:
       - backend
     networks:
