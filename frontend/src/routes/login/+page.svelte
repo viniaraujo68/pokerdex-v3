@@ -1,56 +1,56 @@
 <script>
 	import { login } from '$lib/stores/auth.svelte.js';
+	import { errorMessage } from '$lib/api.js';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { t } from '$lib/i18n.svelte.js';
+	import { safeNext, withNext } from '$lib/nav.js';
+
+	/** Where the page that bounced us here wants us back. Sanitized: never off-origin. */
+	const next = $derived(safeNext($page.url.searchParams.get('next')));
 
 	let username = $state('');
 	let password = $state('');
 	let error = $state('');
 	let busy = $state(false);
 
+	/** @param {SubmitEvent} ev */
 	async function submit(ev) {
 		ev.preventDefault();
 		busy = true;
 		error = '';
 		try {
 			await login(username, password);
-			goto('/');
+			goto(next ?? '/');
 		} catch (e) {
-			error = e.message;
+			error = errorMessage(e);
 			busy = false;
 		}
 	}
 </script>
 
+<svelte:head>
+	<title>{t('title.login')}</title>
+</svelte:head>
+
+<!-- .auth / .auth-alt / .link are shared with /register, so they live in app.css -->
 <div class="auth">
 	<form class="card stack" onsubmit={submit}>
-		<h1>Entrar</h1>
-		<p class="muted">Acesse seus grupos.</p>
+		<h1>{t('auth.login')}</h1>
+		<p class="muted">{t('auth.loginSubtitle')}</p>
 		{#if error}<div class="toast toast-error">{error}</div>{/if}
 		<div class="field">
-			<label for="u">Usuário</label>
+			<label for="u">{t('auth.username')}</label>
 			<input id="u" bind:value={username} autocomplete="username" required />
 		</div>
 		<div class="field">
-			<label for="p">Senha</label>
+			<label for="p">{t('auth.password')}</label>
 			<input id="p" type="password" bind:value={password} autocomplete="current-password" required />
 		</div>
-		<button class="btn btn-primary" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</button>
-		<p class="muted small">Não tem conta? <a href="/register" class="link">Criar uma</a></p>
+		<button class="btn btn-primary" disabled={busy}>{busy ? t('auth.loggingIn') : t('auth.login')}</button>
+		<p class="muted auth-alt">
+			{t('auth.noAccount')}
+			<a href={withNext('/register', next)} class="link">{t('auth.createOne')}</a>
+		</p>
 	</form>
 </div>
-
-<style>
-	.auth {
-		max-width: 400px;
-		margin: 6vh auto 0;
-	}
-	.small {
-		font-size: 0.9rem;
-		text-align: center;
-		margin: 0;
-	}
-	.link {
-		color: var(--felt-bright);
-		font-weight: 600;
-	}
-</style>

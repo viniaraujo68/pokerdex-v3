@@ -1,14 +1,26 @@
 <script>
-	import { get, post, patch, del } from '$lib/api.js';
+	import { get, post, patch, del, errorMessage } from '$lib/api.js';
 	import { goto } from '$app/navigation';
 	import Modal from './Modal.svelte';
+	import { t } from '$lib/i18n.svelte.js';
+	import { toast } from '$lib/toast.svelte.js';
+	import { unbalancedBadgeEnabled, setUnbalancedBadge } from '$lib/prefs.svelte.js';
 
-	/** @type {{ group: any, onchange: Function }} */
+	/**
+	 * `onchange` with a group means "this is the new group"; with no argument it means
+	 * "something under the group moved, refetch" — see the parent's `onGroupChange`.
+	 * @type {{
+	 *   group: import('$lib/types.js').Group,
+	 *   onchange: (updated?: import('$lib/types.js').Group) => void
+	 * }}
+	 */
 	let { group, onchange } = $props();
 
-	let participants = $state([]);
-	let lists = $state({ places: [] });
-	let error = $state('');
+	let participants = $state(/** @type {import('$lib/types.js').Participant[]} */ ([]));
+	/** The catalogs, keyed by the API path segment that owns them. */
+	let lists = $state({ places: /** @type {import('$lib/types.js').Named[]} */ ([]) });
+	/** Only the initial load gets an inline message — with no catalog, empty cards would lie. */
+	let loadError = $state('');
 
 	// delete-group flow (double confirmation: type the group name)
 	let showDelete = $state(false);
@@ -21,15 +33,20 @@
 			await del(`/groups/${group.id}`);
 			goto('/');
 		} catch (e) {
-			error = e.message;
+			toast.error(errorMessage(e));
 			deleting = false;
 			showDelete = false;
 		}
 	}
 
-	// group settings form
+	// group settings form (a draft: nothing here is live until "Salvar alterações")
+	// Reading `group` once is the point: these are the form's *initial* values. Following the
+	// prop would overwrite whatever the user is typing the moment the parent refetches.
+	// svelte-ignore state_referenced_locally
 	let name = $state(group.name);
+	// svelte-ignore state_referenced_locally
 	let description = $state(group.description);
+	// svelte-ignore state_referenced_locally
 	let visibility = $state(group.visibility);
 	let savingGroup = $state(false);
 
@@ -45,32 +62,80 @@
 			]);
 			participants = pp;
 			lists = { places };
+			loadError = '';
 		} catch (e) {
-			error = e.message;
+			loadError = errorMessage(e);
 		}
 	}
 
 	async function saveGroup() {
 		savingGroup = true;
-		error = '';
 		try {
 			const updated = await patch(`/groups/${group.id}`, { name, description, visibility });
 			onchange(updated);
+			toast.success(t('toast.settingsSaved'));
 		} catch (e) {
-			error = e.message;
+			toast.error(errorMessage(e));
 		} finally {
 			savingGroup = false;
 		}
 	}
 
+	// ---------- share link ----------
+	// Everything below reads the SAVED group, never the form draft: a link built from an
+	// unsaved `visibility` would 403 the moment someone opened it.
+	const savedPublic = $derived(group.visibility === 'public');
+	const hasToken = $derived(!!group.share_token);
+	/** A private group with no token has no shareable URL at all — don't fake one. */
+	const linkReady = $derived(savedPublic || hasToken);
+	const visibilityDirty = $derived(visibility !== group.visibility);
+
+	const shareUrl = $derived(
+		typeof window !== 'undefined' && linkReady
+			? `${window.location.origin}/g/${group.slug}` +
+					(savedPublic ? '' : `?t=${group.share_token}`)
+			: ''
+	);
+
+	let rotating = $state(false);
+
+	/** Also the "generate the first link" action: the endpoint mints a token either way. */
 	async function rotateToken() {
-		const updated = await post(`/groups/${group.id}/rotate-share-token`);
-		onchange(updated);
+		rotating = true;
+		const first = !hasToken;
+		try {
+			const updated = await post(`/groups/${group.id}/rotate-share-token`);
+			onchange(updated);
+			toast.success(first ? t('toast.linkGenerated') : t('toast.tokenRotated'));
+		} catch (e) {
+			toast.error(errorMessage(e));
+		} finally {
+			rotating = false;
+		}
 	}
 
-	// catalog handlers (places only)
+	async function copyShare() {
+		if (!shareUrl) return;
+		try {
+			// No clipboard API on http:// origins or older WebViews — say so instead of no-op'ing.
+			if (!navigator.clipboard) throw new Error('clipboard unavailable');
+			await navigator.clipboard.writeText(shareUrl);
+			toast.success(t('toast.linkCopied'));
+		} catch {
+			toast.error(t('toast.copyFailed'));
+		}
+	}
+
+	// ---------- per-group options ----------
+	const showUnbalanced = $derived(unbalancedBadgeEnabled(group.id));
+
+	// ---------- catalog handlers (places only) ----------
+	/** The `kind` the handlers below are keyed by — one catalog today, hence the single member. */
+	/** @typedef {'places'} CatalogKind */
+
 	let drafts = $state({ places: '', participant: '' });
 
+	/** @param {CatalogKind} kind */
 	async function addItem(kind) {
 		const value = drafts[kind].trim();
 		if (!value) return;
@@ -78,17 +143,19 @@
 			const item = await post(`/groups/${group.id}/${kind}`, { name: value });
 			lists[kind] = [...lists[kind], item].sort((a, b) => a.name.localeCompare(b.name));
 			drafts[kind] = '';
+			toast.success(t('toast.placeAdded', { name: item.name }));
 		} catch (e) {
-			error = e.message;
+			toast.error(errorMessage(e));
 		}
 	}
 
+	/** @param {CatalogKind} kind @param {number} id */
 	async function removeItem(kind, id) {
 		try {
 			await del(`/groups/${group.id}/${kind}/${id}`);
 			lists[kind] = lists[kind].filter((x) => x.id !== id);
 		} catch (e) {
-			error = e.message;
+			toast.error(errorMessage(e));
 		}
 	}
 
@@ -100,128 +167,183 @@
 			participants = [...participants, p].sort((a, b) => a.name.localeCompare(b.name));
 			drafts.participant = '';
 			onchange();
+			toast.success(t('toast.participantAdded', { name: p.name }));
 		} catch (e) {
-			error = e.message;
+			toast.error(errorMessage(e));
 		}
 	}
 
+	/** @param {import('$lib/types.js').Participant} p */
 	async function removeParticipant(p) {
 		try {
 			await del(`/groups/${group.id}/participants/${p.id}`);
 			await loadAll();
 			onchange();
 		} catch (e) {
-			error = e.message;
+			toast.error(errorMessage(e));
 		}
 	}
 
-	const shareUrl = $derived(
-		typeof window !== 'undefined'
-			? `${window.location.origin}/g/${group.slug}` +
-					(group.visibility !== 'public' && group.share_token ? `?t=${group.share_token}` : '')
-			: ''
-	);
-
-	function copyShare() {
-		navigator.clipboard?.writeText(shareUrl);
+	/**
+	 * Undo of the soft delete above: PATCH takes a partial body, so no name to echo back.
+	 * @param {import('$lib/types.js').Participant} p
+	 */
+	async function reactivateParticipant(p) {
+		try {
+			const updated = await patch(`/groups/${group.id}/participants/${p.id}`, { active: true });
+			participants = participants.map((x) => (x.id === updated.id ? updated : x));
+			onchange();
+			toast.success(t('toast.participantReactivated', { name: updated.name }));
+		} catch (e) {
+			toast.error(errorMessage(e));
+		}
 	}
 
-	const catalogMeta = [{ kind: 'places', title: '📍 Locais' }];
+	const hasInactive = $derived(participants.some((p) => !p.active));
+	/** @type {{ kind: CatalogKind, title: string }[]} */
+	const catalogMeta = $derived([{ kind: 'places', title: t('settings.places') }]);
 </script>
 
-{#if error}<div class="toast toast-error">{error}</div>{/if}
+{#if loadError}<div class="toast toast-error">{loadError}</div>{/if}
 
 <div class="settings stack">
 	<!-- Group basics -->
 	<div class="card stack">
-		<h3>Grupo</h3>
+		<h3>{t('settings.group')}</h3>
 		<div class="field">
-			<label for="s-name">Nome</label>
+			<label for="s-name">{t('common.name')}</label>
 			<input id="s-name" bind:value={name} />
 		</div>
 		<div class="field">
-			<label for="s-desc">Descrição</label>
+			<label for="s-desc">{t('common.description')}</label>
 			<input id="s-desc" bind:value={description} />
 		</div>
 		<div class="field">
-			<label for="s-vis">Visibilidade</label>
+			<label for="s-vis">{t('group.visibility')}</label>
 			<select id="s-vis" bind:value={visibility}>
-				<option value="public">Público</option>
-				<option value="private">Privado</option>
+				<option value="public">{t('group.public')}</option>
+				<option value="private">{t('group.private')}</option>
 			</select>
 		</div>
 		<div>
 			<button class="btn btn-primary btn-sm" disabled={savingGroup} onclick={saveGroup}>
-				Salvar alterações
+				{savingGroup ? t('common.saving') : t('settings.saveChanges')}
 			</button>
 		</div>
 	</div>
 
-	<!-- Public link -->
+	<!-- Share link — always the saved state, never the draft above -->
 	<div class="card stack">
-		<h3>Link público</h3>
-		{#if visibility === 'public'}
-			<p class="muted small">Qualquer pessoa com este link vê o placar (somente leitura).</p>
+		<h3>{t('settings.publicLink')}</h3>
+		{#if savedPublic}
+			<p class="muted small">{t('settings.publicLinkHint')}</p>
+		{:else if hasToken}
+			<p class="muted small">{t('settings.privateLinkHint')}</p>
 		{:else}
-			<p class="muted small">
-				Grupo privado: o link só funciona com o token abaixo. Gire o token para revogar links
-				antigos.
-			</p>
+			<p class="muted small">{t('settings.noLinkYet')}</p>
 		{/if}
-		<div class="share">
-			<input readonly value={shareUrl} />
-			<button class="btn btn-ghost btn-sm" onclick={copyShare}>Copiar</button>
-		</div>
-		{#if visibility !== 'public'}
+
+		{#if visibilityDirty}
+			<p class="toast toast-warn small">{t('settings.linkUnsavedHint')}</p>
+		{/if}
+
+		{#if linkReady}
+			<div class="share">
+				<input readonly value={shareUrl} aria-label={t('settings.publicLink')} />
+				<button class="btn btn-ghost btn-sm" onclick={copyShare}>{t('common.copy')}</button>
+			</div>
+		{/if}
+
+		{#if !savedPublic}
 			<div>
-				<button class="btn btn-ghost btn-sm" onclick={rotateToken}>🔄 Gerar novo token</button>
+				<button class="btn btn-ghost btn-sm" disabled={rotating} onclick={rotateToken}>
+					{hasToken ? t('settings.rotateToken') : t('settings.generateLink')}
+				</button>
 			</div>
 		{/if}
 	</div>
 
+	<!-- Per-group options (device-local) -->
+	<div class="card stack">
+		<h3>{t('settings.options')}</h3>
+		<label class="opt">
+			<input
+				type="checkbox"
+				checked={showUnbalanced}
+				onchange={(e) => setUnbalancedBadge(group.id, e.currentTarget.checked)}
+			/>
+			<span>
+				<span class="opt-t">{t('settings.unbalancedOption')}</span>
+				<span class="faint opt-d">{t('settings.unbalancedOptionHint')}</span>
+			</span>
+		</label>
+	</div>
+
 	<!-- Participants -->
 	<div class="card stack">
-		<h3>Participantes</h3>
+		<h3>{t('common.players')}</h3>
 		<div class="adder">
 			<input
-				placeholder="Nome do participante"
+				placeholder={t('settings.playerPlaceholder')}
 				bind:value={drafts.participant}
 				onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addParticipant())}
 			/>
-			<button class="btn btn-ghost btn-sm" onclick={addParticipant}>Adicionar</button>
+			<button class="btn btn-ghost btn-sm" onclick={addParticipant}>{t('common.add')}</button>
 		</div>
 		<div class="tags">
-			{#each participants as p}
+			{#each participants as p (p.id)}
 				<span class="chip" class:inactive={!p.active}>
 					{p.name}
-					<button class="chip-x" title="Remover" onclick={() => removeParticipant(p)}>✕</button>
+					{#if p.active}
+						<button
+							class="chip-x"
+							aria-label={t('common.remove')}
+							title={t('common.remove')}
+							onclick={() => removeParticipant(p)}>✕</button
+						>
+					{:else}
+						<button
+							class="chip-x revive"
+							aria-label={t('settings.reactivate', { name: p.name })}
+							title={t('settings.reactivate', { name: p.name })}
+							onclick={() => reactivateParticipant(p)}>↺</button
+						>
+					{/if}
 				</span>
 			{/each}
-			{#if participants.length === 0}<span class="faint small">Nenhum participante ainda.</span>{/if}
+			{#if participants.length === 0}<span class="faint small">{t('settings.noPlayers')}</span>{/if}
 		</div>
+		{#if hasInactive}
+			<p class="faint small">{t('settings.inactiveHint')}</p>
+		{/if}
 	</div>
 
 	<!-- Catalogs -->
 	<div class="catalogs grid">
-		{#each catalogMeta as meta}
+		{#each catalogMeta as meta (meta.kind)}
 			<div class="card stack">
 				<h3>{meta.title}</h3>
 				<div class="adder">
 					<input
-						placeholder="Adicionar…"
+						placeholder={t('settings.addPlaceholder')}
 						bind:value={drafts[meta.kind]}
 						onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addItem(meta.kind))}
 					/>
 					<button class="btn btn-ghost btn-sm" onclick={() => addItem(meta.kind)}>+</button>
 				</div>
 				<div class="tags">
-					{#each lists[meta.kind] as item}
+					{#each lists[meta.kind] as item (item.id)}
 						<span class="chip">
-							{item.name ?? item.label}
-							<button class="chip-x" onclick={() => removeItem(meta.kind, item.id)}>✕</button>
+							{item.name}
+							<button
+								class="chip-x"
+								aria-label={t('common.remove')}
+								title={t('common.remove')}
+								onclick={() => removeItem(meta.kind, item.id)}>✕</button
+							>
 						</span>
 					{/each}
-					{#if lists[meta.kind].length === 0}<span class="faint small">vazio</span>{/if}
+					{#if lists[meta.kind].length === 0}<span class="faint small">{t('common.emptyList')}</span>{/if}
 				</div>
 			</div>
 		{/each}
@@ -229,25 +351,25 @@
 
 	<!-- Danger zone -->
 	<div class="card stack danger">
-		<h3>Zona de perigo</h3>
+		<h3>{t('settings.dangerZone')}</h3>
 		<p class="muted small">
-			Excluir o grupo apaga <strong>permanentemente</strong> todas as noites, participantes e locais.
-			Não dá pra desfazer.
+			{t('settings.deleteWarningPre')} <strong>{t('settings.deleteWarningStrong')}</strong>
+			{t('settings.deleteWarningPost')}
 		</p>
 		<div>
 			<button class="btn btn-danger btn-sm" onclick={() => { showDelete = true; confirmName = ''; }}>
-				Excluir grupo
+				{t('settings.deleteGroup')}
 			</button>
 		</div>
 	</div>
 </div>
 
 {#if showDelete}
-	<Modal title="Excluir grupo" onclose={() => (showDelete = false)}>
+	<Modal title={t('settings.deleteGroup')} onclose={() => (showDelete = false)}>
 		<div class="stack">
 			<p class="muted">
-				Isso vai apagar <strong>{group.name}</strong> e tudo dentro dele para sempre. Para confirmar,
-				digite o nome do grupo abaixo:
+				{t('settings.deleteConfirmPre')} <strong>{group.name}</strong>
+				{t('settings.deleteConfirmPost')}
 			</p>
 			<input
 				placeholder={group.name}
@@ -255,13 +377,13 @@
 				onkeydown={(e) => e.key === 'Enter' && confirmName === group.name && deleteGroup()}
 			/>
 			<div class="row mactions">
-				<button class="btn btn-ghost" onclick={() => (showDelete = false)}>Cancelar</button>
+				<button class="btn btn-ghost" onclick={() => (showDelete = false)}>{t('common.cancel')}</button>
 				<button
 					class="btn btn-danger"
 					disabled={confirmName !== group.name || deleting}
 					onclick={deleteGroup}
 				>
-					{deleting ? 'Excluindo…' : 'Excluir permanentemente'}
+					{deleting ? t('settings.deleting') : t('settings.deletePermanently')}
 				</button>
 			</div>
 		</div>
@@ -295,27 +417,78 @@
 		font-size: 0.85rem;
 		color: var(--text-muted);
 	}
+	/* The whole label toggles, so the row *is* the hit area — negative margin keeps the extra
+	   padding from re-spacing the card. */
+	.opt {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+		cursor: pointer;
+		padding: 8px;
+		margin: -8px;
+		border-radius: var(--radius-sm);
+	}
+	.opt:hover {
+		background: rgba(124, 58, 237, 0.07);
+	}
+	.opt input {
+		width: 22px;
+		height: 22px;
+		margin: 0;
+		flex: 0 0 auto;
+		accent-color: var(--felt-bright);
+	}
+	.opt-t {
+		display: block;
+		font-weight: 600;
+		font-size: 0.92rem;
+	}
+	.opt-d {
+		display: block;
+		font-size: 0.8rem;
+		line-height: 1.35;
+	}
 	.tags {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
 	}
-	.chip {
-		gap: 4px;
+	/* The ✕/↺ used to be a ~13px target. Rather than float a 44px overlay that would spill into
+	   the neighbouring chip (the gap is only 8px), the chip grows to 44px tall and the button
+	   fills it: a full-height target with no overlap. */
+	.tags .chip {
+		gap: 2px;
+		min-height: 44px;
+		/* no right padding: the button itself is the right edge, so it can be a full 44px */
+		padding: 0 0 0 12px;
 	}
 	.chip.inactive {
 		opacity: 0.5;
 	}
 	.chip-x {
+		display: inline-grid;
+		place-items: center;
+		min-width: 44px;
+		min-height: 44px;
 		background: none;
 		border: none;
+		border-radius: 999px;
 		color: var(--text-faint);
 		cursor: pointer;
-		padding: 0 2px;
-		font-size: 0.8rem;
+		padding: 0;
+		font-size: 0.85rem;
+		line-height: 1;
 	}
 	.chip-x:hover {
 		color: var(--text);
+		background: rgba(255, 255, 255, 0.06);
+	}
+	.revive {
+		color: var(--felt-bright);
+		font-size: 1rem;
+	}
+	.revive:hover {
+		color: var(--green-pos);
 	}
 	.catalogs {
 		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
