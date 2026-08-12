@@ -17,4 +17,9 @@ ENV POKERDEX_COOKIE_SECURE=true
 ENV POKERDEX_CORS_ORIGINS=
 
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# --proxy-headers + --forwarded-allow-ips: the edge proxy is the only client uvicorn ever
+# sees, so without trusting its X-Forwarded-For every request would share one rate-limit
+# bucket (and logs would show the proxy's IP). Safe here because the container port is not
+# reachable from outside the compose network.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", \
+     "--proxy-headers", "--forwarded-allow-ips=*"]

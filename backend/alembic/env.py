@@ -8,10 +8,14 @@ from app import models  # noqa: F401  (register tables on the metadata)
 from app.config import settings
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# Single source of truth for the DB URL: app settings (POKERDEX_DATABASE_URL).
+# `%` is escaped because the value goes through ConfigParser interpolation.
+config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
 
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+# When migrations run programmatically at app startup we must NOT touch logging:
+# fileConfig() would tear down uvicorn's handlers. db.py sets configure_logger=False.
+if config.config_file_name is not None and config.attributes.get("configure_logger", True):
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 target_metadata = SQLModel.metadata
 
