@@ -6,14 +6,15 @@ from sqlmodel import select
 
 from .config import settings
 from .db import get_session
-from .models import GroupOwner, Session, User, utcnow
-from .security import new_token
+from .models import GroupOwner, User, UserSession, utcnow
+from .security import hash_token, new_token
 
 
-def create_session(db: DBSession, user_id: int, response: Response) -> Session:
+def create_session(db: DBSession, user_id: int, response: Response) -> UserSession:
     token = new_token()
     expires_at = utcnow() + timedelta(days=settings.session_ttl_days)
-    session = Session(token=token, user_id=user_id, expires_at=expires_at)
+    # Cookie carries the raw token; the DB only ever sees its hash.
+    session = UserSession(token_hash=hash_token(token), user_id=user_id, expires_at=expires_at)
     db.add(session)
     db.commit()
     response.set_cookie(
@@ -28,24 +29,44 @@ def create_session(db: DBSession, user_id: int, response: Response) -> Session:
     return session
 
 
-def destroy_session(db: DBSession, request: Request, response: Response) -> None:
+def current_token_hash(request: Request) -> str | None:
+    """Hash of the caller's session cookie, or None when there is no cookie."""
     token = request.cookies.get(settings.session_cookie_name)
-    if token:
-        existing = db.get(Session, token)
+    return hash_token(token) if token else None
+
+
+def destroy_session(db: DBSession, request: Request, response: Response) -> None:
+    token_hash = current_token_hash(request)
+    if token_hash:
+        existing = db.get(UserSession, token_hash)
         if existing:
             db.delete(existing)
             db.commit()
     response.delete_cookie(settings.session_cookie_name, path="/")
 
 
+def revoke_other_sessions(db: DBSession, user_id: int, keep_token_hash: str | None) -> None:
+    """Delete every session for the user except the one identified by keep_token_hash."""
+    stmt = select(UserSession).where(UserSession.user_id == user_id)
+    for session in db.exec(stmt):
+        if session.token_hash != keep_token_hash:
+            db.delete(session)
+
+
+def revoke_all_sessions(db: DBSession, user_id: int) -> None:
+    """Delete every session for the user, including the current one."""
+    for session in db.exec(select(UserSession).where(UserSession.user_id == user_id)):
+        db.delete(session)
+
+
 def get_current_user(
     request: Request,
     db: DBSession = Depends(get_session),
 ) -> User:
-    token = request.cookies.get(settings.session_cookie_name)
-    if not token:
+    token_hash = current_token_hash(request)
+    if not token_hash:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Not authenticated")
-    session = db.get(Session, token)
+    session = db.get(UserSession, token_hash)
     if not session:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid session")
     if session.expires_at < utcnow():

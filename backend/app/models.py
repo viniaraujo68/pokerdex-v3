@@ -15,9 +15,15 @@ class User(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utcnow)
 
 
-class Session(SQLModel, table=True):
-    # The opaque token stored in the httpOnly cookie is the primary key.
-    token: str = Field(primary_key=True)
+class UserSession(SQLModel, table=True):
+    # Table name kept as "session" so the rename is a pure Python-symbol change (no table
+    # rename in the migration). The class is UserSession to stop colliding with
+    # sqlmodel.Session, which the DB-session imports alias around as DBSession.
+    __tablename__ = "session"
+
+    # We store sha256(cookie_token), never the raw token. The raw value lives only in the
+    # httpOnly cookie; on each request we hash the cookie and look the row up by this hash.
+    token_hash: str = Field(primary_key=True)
     user_id: int = Field(foreign_key="user.id", index=True)
     expires_at: datetime
     created_at: datetime = Field(default_factory=utcnow)
