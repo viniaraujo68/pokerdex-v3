@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import delete as sa_delete
 from sqlmodel import Session as DBSession
-from sqlmodel import func, select
+from sqlmodel import select
 
 from .. import models, schemas, services
 from ..auth import get_current_user, require_owner
@@ -10,22 +10,19 @@ from ..db import get_session
 router = APIRouter(prefix="/api/groups", tags=["groups"])
 
 
-def _to_out(db: DBSession, g: models.Group) -> schemas.GroupOut:
-    night_count = db.exec(
-        select(func.count(models.Night.id)).where(
-            models.Night.group_id == g.id, models.Night.deleted_at == None  # noqa: E711
-        )
-    ).one()
-    participant_count = db.exec(
-        select(func.count(models.Participant.id)).where(
-            models.Participant.group_id == g.id, models.Participant.active == True  # noqa: E712
-        )
-    ).one()
+def _out(g: models.Group, night_counts: dict[int, int], participant_counts: dict[int, int]) -> schemas.GroupOut:
     return schemas.GroupOut(
         id=g.id, name=g.name, slug=g.slug, description=g.description, currency=g.currency,
         visibility=g.visibility, share_token=g.share_token,
-        night_count=night_count, participant_count=participant_count,
+        night_count=night_counts.get(g.id, 0),
+        participant_count=participant_counts.get(g.id, 0),
     )
+
+
+def _to_out(db: DBSession, g: models.Group) -> schemas.GroupOut:
+    """Single-group responses. List responses use services.group_counts directly so the
+    counts stay at 2 queries per request instead of 2 per group."""
+    return _out(g, *services.group_counts(db, [g.id]))
 
 
 @router.get("", response_model=list[schemas.GroupOut])
@@ -34,7 +31,8 @@ def list_my_groups(user: models.User = Depends(get_current_user), db: DBSession 
         select(models.GroupOwner.group_id).where(models.GroupOwner.user_id == user.id)
     ).all()
     groups = db.exec(select(models.Group).where(models.Group.id.in_(group_ids))).all() if group_ids else []
-    return [_to_out(db, g) for g in groups]
+    night_counts, participant_counts = services.group_counts(db, [g.id for g in groups])
+    return [_out(g, night_counts, participant_counts) for g in groups]
 
 
 @router.post("", response_model=schemas.GroupOut, status_code=201)
@@ -49,10 +47,12 @@ def create_group(
         visibility=body.visibility if body.visibility in ("private", "public") else "private",
     )
     db.add(group)
-    db.commit()
-    db.refresh(group)
+    # flush (not commit) to get the id: group + ownership must land in one transaction,
+    # otherwise a failure in between leaves an ownerless group that nobody can reach.
+    db.flush()
     db.add(models.GroupOwner(group_id=group.id, user_id=user.id))
     db.commit()
+    db.refresh(group)
     return _to_out(db, group)
 
 

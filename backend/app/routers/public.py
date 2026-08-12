@@ -1,15 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlmodel import Session as DBSession
 from sqlmodel import func, select
 
 from .. import models, schemas, services
+from ..config import settings
 from ..db import get_session
+from ..errors import api_error
+from ..ratelimit import limiter
 
 router = APIRouter(prefix="/api/public", tags=["public"])
 
 
+# Unauthenticated and cheap to scrape, so rate limited per IP.
 @router.get("", response_model=list[schemas.PublicGroupSummary])
+@limiter.limit(settings.rate_limit_public)
 def search_public_groups(
+    request: Request,
     q: str = Query("", max_length=80),
     limit: int = Query(30, ge=1, le=100),
     db: DBSession = Depends(get_session),
@@ -24,29 +30,21 @@ def search_public_groups(
         )
     groups = db.exec(stmt.order_by(models.Group.name).limit(limit)).all()
 
-    out = []
-    for g in groups:
-        night_count = db.exec(
-            select(func.count(models.Night.id)).where(
-                models.Night.group_id == g.id, models.Night.deleted_at == None  # noqa: E711
-            )
-        ).one()
-        participant_count = db.exec(
-            select(func.count(models.Participant.id)).where(
-                models.Participant.group_id == g.id, models.Participant.active == True  # noqa: E712
-            )
-        ).one()
-        out.append(
-            schemas.PublicGroupSummary(
-                name=g.name, slug=g.slug, description=g.description,
-                night_count=night_count, participant_count=participant_count,
-            )
+    # 2 grouped-count queries for the whole page instead of 2 per group.
+    night_counts, participant_counts = services.group_counts(db, [g.id for g in groups])
+    return [
+        schemas.PublicGroupSummary(
+            name=g.name, slug=g.slug, description=g.description,
+            night_count=night_counts.get(g.id, 0),
+            participant_count=participant_counts.get(g.id, 0),
         )
-    return out
+        for g in groups
+    ]
 
 
 @router.get("/{slug}", response_model=schemas.PublicGroupOut)
-def get_public_group(slug: str, t: str | None = None, db: DBSession = Depends(get_session)):
+@limiter.limit(settings.rate_limit_public)
+def get_public_group(request: Request, slug: str, t: str | None = None, db: DBSession = Depends(get_session)):
     group = db.exec(select(models.Group).where(models.Group.slug == slug)).first()
     if not group:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Grupo não encontrado")
@@ -54,9 +52,10 @@ def get_public_group(slug: str, t: str | None = None, db: DBSession = Depends(ge
     # Access: public groups are open; private groups require a matching share token.
     allowed = group.visibility == "public" or (group.share_token and t == group.share_token)
     if not allowed:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Este grupo é privado")
+        raise api_error(status.HTTP_403_FORBIDDEN, "group_private", "Este grupo é privado")
 
     names = services._participant_names(db, group.id)
+    places = services._place_names(db, group.id)
     nights = services.active_nights(db, group.id)
     nights.sort(key=lambda n: (n.date, n.id), reverse=True)
     return schemas.PublicGroupOut(
@@ -66,5 +65,5 @@ def get_public_group(slug: str, t: str | None = None, db: DBSession = Depends(ge
         currency=group.currency,
         stats=services.compute_stats(db, group.id),
         evolution=services.compute_evolution(db, group.id),
-        nights=[services.serialize_night(db, n, names) for n in nights],
+        nights=[services.serialize_night(db, n, names, places) for n in nights],
     )

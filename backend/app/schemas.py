@@ -14,6 +14,14 @@ class UserOut(BaseModel):
     username: str
 
 
+class PasswordChange(BaseModel):
+    # current_password is only ever fed to argon2 verify, so a wrong value must reach that
+    # check and return `invalid_credentials` rather than tripping a 422 first — hence just
+    # non-empty. new_password mirrors registration's rules (see Credentials.password).
+    current_password: str = Field(min_length=1)
+    new_password: str = Field(min_length=6, max_length=200)
+
+
 # ---------- Groups ----------
 class GroupCreate(BaseModel):
     name: str = Field(min_length=1, max_length=80)
@@ -57,11 +65,24 @@ class ParticipantOut(BaseModel):
     active: bool
 
 
+class ParticipantUpdate(BaseModel):
+    """Partial update: omitted fields keep their current value, so the UI can flip `active`
+    (deactivate / reactivate) without having to echo the name back."""
+
+    name: str | None = Field(default=None, min_length=1, max_length=80)
+    active: bool | None = None
+
+
 # ---------- Nights ----------
+# Money is never negative and must stay far below the 64-bit range SQLite can store
+# (a bare int would accept 2**63 and blow up with OverflowError on insert).
+MONEY_MAX_CENTS = 10**12  # R$ 10 bilhões em centavos
+
+
 class EntryIn(BaseModel):
     participant_id: int
-    buy_in_cents: int = 0
-    cash_out_cents: int = 0
+    buy_in_cents: int = Field(default=0, ge=0, le=MONEY_MAX_CENTS)
+    cash_out_cents: int = Field(default=0, ge=0, le=MONEY_MAX_CENTS)
 
 
 class EntryOut(BaseModel):
@@ -103,7 +124,7 @@ class RankingRow(BaseModel):
 class Record(BaseModel):
     label: str
     participant_name: str | None
-    value_cents: int
+    value_cents: int | None  # None when the group has no data for this record yet
     night_date: date | None
 
 
@@ -115,7 +136,8 @@ class StatsOut(BaseModel):
 
 class EvolutionPoint(BaseModel):
     date: date
-    cumulative_cents: int
+    # None before the participant's first night, so every series lines up with `dates`.
+    cumulative_cents: int | None
 
 
 class EvolutionSeries(BaseModel):
