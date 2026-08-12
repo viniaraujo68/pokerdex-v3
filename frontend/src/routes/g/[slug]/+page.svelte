@@ -1,84 +1,131 @@
 <script>
 	import { page } from '$app/stores';
-	import { get } from '$lib/api.js';
+	import { goto } from '$app/navigation';
 	import RankingTable from '$lib/components/RankingTable.svelte';
 	import Records from '$lib/components/Records.svelte';
 	import EvolutionChart from '$lib/components/EvolutionChart.svelte';
 	import NightsList from '$lib/components/NightsList.svelte';
+	import TabBar from '$lib/components/TabBar.svelte';
+	import { t } from '$lib/i18n.svelte.js';
 
-	const slug = $derived($page.params.slug);
+	/** Fetched in `+page.js` so the scoreboard is in the server-rendered HTML. */
+	/** @type {{ data: { group: any, status: number } }} */
+	let { data } = $props();
+
+	const group = $derived(data.group);
+	/** Present only on private groups, which are shared as `/g/<slug>?t=<token>`. */
 	const token = $derived($page.url.searchParams.get('t'));
 
-	let data = $state(null);
-	let loading = $state(true);
-	let error = $state('');
-	let tab = $state('ranking');
+	// Localized here rather than in the load: the load runs on the server (where the locale is
+	// still the pt-BR default), while this re-renders when the visitor switches language.
+	// No 404 branch: the load turns a missing slug into a real `error(404)` so crawlers get the
+	// right status, and `+error.svelte` takes over. 403 lands here on purpose — see +page.js.
+	const error = $derived(
+		data.status === 200
+			? ''
+			: data.status === 403
+				? t('public.errorPrivate')
+				: data.status === 0
+					? t('error.body')
+					: t('error.http', { status: data.status })
+	);
 
-	$effect(() => {
-		if (slug) load();
+	// Tab in the URL, like the owner's group page — a shared link keeps its tab, and Back
+	// walks the tabs instead of leaving the scoreboard. `?t=` (share token) rides along.
+	const TAB_IDS = ['ranking', 'stats', 'nights'];
+	const DEFAULT_TAB = 'ranking';
+	const tab = $derived.by(() => {
+		const requested = $page.url.searchParams.get('tab');
+		return requested && TAB_IDS.includes(requested) ? requested : DEFAULT_TAB;
 	});
 
-	async function load() {
-		loading = true;
-		error = '';
-		try {
-			const q = token ? `?t=${encodeURIComponent(token)}` : '';
-			data = await get(`/public/${slug}${q}`);
-		} catch (e) {
-			error =
-				e.status === 403
-					? 'Este grupo é privado. Você precisa de um link com token válido.'
-					: e.status === 404
-						? 'Grupo não encontrado.'
-						: e.message;
-		} finally {
-			loading = false;
-		}
+	const tabs = $derived([
+		{ id: 'ranking', label: t('tab.ranking') },
+		{ id: 'stats', label: t('tab.stats') },
+		{ id: 'nights', label: t('tab.nights') }
+	]);
+
+	/** @param {string} id */
+	function setTab(id) {
+		if (id === tab) return;
+		const url = new URL($page.url);
+		if (id === DEFAULT_TAB) url.searchParams.delete('tab');
+		else url.searchParams.set('tab', id);
+		goto(url, { keepFocus: true, noScroll: true });
 	}
+
+	// ---------- unfurl metadata (WhatsApp/Discord/Twitter paste this page a lot) ----------
+	const title = $derived(group ? t('title.public', { name: group.name }) : t('title.home'));
+	const metaDescription = $derived.by(() => {
+		if (!group) return '';
+		const counts = t('public.metaCounts', {
+			nights: t('group.nightCount', { count: group.stats.total_nights }),
+			players: t('group.playerCount', { count: group.stats.ranking.length })
+		});
+		return [group.description, counts, t('public.metaTagline')].filter(Boolean).join(' · ');
+	});
+	/** Canonical, token-free: the share token must not end up in an unfurl card. */
+	const shareUrl = $derived($page.url.origin + $page.url.pathname);
 </script>
 
-{#if loading}
-	<div class="center"><div class="spinner"></div></div>
-{:else if error}
-	<div class="card empty">{error}</div>
-{:else if data}
-	<div class="head">
-		<span class="chip chip-felt">placar público ♠</span>
-		<h1>{data.name}</h1>
-		{#if data.description}<p class="muted">{data.description}</p>{/if}
-	</div>
-
-	<div class="tabs">
-		<button class="tab" class:active={tab === 'ranking'} onclick={() => (tab = 'ranking')}>Ranking</button>
-		<button class="tab" class:active={tab === 'stats'} onclick={() => (tab = 'stats')}>Estatísticas</button>
-		<button class="tab" class:active={tab === 'nights'} onclick={() => (tab = 'nights')}>Noites</button>
-	</div>
-
-	{#if tab === 'ranking'}
-		<div class="card"><RankingTable ranking={data.stats.ranking} /></div>
-	{:else if tab === 'stats'}
-		<div class="stack">
-			<Records records={data.stats.records} totalNights={data.stats.total_nights} />
-			<div class="card stack">
-				<h3>Evolução do lucro</h3>
-				<EvolutionChart evolution={data.evolution} />
-			</div>
-		</div>
-	{:else if tab === 'nights'}
-		<NightsList nights={data.nights} />
+<svelte:head>
+	<title>{title}</title>
+	{#if group}
+		<meta name="description" content={metaDescription} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Pokerdex" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={metaDescription} />
+		<meta property="og:url" content={shareUrl} />
 	{/if}
+	{#if token}
+		<!-- Reached through a private group's share link: readable by whoever has the link,
+		     but it has no business in a search index. -->
+		<meta name="robots" content="noindex" />
+	{/if}
+</svelte:head>
+
+{#if error}
+	<div class="card empty">{error}</div>
+{:else if group}
+	<div class="head">
+		<span class="chip chip-felt">{t('public.badge')}</span>
+		<h1>{group.name}</h1>
+		{#if group.description}<p class="muted">{group.description}</p>{/if}
+	</div>
+
+	<TabBar
+		{tabs}
+		active={tab}
+		onChange={setTab}
+		label={t('tab.sections')}
+		controls="public-panel"
+		idPrefix="ptab"
+		center
+	/>
+
+	<div id="public-panel" role="tabpanel" aria-labelledby={`ptab-${tab}`}>
+		{#if tab === 'ranking'}
+			<div class="card"><RankingTable ranking={group.stats.ranking} /></div>
+		{:else if tab === 'stats'}
+			<div class="stack">
+				<Records records={group.stats.records} totalNights={group.stats.total_nights} />
+				<div class="card stack">
+					<h3>{t('stats.evolution')}</h3>
+					<EvolutionChart evolution={group.evolution} />
+				</div>
+			</div>
+		{:else if tab === 'nights'}
+			<NightsList nights={group.nights} />
+		{/if}
+	</div>
 
 	<p class="foot-cta faint">
-		Quer registrar as noites do seu grupo? <a href="/" class="link">Conheça o Pokerdex</a>
+		{t('public.cta')} <a href="/" class="link">{t('public.ctaLink')}</a>
 	</p>
 {/if}
 
 <style>
-	.center {
-		display: grid;
-		place-items: center;
-		min-height: 40vh;
-	}
 	.head {
 		display: flex;
 		flex-direction: column;
@@ -90,33 +137,9 @@
 	.head h1 {
 		font-size: 2.2rem;
 	}
-	.tabs {
-		display: flex;
-		gap: 4px;
-		justify-content: center;
-		border-bottom: 1px solid var(--border);
-		margin-bottom: 24px;
-	}
-	.tab {
-		background: none;
-		border: none;
-		border-bottom: 2px solid transparent;
-		color: var(--text-muted);
-		padding: 10px 16px;
-		font-weight: 600;
-		cursor: pointer;
-	}
-	.tab.active {
-		color: var(--felt-bright);
-		border-bottom-color: var(--felt-bright);
-	}
 	.foot-cta {
 		text-align: center;
 		margin-top: 40px;
 		font-size: 0.9rem;
-	}
-	.link {
-		color: var(--felt-bright);
-		font-weight: 600;
 	}
 </style>
