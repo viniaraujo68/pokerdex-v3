@@ -55,9 +55,9 @@
 		<div class="nav-right">
 			{#if !isPublic}
 				<nav class="nav-actions">
-					<a href="/explorar" class="explore-link">{t('nav.explore')}</a>
+					<a href="/explore" class="explore-link">{t('nav.explore')}</a>
 					{#if auth.ready && auth.user}
-						<a href="/conta" class="user" title={t('nav.account')}>👤 {auth.user.username}</a>
+						<a href="/account" class="user" title={t('nav.account')}>👤 {auth.user.username}</a>
 						<button class="btn btn-ghost btn-sm" onclick={handleLogout}>{t('nav.logout')}</button>
 					{:else if auth.ready}
 						<a href="/login" class="btn btn-ghost btn-sm">{t('nav.login')}</a>

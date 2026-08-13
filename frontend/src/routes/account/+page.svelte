@@ -8,7 +8,7 @@
 	// Client-side guard: this page has no server load, so bounce anonymous visitors to login
 	// once the auth probe has settled (auth.ready).
 	$effect(() => {
-		if (auth.ready && !auth.user) goto('/login?next=/conta');
+		if (auth.ready && !auth.user) goto('/login?next=/account');
 	});
 
 	let current = $state('');

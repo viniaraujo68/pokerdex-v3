@@ -2,7 +2,7 @@
 	import { t } from '$lib/i18n.svelte.js';
 
 	/**
-	 * One group in a card grid — the home dashboard and /explorar render the same card, so it
+	 * One group in a card grid — the home dashboard and /explore render the same card, so it
 	 * lives here. `visibility` is a prop because the public directory doesn't ship the field
 	 * (everything it returns is public by definition) while the dashboard does.
 	 * @type {{

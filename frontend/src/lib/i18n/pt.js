@@ -77,7 +77,7 @@ export default {
 	},
 	'group.unbalancedGoTo': 'Ver na aba Noites',
 
-	// ---------- explorar ----------
+	// ---------- explore ----------
 	'explore.title': 'Explorar grupos',
 	'explore.subtitle': 'Descubra placares públicos de outros grupos.',
 	'explore.searchPlaceholder': '🔎 Buscar grupos públicos pelo nome…',

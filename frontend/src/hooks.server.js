@@ -1,6 +1,6 @@
 /**
  * Server-side `/api` routing for the pages that are rendered on the server
- * (`/g/[slug]` and `/explorar` — see their `+page.js`).
+ * (`/g/[slug]` and `/explore` — see their `+page.js`).
  *
  * In the browser `/api/*` is same-origin: the edge proxy (prod) or the Vite dev proxy sends
  * it to FastAPI. During SSR a relative fetch resolves against the SvelteKit node server,
@@ -31,7 +31,7 @@ export async function handleFetch({ request, fetch, event }) {
 		 * The one header worth adding. This request leaves the *frontend container*, so
 		 * without it FastAPI sees a single source IP for every visitor and slowapi's per-IP
 		 * buckets collapse into one shared allowance — the first few SSR'd views of
-		 * /g/<slug> or /explorar would 429 the whole world.
+		 * /g/<slug> or /explore would 429 the whole world.
 		 *
 		 * `event.getClientAddress()` is the real visitor: adapter-node resolves it from
 		 * ADDRESS_HEADER/XFF_DEPTH (set in docker-compose.yml), so the value we pass on is
