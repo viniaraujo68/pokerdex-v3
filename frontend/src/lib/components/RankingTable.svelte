@@ -21,22 +21,22 @@
 	/** @type {'asc'|'desc'} */
 	let sortDir = $state('desc');
 
-	// Canonical standing comes from the backend order (sorted by total profit desc),
-	// so the "#"/medal stays attached to each person even when sorting by another column.
+	// The "#"/medal follows the current sort: it's the row's position in the order on screen,
+	// so re-sorting (e.g. by nights played) renumbers everyone to match what's displayed.
 	/** @typedef {import('$lib/types.js').RankingRow & { rank: number }} Ranked */
-	const ranked = $derived(ranking.map((r, i) => ({ ...r, rank: i + 1 })));
-
 	const sorted = $derived.by(() => {
 		const dir = sortDir === 'asc' ? 1 : -1;
-		/** Missing values sort last in either direction's "worst" end. @param {Ranked} r */
+		/** Missing values sort last in either direction's "worst" end. @param {import('$lib/types.js').RankingRow} r */
 		const val = (r) => {
 			const v = r[sortKey];
 			return typeof v === 'number' ? v : -Infinity;
 		};
-		return [...ranked].sort((a, b) => {
-			if (sortKey === 'name') return dir * a.name.localeCompare(b.name);
-			return dir * (val(a) - val(b));
-		});
+		return [...ranking]
+			.sort((a, b) => {
+				if (sortKey === 'name') return dir * a.name.localeCompare(b.name);
+				return dir * (val(a) - val(b));
+			})
+			.map((r, i) => ({ ...r, rank: i + 1 }));
 	});
 
 	/** @param {keyof import('$lib/types.js').RankingRow} key */
