@@ -23,7 +23,7 @@ const TAGS = { pt: 'pt-BR', en: 'en-US' };
 /**
  * @returns {Locale}
  *
- * The public pages (`/g/[slug]`, `/explorar`) are server-rendered, and on the server there
+ * The public pages (`/g/[slug]`, `/explore`) are server-rendered, and on the server there
  * is no storage and no `navigator` — nor a per-request place to put a locale, since this
  * module's state is shared by every request the node server handles. So SSR always renders
  * pt-BR (the app's primary audience, and what `app.html` declares as `lang`) and the client

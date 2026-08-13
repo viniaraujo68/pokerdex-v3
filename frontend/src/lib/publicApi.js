@@ -1,5 +1,5 @@
 /**
- * Fetch helper for the *universal* loads of the public pages (`/g/[slug]`, `/explorar`).
+ * Fetch helper for the *universal* loads of the public pages (`/g/[slug]`, `/explore`).
  *
  * Separate from `$lib/api.js` on purpose:
  *  - it takes the load event's `fetch`, so SSR responses are inlined into the HTML and the
