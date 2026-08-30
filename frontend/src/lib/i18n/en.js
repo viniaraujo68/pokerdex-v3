@@ -180,8 +180,6 @@ export default {
 	'ranking.nights': 'Nights',
 	'ranking.avgPerNight': 'Avg/night',
 	'ranking.roi': 'ROI',
-	'ranking.sortBy': 'Sort:',
-	'ranking.sortByColumn': 'Sort by {column}',
 	'ranking.cardSub': {
 		one: '{count} night · avg {avg} · ROI {roi}',
 		other: '{count} nights · avg {avg} · ROI {roi}'
