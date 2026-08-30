@@ -101,15 +101,15 @@
 {#if loading}
 	<div class="center"><div class="spinner"></div></div>
 {:else if !ready}
-	<div class="stack">
-		<div class="toast toast-error">
+	<div class="pd-stack">
+		<div class="pd-toast pd-toast-error">
 			{editId
 				? t('night.loadFailed', { message: loadError || t('night.notLoaded') })
 				: loadError || t('night.notLoaded')}
 		</div>
 		<div class="row">
-			<button class="btn btn-primary" onclick={load}>{t('common.retry')}</button>
-			<a href={`/groups/${groupId}`} class="btn btn-ghost">{t('group.back')}</a>
+			<button class="pd-btn pd-btn-primary" onclick={load}>{t('common.retry')}</button>
+			<a href={`/groups/${groupId}`} class="pd-btn pd-btn-ghost">{t('group.back')}</a>
 		</div>
 	</div>
 <!-- `catalogs` is what `ready` above is mostly about; re-testing it here is what narrows it. -->

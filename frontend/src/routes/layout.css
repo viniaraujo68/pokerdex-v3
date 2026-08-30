@@ -5,5 +5,5 @@
 @import 'tailwindcss';
 
 @plugin "daisyui" {
-	exclude: rootscrollgutter, button, card, toast, tab, modal, stat, hero, stack, toggle, link;
+	exclude: rootscrollgutter;
 }

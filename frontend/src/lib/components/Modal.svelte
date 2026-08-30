@@ -96,7 +96,7 @@
 	}}
 >
 	<div
-		class="modal"
+		class="pd-modal"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -132,7 +132,7 @@
 		overscroll-behavior: contain;
 		animation: fade 0.15s ease;
 	}
-	.modal {
+	.pd-modal {
 		margin: auto;
 		width: 100%;
 		max-width: 460px;
@@ -147,7 +147,7 @@
 		animation: pop 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.1);
 		overflow: hidden;
 	}
-	.modal:focus {
+	.pd-modal:focus {
 		outline: none;
 	}
 	.mhead {
@@ -205,7 +205,7 @@
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.backdrop,
-		.modal {
+		.pd-modal {
 			animation: none;
 		}
 	}

@@ -86,9 +86,9 @@
 		<span class="sr-only">{t('common.loading')}</span>
 		<div class="sk sk-h1"></div>
 		<div class="sk sk-line sk-sub"></div>
-		<div class="groups grid">
+		<div class="groups pd-grid">
 			{#each [0, 1, 2] as i (i)}
-				<div class="card sk-card">
+				<div class="pd-card sk-card">
 					<div class="sk sk-line sk-cardtitle"></div>
 					<div class="sk sk-line sk-cardline"></div>
 					<div class="sk-chips">
@@ -101,13 +101,13 @@
 	</div>
 {:else if !auth.user}
 	<!-- Landing -->
-	<section class="hero">
+	<section class="pd-hero">
 		<span class="logo-big">♠</span>
 		<h1>Pokerdex</h1>
 		<p class="muted lead">{t('home.tagline')}</p>
-		<div class="row hero-cta">
-			<a href="/register" class="btn btn-primary">{t('nav.register')}</a>
-			<a href="/login" class="btn btn-ghost">{t('nav.login')}</a>
+		<div class="row pd-hero-cta">
+			<a href="/register" class="pd-btn pd-btn-primary">{t('nav.register')}</a>
+			<a href="/login" class="pd-btn pd-btn-ghost">{t('nav.login')}</a>
 		</div>
 	</section>
 {:else}
@@ -117,15 +117,15 @@
 			<h1>{t('home.myGroups')}</h1>
 			<p class="muted">{t('home.greeting', { name: auth.user.username })}</p>
 		</div>
-		<button class="btn btn-primary" onclick={() => (showForm = !showForm)}>{t('home.newGroup')}</button>
+		<button class="pd-btn pd-btn-primary" onclick={() => (showForm = !showForm)}>{t('home.newGroup')}</button>
 	</div>
 
-	{#if error}<div class="toast toast-error">{error}</div>{/if}
+	{#if error}<div class="pd-toast pd-toast-error">{error}</div>{/if}
 
 	{#if showForm}
 		<Modal title={t('group.create')} onclose={() => (showForm = false)}>
-			<form class="stack" onsubmit={createGroup}>
-				{#if createError}<div class="toast toast-error">{createError}</div>{/if}
+			<form class="pd-stack" onsubmit={createGroup}>
+				{#if createError}<div class="pd-toast pd-toast-error">{createError}</div>{/if}
 				<div class="field">
 					<label for="g-name">{t('group.nameLabel')}</label>
 					<!-- svelte-ignore a11y_autofocus -->
@@ -171,8 +171,8 @@
 					</div>
 				</div>
 				<div class="row mactions">
-					<button type="button" class="btn btn-ghost" onclick={() => (showForm = false)}>{t('common.cancel')}</button>
-					<button class="btn btn-primary" disabled={creating || !name}>
+					<button type="button" class="pd-btn pd-btn-ghost" onclick={() => (showForm = false)}>{t('common.cancel')}</button>
+					<button class="pd-btn pd-btn-primary" disabled={creating || !name}>
 						{creating ? t('group.creating') : t('group.create')}
 					</button>
 				</div>
@@ -181,18 +181,18 @@
 	{/if}
 
 	{#if groups.length === 0}
-		<div class="card empty stack empty-cta">
+		<div class="pd-card empty pd-stack empty-cta">
 			<p>{t('home.empty')}</p>
-			<button class="btn btn-primary" onclick={() => (showForm = true)}>{t('home.newGroup')}</button>
+			<button class="pd-btn pd-btn-primary" onclick={() => (showForm = true)}>{t('home.newGroup')}</button>
 		</div>
 	{:else}
 		{#if groups.length > 3}
 			<input class="search" placeholder={t('home.searchPlaceholder')} bind:value={query} />
 		{/if}
 		{#if filteredGroups.length === 0}
-			<div class="card empty">{t('home.noResults', { query })}</div>
+			<div class="pd-card empty">{t('home.noResults', { query })}</div>
 		{:else}
-			<div class="groups grid">
+			<div class="groups pd-grid">
 				{#each filteredGroups as g (g.id)}
 					<GroupCard group={g} href={`/groups/${g.id}`} visibility={g.visibility} />
 				{/each}
@@ -238,7 +238,7 @@
 		width: 84px;
 		border-radius: 999px;
 	}
-	.hero {
+	.pd-hero {
 		text-align: center;
 		max-width: 560px;
 		margin: 12vh auto 0;
@@ -258,13 +258,13 @@
 		font-size: 2.4rem;
 		box-shadow: var(--shadow-lg);
 	}
-	.hero h1 {
+	.pd-hero h1 {
 		font-size: clamp(2.2rem, 6vw, 3rem);
 	}
 	.lead {
 		font-size: 1.1rem;
 	}
-	.hero-cta {
+	.pd-hero-cta {
 		margin-top: 10px;
 	}
 	.head {
@@ -282,7 +282,7 @@
 			align-items: stretch;
 			gap: 12px;
 		}
-		.head :global(.btn) {
+		.head :global(.pd-btn) {
 			width: 100%;
 		}
 		.search {

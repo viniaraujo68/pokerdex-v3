@@ -57,13 +57,13 @@
 </svelte:head>
 
 {#if auth.ready && auth.user}
-	<div class="account stack">
+	<div class="account pd-stack">
 		<div>
 			<h1>{t('account.title')}</h1>
 			<p class="muted">{t('account.subtitle', { name: auth.user.username })}</p>
 		</div>
 
-		<form class="card stack" onsubmit={submit}>
+		<form class="pd-card pd-stack" onsubmit={submit}>
 			<h2>{t('account.changePassword')}</h2>
 			<div class="field">
 				<label for="cur">{t('account.currentPassword')}</label>
@@ -97,15 +97,15 @@
 					required
 				/>
 			</div>
-			<button class="btn btn-primary" disabled={busy}>
+			<button class="pd-btn pd-btn-primary" disabled={busy}>
 				{busy ? t('common.saving') : t('account.changePassword')}
 			</button>
 		</form>
 
-		<div class="card stack">
+		<div class="pd-card pd-stack">
 			<h2>{t('account.sessions')}</h2>
 			<p class="muted">{t('account.logoutAllHint')}</p>
-			<button class="btn btn-ghost" onclick={logoutAll} disabled={leaving}>
+			<button class="pd-btn pd-btn-ghost" onclick={logoutAll} disabled={leaving}>
 				{t('account.logoutAll')}
 			</button>
 		</div>

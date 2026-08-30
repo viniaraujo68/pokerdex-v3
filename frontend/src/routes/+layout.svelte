@@ -60,17 +60,17 @@
 					<a href="/explore" class="explore-link">{t('nav.explore')}</a>
 					{#if auth.ready && auth.user}
 						<a href="/account" class="user" title={t('nav.account')}>👤 {auth.user.username}</a>
-						<button class="btn btn-ghost btn-sm" onclick={handleLogout}>{t('nav.logout')}</button>
+						<button class="pd-btn pd-btn-ghost pd-btn-sm" onclick={handleLogout}>{t('nav.logout')}</button>
 					{:else if auth.ready}
-						<a href="/login" class="btn btn-ghost btn-sm">{t('nav.login')}</a>
-						<a href="/register" class="btn btn-primary btn-sm">{t('nav.register')}</a>
+						<a href="/login" class="pd-btn pd-btn-ghost pd-btn-sm">{t('nav.login')}</a>
+						<a href="/register" class="pd-btn pd-btn-primary pd-btn-sm">{t('nav.register')}</a>
 					{/if}
 				</nav>
 			{:else if auth.ready && !auth.user}
 				<!-- Public scoreboards stay chrome-free, but a visitor who likes what they see
 				     needs one way in. Owners already have the full nav elsewhere. -->
 				<nav class="nav-actions">
-					<a href="/register" class="btn btn-primary btn-sm">{t('nav.register')}</a>
+					<a href="/register" class="pd-btn pd-btn-primary pd-btn-sm">{t('nav.register')}</a>
 				</nav>
 			{/if}
 

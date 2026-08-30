@@ -95,7 +95,7 @@
 	}
 </script>
 
-<div class="card card-tight night">
+<div class="pd-card pd-card-tight night">
 	<button
 		type="button"
 		class="head"
@@ -150,13 +150,13 @@
 							{#if entryError}<div class="qerr">{entryError}</div>{/if}
 							<div class="qactions">
 								<button
-									class="btn btn-primary btn-sm"
+									class="pd-btn pd-btn-primary pd-btn-sm"
 									disabled={savingEntry}
 									onclick={() => saveEntry(e)}
 								>
 									{savingEntry ? t('common.saving') : t('common.save')}
 								</button>
-								<button class="btn btn-ghost btn-sm" disabled={savingEntry} onclick={cancelEdit}>
+								<button class="pd-btn pd-btn-ghost pd-btn-sm" disabled={savingEntry} onclick={cancelEdit}>
 									{t('common.cancel')}
 								</button>
 							</div>
@@ -205,10 +205,10 @@
 
 			{#if editable}
 				<div class="actions">
-					<button class="btn btn-ghost btn-sm" onclick={() => onEdit?.(night)}>
+					<button class="pd-btn pd-btn-ghost pd-btn-sm" onclick={() => onEdit?.(night)}>
 						{t('common.edit')}
 					</button>
-					<button class="btn btn-danger btn-sm" onclick={() => onDelete?.(night)}>
+					<button class="pd-btn pd-btn-danger pd-btn-sm" onclick={() => onDelete?.(night)}>
 						{t('common.delete')}
 					</button>
 				</div>

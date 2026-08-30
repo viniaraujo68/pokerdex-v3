@@ -484,15 +484,15 @@
 
 <svelte:window onbeforeunload={onBeforeUnload} />
 
-<form class="stack sheet" onsubmit={submit}>
+<form class="pd-stack sheet" onsubmit={submit}>
 	{#if draftPrompt}
-		<div class="toast toast-warn draft">
+		<div class="pd-toast pd-toast-warn draft">
 			<span>{t('night.draftFound', { date: draftDate(draftPrompt.savedAt) })}</span>
 			<span class="row draft-actions">
-				<button type="button" class="btn btn-ghost btn-sm" onclick={restoreDraft}>
+				<button type="button" class="pd-btn pd-btn-ghost pd-btn-sm" onclick={restoreDraft}>
 					{t('night.draftRestore')}
 				</button>
-				<button type="button" class="btn btn-ghost btn-sm" onclick={discardDraft}>
+				<button type="button" class="pd-btn pd-btn-ghost pd-btn-sm" onclick={discardDraft}>
 					{t('night.draftDiscard')}
 				</button>
 			</span>
@@ -500,7 +500,7 @@
 	{/if}
 
 	<!-- ---------- when / where ---------- -->
-	<div class="card stack">
+	<div class="pd-card pd-stack">
 		<div class="block">
 			<span class="blabel" id="date-label">{t('night.date')}</span>
 			<div class="chips" role="group" aria-labelledby="date-label">
@@ -578,7 +578,7 @@
 					/>
 					<button
 						type="button"
-						class="btn btn-primary btn-sm"
+						class="pd-btn pd-btn-primary pd-btn-sm"
 						disabled={addingPlace}
 						onclick={addPlace}
 					>
@@ -586,7 +586,7 @@
 					</button>
 					<button
 						type="button"
-						class="btn btn-ghost btn-sm"
+						class="pd-btn pd-btn-ghost pd-btn-sm"
 						aria-label={t('common.cancel')}
 						onclick={() => (showNewPlace = false)}
 					>
@@ -598,7 +598,7 @@
 	</div>
 
 	<!-- ---------- roster ---------- -->
-	<div class="card stack">
+	<div class="pd-card pd-stack">
 		<div class="spread">
 			<span class="blabel" id="roster-label">{t('night.whoPlayed')}</span>
 			{#if rows.length}
@@ -639,7 +639,7 @@
 			/>
 			<button
 				type="button"
-				class="btn btn-ghost btn-sm"
+				class="pd-btn pd-btn-ghost pd-btn-sm"
 				disabled={addingParticipant}
 				onclick={addParticipant}
 			>
@@ -651,7 +651,7 @@
 	<!-- ---------- money ---------- -->
 	{#if rows.length}
 		<!-- card-tight: every horizontal pixel goes to the amount inputs at 375px -->
-		<div class="card card-tight stack money-card">
+		<div class="pd-card pd-card-tight pd-stack money-card">
 			<div class="spread">
 				<span class="blabel">{t('night.amounts')}</span>
 				{#if defaultBuyIn}
@@ -745,7 +745,7 @@
 	{/if}
 
 	{#if formError}
-		<div class="toast toast-error">{formError}</div>
+		<div class="pd-toast pd-toast-error">{formError}</div>
 	{/if}
 
 	<!-- ---------- sticky bar ---------- -->
@@ -756,13 +756,13 @@
 				<span class="row">
 					<button
 						type="button"
-						class="btn btn-primary btn-sm"
+						class="pd-btn pd-btn-primary pd-btn-sm"
 						bind:this={confirmButton}
 						onclick={doSubmit}
 					>
 						{t('night.saveAnyway')}
 					</button>
-					<button type="button" class="btn btn-ghost btn-sm" onclick={() => (confirming = false)}>
+					<button type="button" class="pd-btn pd-btn-ghost pd-btn-sm" onclick={() => (confirming = false)}>
 						{t('common.cancel')}
 					</button>
 				</span>
@@ -785,10 +785,10 @@
 				</span>
 			</div>
 			<div class="bactions">
-				<button type="button" class="btn btn-ghost" onclick={() => oncancel()}>
+				<button type="button" class="pd-btn pd-btn-ghost" onclick={() => oncancel()}>
 					{t('common.cancel')}
 				</button>
-				<button class="btn btn-primary save" disabled={saving || submitting || rows.length === 0}>
+				<button class="pd-btn pd-btn-primary save" disabled={saving || submitting || rows.length === 0}>
 					{saving || submitting ? t('night.saving') : t('night.save')}
 				</button>
 			</div>

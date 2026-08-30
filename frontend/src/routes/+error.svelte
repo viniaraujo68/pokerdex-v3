@@ -13,7 +13,7 @@
 	<title>{notFound ? t('title.notFound') : t('title.error')}</title>
 </svelte:head>
 
-<div class="card empty stack errbox">
+<div class="pd-card empty pd-stack errbox">
 	<span class="glyph" aria-hidden="true">♠</span>
 	<span class="chip">{t('error.http', { status: $page.status })}</span>
 	<h1>{title}</h1>
@@ -21,7 +21,7 @@
 	{#if $page.error?.message && !notFound}
 		<p class="faint detail">{$page.error.message}</p>
 	{/if}
-	<a href="/" class="btn btn-ghost">{t('error.home')}</a>
+	<a href="/" class="pd-btn pd-btn-ghost">{t('error.home')}</a>
 </div>
 
 <style>
