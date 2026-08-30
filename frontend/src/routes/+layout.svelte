@@ -10,7 +10,7 @@
 	import { setUserContext } from '@viniaraujo68/plinth/user';
 	import { routes } from '$lib/routes.js';
 	import { user } from '$lib/user.js';
-	import { loadUser } from '$lib/stores/auth.svelte.js';
+	import { auth, loadUser } from '$lib/stores/auth.svelte.js';
 	import { i18n, setLocale, t } from '$lib/i18n.svelte.js';
 	import Toasts from '$lib/components/Toasts.svelte';
 
@@ -20,6 +20,8 @@
 	setUserContext(user);
 
 	onMount(loadUser);
+
+	const isPublicScoreboard = $derived(page.route.id?.startsWith('/g/') ?? false);
 
 	/* ---------- navigation progress ----------
 	   Most navigations here resolve from cache in a few frames, and a bar that flashes on
@@ -48,83 +50,116 @@
 	<div class="navbar-progress" aria-hidden="true"><span></span></div>
 {/if}
 
-<div class="shell-host">
-	<AppShell
-		navLabel={t('nav.main')}
-		collapseLabel={t('nav.collapse')}
-		moreLabel={t('nav.more')}
-		closeLabel={t('common.close')}
-		logoutLabel={t('nav.logout')}
-	>
-		{#snippet brand({ collapsed })}
-			<a href="/" class="brand">
-				<span class="logo">♠</span>
-				{#if !collapsed}<span class="brand-name">Pokerdex</span>{/if}
-			</a>
-		{/snippet}
+{#snippet brandMark(collapsed = false)}
+	<a href="/" class="brand">
+		<span class="logo">♠</span>
+		{#if !collapsed}<span class="brand-name">Pokerdex</span>{/if}
+	</a>
+{/snippet}
 
-		{#snippet icon(route)}
-			{@const name = route.meta.icon}
-			<svg
-				class="size-5"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.75"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				{#if name === 'home'}
-					<path d="M3 10.5 12 3l9 7.5" />
-					<path d="M5 9.5V21h14V9.5" />
-				{:else if name === 'explore'}
-					<circle cx="12" cy="12" r="9" />
-					<path d="m15.5 8.5-2 5-5 2 2-5z" />
-				{:else if name === 'account'}
-					<circle cx="12" cy="8" r="3.5" />
-					<path d="M5 20a7 7 0 0 1 14 0" />
-				{:else if name === 'login'}
-					<path d="M10 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4" />
-					<path d="m15 8 4 4-4 4M19 12H9" />
-				{:else if name === 'register'}
-					<circle cx="9" cy="8" r="3.5" />
-					<path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
-					<path d="M19 8v6M22 11h-6" />
+{#snippet langToggle()}
+	<div class="lang" role="group" aria-label={t('nav.language')}>
+		<button
+			class="lang-opt"
+			class:sel={i18n.locale === 'pt'}
+			aria-pressed={i18n.locale === 'pt'}
+			title={t('nav.switchToPt')}
+			onclick={() => setLocale('pt')}>PT</button
+		>
+		<button
+			class="lang-opt"
+			class:sel={i18n.locale === 'en'}
+			aria-pressed={i18n.locale === 'en'}
+			title={t('nav.switchToEn')}
+			onclick={() => setLocale('en')}>EN</button
+		>
+	</div>
+{/snippet}
+
+{#snippet tagline()}
+	<footer class="foot">
+		<div class="container faint">{t('footer.tagline')}</div>
+	</footer>
+{/snippet}
+
+{#if isPublicScoreboard}
+	<header class="public-nav">
+		<div class="container public-nav-inner">
+			{@render brandMark()}
+
+			<div class="public-nav-right">
+				{#if auth.ready && !auth.user}
+					<a href="/register" class="pd-btn pd-btn-primary pd-btn-sm">{t('nav.register')}</a>
 				{/if}
-			</svg>
-		{/snippet}
-
-		{#snippet footer()}
-			<div class="lang" role="group" aria-label={t('nav.language')}>
-				<button
-					class="lang-opt"
-					class:sel={i18n.locale === 'pt'}
-					aria-pressed={i18n.locale === 'pt'}
-					title={t('nav.switchToPt')}
-					onclick={() => setLocale('pt')}>PT</button
-				>
-				<button
-					class="lang-opt"
-					class:sel={i18n.locale === 'en'}
-					aria-pressed={i18n.locale === 'en'}
-					title={t('nav.switchToEn')}
-					onclick={() => setLocale('en')}>EN</button
-				>
+				{@render langToggle()}
 			</div>
-		{/snippet}
-
-		<div class="shell-page">
-			<div class="container page">
-				{@render children()}
-			</div>
-
-			<footer class="foot">
-				<div class="container faint">{t('footer.tagline')}</div>
-			</footer>
 		</div>
-	</AppShell>
-</div>
+	</header>
+
+	<main class="container page">
+		{@render children()}
+	</main>
+
+	{@render tagline()}
+{:else}
+	<div class="shell-host">
+		<AppShell
+			navLabel={t('nav.main')}
+			collapseLabel={t('nav.collapse')}
+			moreLabel={t('nav.more')}
+			closeLabel={t('common.close')}
+			logoutLabel={t('nav.logout')}
+		>
+			{#snippet brand({ collapsed })}
+				{@render brandMark(collapsed)}
+			{/snippet}
+
+			{#snippet icon(route)}
+				{@const name = route.meta.icon}
+				<svg
+					class="size-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.75"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					{#if name === 'home'}
+						<path d="M3 10.5 12 3l9 7.5" />
+						<path d="M5 9.5V21h14V9.5" />
+					{:else if name === 'explore'}
+						<circle cx="12" cy="12" r="9" />
+						<path d="m15.5 8.5-2 5-5 2 2-5z" />
+					{:else if name === 'account'}
+						<circle cx="12" cy="8" r="3.5" />
+						<path d="M5 20a7 7 0 0 1 14 0" />
+					{:else if name === 'login'}
+						<path d="M10 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4" />
+						<path d="m15 8 4 4-4 4M19 12H9" />
+					{:else if name === 'register'}
+						<circle cx="9" cy="8" r="3.5" />
+						<path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+						<path d="M19 8v6M22 11h-6" />
+					{/if}
+				</svg>
+			{/snippet}
+
+			{#snippet footer()}
+				{@render langToggle()}
+			{/snippet}
+
+			<div class="shell-page">
+				<div class="container page">
+					{@render children()}
+				</div>
+
+				{@render tagline()}
+			</div>
+		</AppShell>
+	</div>
+{/if}
 
 <!-- One overlay for the whole app: it outlives navigations, so a toast fired just before a
      goto() is still on screen when the next page renders. -->
@@ -177,6 +212,36 @@
 		height: 100dvh;
 	}
 
+	.public-nav {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: rgba(12, 10, 18, 0.8);
+		backdrop-filter: blur(12px);
+		border-bottom: 1px solid var(--border-color);
+	}
+	.public-nav-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 64px;
+	}
+	.public-nav-right {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+	@media (max-width: 560px) {
+		.public-nav-right {
+			gap: 8px;
+		}
+	}
+	@media (max-width: 400px) {
+		.public-nav .brand-name {
+			display: none;
+		}
+	}
+
 	.brand {
 		display: flex;
 		align-items: center;
@@ -206,8 +271,15 @@
 		overflow: hidden;
 		background: var(--bg-elev);
 	}
-	:global(.plinth-shell.collapsed) .lang {
+	:global(.plinth-shell.collapsed .shell-sidebar) .lang {
 		flex-direction: column;
+	}
+	:global(.plinth-sheet) .lang {
+		flex-direction: row;
+	}
+	:global(.plinth-sheet) .lang-opt {
+		min-height: 2.25rem;
+		padding: 6px 14px;
 	}
 	.lang-opt {
 		background: none;
