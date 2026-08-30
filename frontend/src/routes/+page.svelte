@@ -3,7 +3,7 @@
 	import { auth } from '$lib/stores/auth.svelte.js';
 	import { get, post, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
-	import Modal from '$lib/components/Modal.svelte';
+	import { Modal } from '@viniaraujo68/plinth/components';
 	import GroupCard from '$lib/components/GroupCard.svelte';
 	import { t } from '$lib/i18n.svelte.js';
 
@@ -22,7 +22,9 @@
 	);
 
 	// create-group form
-	let showForm = $state(false);
+	let createModal = $state(
+		/** @type {import('@viniaraujo68/plinth/components').Modal|undefined} */ (undefined)
+	);
 	let name = $state('');
 	let description = $state('');
 	let visibility = $state('public');
@@ -68,7 +70,6 @@
 			const g = await post('/groups', { name, description, visibility });
 			goto(`/groups/${g.id}`);
 		} catch (e) {
-			// mostrado dentro do modal — fora dele ficaria escondido atrás do overlay
 			createError = errorMessage(e);
 			creating = false;
 		}
@@ -117,73 +118,79 @@
 			<h1>{t('home.myGroups')}</h1>
 			<p class="muted">{t('home.greeting', { name: auth.user.username })}</p>
 		</div>
-		<button class="pd-btn pd-btn-primary" onclick={() => (showForm = !showForm)}>{t('home.newGroup')}</button>
+		<button class="pd-btn pd-btn-primary" onclick={() => createModal?.show()}>{t('home.newGroup')}</button>
 	</div>
 
 	{#if error}<div class="pd-alert pd-alert-error">{error}</div>{/if}
 
-	{#if showForm}
-		<Modal title={t('group.create')} onclose={() => (showForm = false)}>
-			<form class="pd-stack" onsubmit={createGroup}>
-				{#if createError}<div class="pd-alert pd-alert-error">{createError}</div>{/if}
-				<div class="field">
-					<label for="g-name">{t('group.nameLabel')}</label>
-					<!-- svelte-ignore a11y_autofocus -->
+	<Modal
+		bind:this={createModal}
+		title={t('group.create')}
+		closeLabel={t('common.close')}
+		class="max-w-[460px]"
+	>
+		<form id="create-group" class="pd-stack" onsubmit={createGroup}>
+			{#if createError}<div class="pd-alert pd-alert-error">{createError}</div>{/if}
+			<div class="field">
+				<label for="g-name">{t('group.nameLabel')}</label>
+				<!-- svelte-ignore a11y_autofocus -->
 				<input id="g-name" bind:value={name} autofocus required />
-				</div>
-				<div class="field">
-					<label for="g-desc">{t('common.description')} <span class="faint">{t('common.optional')}</span></label>
-					<input id="g-desc" bind:value={description} />
-				</div>
-				<div class="field">
-					<span class="lbl" id="vis-label">{t('group.visibility')}</span>
-					<div class="vis" role="radiogroup" aria-labelledby="vis-label">
-						<button
-							type="button"
-							id="vis-public"
-							class="vis-opt"
-							class:sel={visibility === 'public'}
-							role="radio"
-							aria-checked={visibility === 'public'}
-							tabindex={visibility === 'public' ? 0 : -1}
-							onkeydown={onVisKey}
-							onclick={() => (visibility = 'public')}
-						>
-							<span class="vis-ic" aria-hidden="true">🌐</span>
-							<span class="vis-t">{t('group.public')}</span>
-							<span class="vis-d faint">{t('group.publicHint')}</span>
-						</button>
-						<button
-							type="button"
-							id="vis-private"
-							class="vis-opt"
-							class:sel={visibility === 'private'}
-							role="radio"
-							aria-checked={visibility === 'private'}
-							tabindex={visibility === 'private' ? 0 : -1}
-							onkeydown={onVisKey}
-							onclick={() => (visibility = 'private')}
-						>
-							<span class="vis-ic" aria-hidden="true">🔒</span>
-							<span class="vis-t">{t('group.private')}</span>
-							<span class="vis-d faint">{t('group.privateHint')}</span>
-						</button>
-					</div>
-				</div>
-				<div class="row mactions">
-					<button type="button" class="pd-btn pd-btn-ghost" onclick={() => (showForm = false)}>{t('common.cancel')}</button>
-					<button class="pd-btn pd-btn-primary" disabled={creating || !name}>
-						{creating ? t('group.creating') : t('group.create')}
+			</div>
+			<div class="field">
+				<label for="g-desc">{t('common.description')} <span class="faint">{t('common.optional')}</span></label>
+				<input id="g-desc" bind:value={description} />
+			</div>
+			<div class="field">
+				<span class="lbl" id="vis-label">{t('group.visibility')}</span>
+				<div class="vis" role="radiogroup" aria-labelledby="vis-label">
+					<button
+						type="button"
+						id="vis-public"
+						class="vis-opt"
+						class:sel={visibility === 'public'}
+						role="radio"
+						aria-checked={visibility === 'public'}
+						tabindex={visibility === 'public' ? 0 : -1}
+						onkeydown={onVisKey}
+						onclick={() => (visibility = 'public')}
+					>
+						<span class="vis-ic" aria-hidden="true">🌐</span>
+						<span class="vis-t">{t('group.public')}</span>
+						<span class="vis-d faint">{t('group.publicHint')}</span>
+					</button>
+					<button
+						type="button"
+						id="vis-private"
+						class="vis-opt"
+						class:sel={visibility === 'private'}
+						role="radio"
+						aria-checked={visibility === 'private'}
+						tabindex={visibility === 'private' ? 0 : -1}
+						onkeydown={onVisKey}
+						onclick={() => (visibility = 'private')}
+					>
+						<span class="vis-ic" aria-hidden="true">🔒</span>
+						<span class="vis-t">{t('group.private')}</span>
+						<span class="vis-d faint">{t('group.privateHint')}</span>
 					</button>
 				</div>
-			</form>
-		</Modal>
-	{/if}
+			</div>
+		</form>
+
+		{#snippet footer()}
+			<button type="button" class="pd-btn pd-btn-ghost" onclick={() => createModal?.close()}>
+				{t('common.cancel')}
+			</button>
+			<button class="pd-btn pd-btn-primary" form="create-group" disabled={creating || !name}>
+				{creating ? t('group.creating') : t('group.create')}
+			</button>
+		{/snippet}
+	</Modal>
 
 	{#if groups.length === 0}
 		<div class="pd-card empty pd-stack empty-cta">
 			<p>{t('home.empty')}</p>
-			<button class="pd-btn pd-btn-primary" onclick={() => (showForm = true)}>{t('home.newGroup')}</button>
+			<button class="pd-btn pd-btn-primary" onclick={() => createModal?.show()}>{t('home.newGroup')}</button>
 		</div>
 	{:else}
 		{#if groups.length > 3}
@@ -337,10 +344,6 @@
 	.vis-d {
 		font-size: 0.74rem;
 		line-height: 1.3;
-	}
-	.mactions {
-		justify-content: flex-end;
-		margin-top: 4px;
 	}
 	.search {
 		max-width: 360px;

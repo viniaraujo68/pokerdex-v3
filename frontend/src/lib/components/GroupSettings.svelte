@@ -1,7 +1,7 @@
 <script>
 	import { get, post, patch, del, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
-	import Modal from './Modal.svelte';
+	import { Modal } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
 	import { toast } from '@viniaraujo68/plinth/toast';
 	import { unbalancedBadgeEnabled, setUnbalancedBadge } from '$lib/prefs.svelte.js';
@@ -23,7 +23,9 @@
 	let loadError = $state('');
 
 	// delete-group flow (double confirmation: type the group name)
-	let showDelete = $state(false);
+	let deleteModal = $state(
+		/** @type {import('@viniaraujo68/plinth/components').Modal|undefined} */ (undefined)
+	);
 	let confirmName = $state('');
 	let deleting = $state(false);
 
@@ -35,7 +37,7 @@
 		} catch (e) {
 			toast.error(errorMessage(e));
 			deleting = false;
-			showDelete = false;
+			deleteModal?.close();
 		}
 	}
 
@@ -357,38 +359,42 @@
 			{t('settings.deleteWarningPost')}
 		</p>
 		<div>
-			<button class="pd-btn pd-btn-danger pd-btn-sm" onclick={() => { showDelete = true; confirmName = ''; }}>
+			<button class="pd-btn pd-btn-danger pd-btn-sm" onclick={() => { confirmName = ''; deleteModal?.show(); }}>
 				{t('settings.deleteGroup')}
 			</button>
 		</div>
 	</div>
 </div>
 
-{#if showDelete}
-	<Modal title={t('settings.deleteGroup')} onclose={() => (showDelete = false)}>
-		<div class="pd-stack">
-			<p class="muted">
-				{t('settings.deleteConfirmPre')} <strong>{group.name}</strong>
-				{t('settings.deleteConfirmPost')}
-			</p>
-			<input
-				placeholder={group.name}
-				bind:value={confirmName}
-				onkeydown={(e) => e.key === 'Enter' && confirmName === group.name && deleteGroup()}
-			/>
-			<div class="row mactions">
-				<button class="pd-btn pd-btn-ghost" onclick={() => (showDelete = false)}>{t('common.cancel')}</button>
-				<button
-					class="pd-btn pd-btn-danger"
-					disabled={confirmName !== group.name || deleting}
-					onclick={deleteGroup}
-				>
-					{deleting ? t('settings.deleting') : t('settings.deletePermanently')}
-				</button>
-			</div>
-		</div>
-	</Modal>
-{/if}
+<Modal
+	bind:this={deleteModal}
+	title={t('settings.deleteGroup')}
+	closeLabel={t('common.close')}
+	class="max-w-[460px]"
+>
+	<div class="pd-stack">
+		<p class="muted">
+			{t('settings.deleteConfirmPre')} <strong>{group.name}</strong>
+			{t('settings.deleteConfirmPost')}
+		</p>
+		<input
+			placeholder={group.name}
+			bind:value={confirmName}
+			onkeydown={(e) => e.key === 'Enter' && confirmName === group.name && deleteGroup()}
+		/>
+	</div>
+
+	{#snippet footer()}
+		<button class="pd-btn pd-btn-ghost" onclick={() => deleteModal?.close()}>{t('common.cancel')}</button>
+		<button
+			class="pd-btn pd-btn-danger"
+			disabled={confirmName !== group.name || deleting}
+			onclick={deleteGroup}
+		>
+			{deleting ? t('settings.deleting') : t('settings.deletePermanently')}
+		</button>
+	{/snippet}
+</Modal>
 
 <style>
 	.small {
@@ -400,10 +406,6 @@
 	}
 	.danger h3 {
 		color: var(--red);
-	}
-	.mactions {
-		justify-content: flex-end;
-		margin-top: 4px;
 	}
 	.adder {
 		display: flex;
