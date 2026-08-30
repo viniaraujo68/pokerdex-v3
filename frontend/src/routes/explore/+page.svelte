@@ -1,5 +1,5 @@
 <script>
-	import { get, errorMessage } from '$lib/api.js';
+	import { get, errorMessage } from '$lib/http.js';
 	import { t } from '$lib/i18n.svelte.js';
 	import GroupCard from '$lib/components/GroupCard.svelte';
 
@@ -94,7 +94,7 @@
 </div>
 
 {#if error}
-	<div class="pd-toast pd-toast-error">{error}</div>
+	<div class="pd-alert pd-alert-error">{error}</div>
 {:else if results.length === 0}
 	<div class="pd-card empty">
 		{shownQuery.trim() ? t('explore.noResults', { query: shownQuery }) : t('explore.empty')}

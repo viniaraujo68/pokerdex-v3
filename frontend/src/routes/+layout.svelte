@@ -8,11 +8,11 @@
 	import { RoutingContext, setRoutingContext } from '@viniaraujo68/plinth/routing';
 	import { AppShell } from '@viniaraujo68/plinth/shell';
 	import { setUserContext } from '@viniaraujo68/plinth/user';
+	import { Toaster } from '@viniaraujo68/plinth/toast';
 	import { routes } from '$lib/routes.js';
 	import { user } from '$lib/user.js';
 	import { auth, loadUser } from '$lib/stores/auth.svelte.js';
 	import { i18n, setLocale, t } from '$lib/i18n.svelte.js';
-	import Toasts from '$lib/components/Toasts.svelte';
 
 	let { children } = $props();
 
@@ -161,9 +161,14 @@
 	</div>
 {/if}
 
-<!-- One overlay for the whole app: it outlives navigations, so a toast fired just before a
-     goto() is still on screen when the next page renders. -->
-<Toasts />
+<!-- One overlay for the whole app, outside both branches: it outlives navigations, so a toast
+     fired just before a goto() is still on screen when the next page renders. -->
+<Toaster
+	class="z-[80]"
+	position="top-end"
+	label={t('toast.region')}
+	dismissLabel={t('common.close')}
+/>
 
 <style>
 	/* Above the shell — the progress bar is fixed to the viewport, the shell is not. */

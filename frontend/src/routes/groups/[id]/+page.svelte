@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { get, del, put, errorMessage, errorStatus } from '$lib/api.js';
+	import { get, del, put, errorMessage, errorStatus } from '$lib/http.js';
 	import { auth } from '$lib/stores/auth.svelte.js';
 	import RankingTable from '$lib/components/RankingTable.svelte';
 	import Records from '$lib/components/Records.svelte';
@@ -10,7 +10,7 @@
 	import GroupSettings from '$lib/components/GroupSettings.svelte';
 	import TabBar from '$lib/components/TabBar.svelte';
 	import { t } from '$lib/i18n.svelte.js';
-	import { toast } from '$lib/toast.svelte.js';
+	import { toast } from '@viniaraujo68/plinth/toast';
 	import { loginUrl } from '$lib/nav.js';
 	import { unbalancedBadgeEnabled } from '$lib/prefs.svelte.js';
 
@@ -172,7 +172,7 @@
 		{/each}
 	</div>
 {:else if error}
-	<div class="pd-toast pd-toast-error">{error}</div>
+	<div class="pd-alert pd-alert-error">{error}</div>
 	<a href="/" class="pd-btn pd-btn-ghost" style="margin-top:16px">{t('group.back')}</a>
 {:else if group && stats && evolution}
 	<div class="spread head">

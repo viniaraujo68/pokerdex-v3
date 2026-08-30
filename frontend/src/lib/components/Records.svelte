@@ -1,5 +1,5 @@
 <script>
-	import { formatSigned, moneyClass } from '$lib/money.js';
+	import { formatSigned, moneyClass } from '$lib/money.svelte.js';
 	import { localeTag, t } from '$lib/i18n.svelte.js';
 
 	/** @type {{ records: import('$lib/types.js').GroupRecord[], totalNights: number }} */

@@ -1,6 +1,6 @@
 <script>
 	import { login } from '$lib/stores/auth.svelte.js';
-	import { errorMessage } from '$lib/api.js';
+	import { errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { t } from '$lib/i18n.svelte.js';
@@ -38,7 +38,7 @@
 	<form class="pd-card pd-stack" onsubmit={submit}>
 		<h1>{t('auth.login')}</h1>
 		<p class="muted">{t('auth.loginSubtitle')}</p>
-		{#if error}<div class="pd-toast pd-toast-error">{error}</div>{/if}
+		{#if error}<div class="pd-alert pd-alert-error">{error}</div>{/if}
 		<div class="field">
 			<label for="u">{t('auth.username')}</label>
 			<input id="u" bind:value={username} autocomplete="username" required />

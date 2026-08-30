@@ -1,11 +1,11 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { get, post, put, errorMessage } from '$lib/api.js';
+	import { get, post, put, errorMessage } from '$lib/http.js';
 	import { auth } from '$lib/stores/auth.svelte.js';
 	import NightForm from '$lib/components/NightForm.svelte';
 	import { t } from '$lib/i18n.svelte.js';
-	import { toast } from '$lib/toast.svelte.js';
+	import { toast } from '@viniaraujo68/plinth/toast';
 	import { loginUrl } from '$lib/nav.js';
 
 	// Guaranteed by the `[id]` route segment; `$page.params` just isn't typed per-route.
@@ -102,7 +102,7 @@
 	<div class="center"><div class="spinner"></div></div>
 {:else if !ready}
 	<div class="pd-stack">
-		<div class="pd-toast pd-toast-error">
+		<div class="pd-alert pd-alert-error">
 			{editId
 				? t('night.loadFailed', { message: loadError || t('night.notLoaded') })
 				: loadError || t('night.notLoaded')}

@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { formatMoney, formatMoneyAxis } from '$lib/money.js';
+	import { formatMoney, formatMoneyAxis } from '$lib/money.svelte.js';
 	import { i18n, localeTag, t } from '$lib/i18n.svelte.js';
 
 	/** @type {{ evolution: import('$lib/types.js').Evolution }} */
