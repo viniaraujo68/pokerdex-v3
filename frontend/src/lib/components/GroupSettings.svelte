@@ -204,11 +204,11 @@
 	const catalogMeta = $derived([{ kind: 'places', title: t('settings.places') }]);
 </script>
 
-{#if loadError}<div class="toast toast-error">{loadError}</div>{/if}
+{#if loadError}<div class="pd-toast pd-toast-error">{loadError}</div>{/if}
 
-<div class="settings stack">
+<div class="settings pd-stack">
 	<!-- Group basics -->
-	<div class="card stack">
+	<div class="pd-card pd-stack">
 		<h3>{t('settings.group')}</h3>
 		<div class="field">
 			<label for="s-name">{t('common.name')}</label>
@@ -226,14 +226,14 @@
 			</select>
 		</div>
 		<div>
-			<button class="btn btn-primary btn-sm" disabled={savingGroup} onclick={saveGroup}>
+			<button class="pd-btn pd-btn-primary pd-btn-sm" disabled={savingGroup} onclick={saveGroup}>
 				{savingGroup ? t('common.saving') : t('settings.saveChanges')}
 			</button>
 		</div>
 	</div>
 
 	<!-- Share link — always the saved state, never the draft above -->
-	<div class="card stack">
+	<div class="pd-card pd-stack">
 		<h3>{t('settings.publicLink')}</h3>
 		{#if savedPublic}
 			<p class="muted small">{t('settings.publicLinkHint')}</p>
@@ -244,19 +244,19 @@
 		{/if}
 
 		{#if visibilityDirty}
-			<p class="toast toast-warn small">{t('settings.linkUnsavedHint')}</p>
+			<p class="pd-toast pd-toast-warn small">{t('settings.linkUnsavedHint')}</p>
 		{/if}
 
 		{#if linkReady}
 			<div class="share">
 				<input readonly value={shareUrl} aria-label={t('settings.publicLink')} />
-				<button class="btn btn-ghost btn-sm" onclick={copyShare}>{t('common.copy')}</button>
+				<button class="pd-btn pd-btn-ghost pd-btn-sm" onclick={copyShare}>{t('common.copy')}</button>
 			</div>
 		{/if}
 
 		{#if !savedPublic}
 			<div>
-				<button class="btn btn-ghost btn-sm" disabled={rotating} onclick={rotateToken}>
+				<button class="pd-btn pd-btn-ghost pd-btn-sm" disabled={rotating} onclick={rotateToken}>
 					{hasToken ? t('settings.rotateToken') : t('settings.generateLink')}
 				</button>
 			</div>
@@ -264,7 +264,7 @@
 	</div>
 
 	<!-- Per-group options (device-local) -->
-	<div class="card stack">
+	<div class="pd-card pd-stack">
 		<h3>{t('settings.options')}</h3>
 		<label class="opt">
 			<input
@@ -280,7 +280,7 @@
 	</div>
 
 	<!-- Participants -->
-	<div class="card stack">
+	<div class="pd-card pd-stack">
 		<h3>{t('common.players')}</h3>
 		<div class="adder">
 			<input
@@ -288,7 +288,7 @@
 				bind:value={drafts.participant}
 				onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addParticipant())}
 			/>
-			<button class="btn btn-ghost btn-sm" onclick={addParticipant}>{t('common.add')}</button>
+			<button class="pd-btn pd-btn-ghost pd-btn-sm" onclick={addParticipant}>{t('common.add')}</button>
 		</div>
 		<div class="tags">
 			{#each participants as p (p.id)}
@@ -319,9 +319,9 @@
 	</div>
 
 	<!-- Catalogs -->
-	<div class="catalogs grid">
+	<div class="catalogs pd-grid">
 		{#each catalogMeta as meta (meta.kind)}
-			<div class="card stack">
+			<div class="pd-card pd-stack">
 				<h3>{meta.title}</h3>
 				<div class="adder">
 					<input
@@ -329,7 +329,7 @@
 						bind:value={drafts[meta.kind]}
 						onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addItem(meta.kind))}
 					/>
-					<button class="btn btn-ghost btn-sm" onclick={() => addItem(meta.kind)}>+</button>
+					<button class="pd-btn pd-btn-ghost pd-btn-sm" onclick={() => addItem(meta.kind)}>+</button>
 				</div>
 				<div class="tags">
 					{#each lists[meta.kind] as item (item.id)}
@@ -350,14 +350,14 @@
 	</div>
 
 	<!-- Danger zone -->
-	<div class="card stack danger">
+	<div class="pd-card pd-stack danger">
 		<h3>{t('settings.dangerZone')}</h3>
 		<p class="muted small">
 			{t('settings.deleteWarningPre')} <strong>{t('settings.deleteWarningStrong')}</strong>
 			{t('settings.deleteWarningPost')}
 		</p>
 		<div>
-			<button class="btn btn-danger btn-sm" onclick={() => { showDelete = true; confirmName = ''; }}>
+			<button class="pd-btn pd-btn-danger pd-btn-sm" onclick={() => { showDelete = true; confirmName = ''; }}>
 				{t('settings.deleteGroup')}
 			</button>
 		</div>
@@ -366,7 +366,7 @@
 
 {#if showDelete}
 	<Modal title={t('settings.deleteGroup')} onclose={() => (showDelete = false)}>
-		<div class="stack">
+		<div class="pd-stack">
 			<p class="muted">
 				{t('settings.deleteConfirmPre')} <strong>{group.name}</strong>
 				{t('settings.deleteConfirmPost')}
@@ -377,9 +377,9 @@
 				onkeydown={(e) => e.key === 'Enter' && confirmName === group.name && deleteGroup()}
 			/>
 			<div class="row mactions">
-				<button class="btn btn-ghost" onclick={() => (showDelete = false)}>{t('common.cancel')}</button>
+				<button class="pd-btn pd-btn-ghost" onclick={() => (showDelete = false)}>{t('common.cancel')}</button>
 				<button
-					class="btn btn-danger"
+					class="pd-btn pd-btn-danger"
 					disabled={confirmName !== group.name || deleting}
 					onclick={deleteGroup}
 				>

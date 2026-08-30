@@ -37,12 +37,12 @@
 	<title>{t('title.register')}</title>
 </svelte:head>
 
-<!-- .auth / .auth-alt / .link are shared with /login, so they live in app.css -->
+<!-- .auth / .auth-alt / .pd-link are shared with /login, so they live in app.css -->
 <div class="auth">
-	<form class="card stack" onsubmit={submit}>
+	<form class="pd-card pd-stack" onsubmit={submit}>
 		<h1>{t('auth.register')}</h1>
 		<p class="muted">{t('auth.registerSubtitle')}</p>
-		{#if error}<div class="toast toast-error">{error}</div>{/if}
+		{#if error}<div class="pd-toast pd-toast-error">{error}</div>{/if}
 		<div class="field">
 			<label for="u">{t('auth.username')}</label>
 			<input id="u" bind:value={username} autocomplete="username" minlength="3" required />
@@ -51,10 +51,10 @@
 			<label for="p">{t('auth.password')}</label>
 			<input id="p" type="password" bind:value={password} autocomplete="new-password" minlength="6" required />
 		</div>
-		<button class="btn btn-primary" disabled={busy}>{busy ? t('auth.registering') : t('auth.register')}</button>
+		<button class="pd-btn pd-btn-primary" disabled={busy}>{busy ? t('auth.registering') : t('auth.register')}</button>
 		<p class="muted auth-alt">
 			{t('auth.hasAccount')}
-			<a href={withNext('/login', next)} class="link">{t('auth.login')}</a>
+			<a href={withNext('/login', next)} class="pd-link">{t('auth.login')}</a>
 		</p>
 	</form>
 </div>

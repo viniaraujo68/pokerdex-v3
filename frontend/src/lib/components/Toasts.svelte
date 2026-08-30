@@ -13,7 +13,7 @@
 	style={`--toast-gap:${layout.bottomGap}px`}
 >
 	{#each items as item (item.id)}
-		<div class="toast toast-{item.kind} item">
+		<div class="pd-toast pd-toast-{item.kind} item">
 			<span class="msg">{item.message}</span>
 			<button
 				class="x"
@@ -52,7 +52,7 @@
 		position: relative;
 		isolation: isolate;
 	}
-	/* The shared `.toast` palette is a ~10% tint, meant for use inside a card. Floating over
+	/* The shared `.pd-toast` palette is a ~10% tint, meant for use inside a card. Floating over
 	   the page it would let buttons and text bleed through, so slide an opaque layer under it
 	   instead of hardcoding a blended colour per kind. */
 	.item::before {

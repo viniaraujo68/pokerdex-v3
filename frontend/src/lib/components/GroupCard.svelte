@@ -14,7 +14,7 @@
 	let { group, href, visibility = 'public' } = $props();
 </script>
 
-<a {href} class="card group">
+<a {href} class="pd-card group">
 	<div class="spread">
 		<h3>{group.name}</h3>
 		<span class="chip {visibility === 'public' ? 'chip-felt' : ''}">
@@ -22,7 +22,7 @@
 		</span>
 	</div>
 	{#if group.description}<p class="muted desc">{group.description}</p>{/if}
-	<div class="row stats">
+	<div class="row pd-stats">
 		<span class="chip">🃏 {t('group.nightCount', { count: group.night_count })}</span>
 		<span class="chip">👥 {t('group.playerCount', { count: group.participant_count })}</span>
 	</div>
@@ -52,7 +52,7 @@
 		margin: 0;
 	}
 	/* pushed to the bottom so the chips line up across cards of different description length */
-	.stats {
+	.pd-stats {
 		flex-wrap: wrap;
 		margin-top: auto;
 	}

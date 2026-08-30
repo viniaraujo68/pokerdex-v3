@@ -161,7 +161,7 @@
 			{#each TAB_IDS as id (id)}<div class="sk sk-tab"></div>{/each}
 		</div>
 		{#each [0, 1, 2] as i (i)}
-			<div class="card card-tight sk-card">
+			<div class="pd-card pd-card-tight sk-card">
 				<div class="sk sk-line sk-date"></div>
 				<div class="sk-chips">
 					<div class="sk sk-chip"></div>
@@ -172,8 +172,8 @@
 		{/each}
 	</div>
 {:else if error}
-	<div class="toast toast-error">{error}</div>
-	<a href="/" class="btn btn-ghost" style="margin-top:16px">{t('group.back')}</a>
+	<div class="pd-toast pd-toast-error">{error}</div>
+	<a href="/" class="pd-btn pd-btn-ghost" style="margin-top:16px">{t('group.back')}</a>
 {:else if group && stats && evolution}
 	<div class="spread head">
 		<div>
@@ -181,7 +181,7 @@
 			<h1>{group.name}</h1>
 			{#if group.description}<p class="muted">{group.description}</p>{/if}
 		</div>
-		<a href={`/groups/${groupId}/nights/new`} class="btn btn-primary">{t('group.newNight')}</a>
+		<a href={`/groups/${groupId}/nights/new`} class="pd-btn pd-btn-primary">{t('group.newNight')}</a>
 	</div>
 
 	<TabBar {tabs} active={tab} onChange={setTab} label={t('tab.sections')} controls="group-panel" />
@@ -212,11 +212,11 @@
 				onQuickEdit={quickEditEntry}
 			/>
 		{:else if tab === 'ranking'}
-			<div class="card"><RankingTable ranking={stats.ranking} /></div>
+			<div class="pd-card"><RankingTable ranking={stats.ranking} /></div>
 		{:else if tab === 'stats'}
-			<div class="stack">
+			<div class="pd-stack">
 				<Records records={stats.records} totalNights={stats.total_nights} />
-				<div class="card stack">
+				<div class="pd-card pd-stack">
 					<h3>{t('stats.evolution')}</h3>
 					<EvolutionChart {evolution} />
 				</div>
@@ -286,7 +286,7 @@
 			align-items: stretch;
 			gap: 12px;
 		}
-		.head :global(.btn) {
+		.head :global(.pd-btn) {
 			width: 100%;
 		}
 	}

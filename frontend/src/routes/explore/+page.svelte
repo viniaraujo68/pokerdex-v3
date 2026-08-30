@@ -94,15 +94,15 @@
 </div>
 
 {#if error}
-	<div class="toast toast-error">{error}</div>
+	<div class="pd-toast pd-toast-error">{error}</div>
 {:else if results.length === 0}
-	<div class="card empty">
+	<div class="pd-card empty">
 		{shownQuery.trim() ? t('explore.noResults', { query: shownQuery }) : t('explore.empty')}
 	</div>
 {:else}
 	<!-- `stale` only dims: replacing the grid with a spinner on every keystroke made the page
 	     flash and lose the user's place. -->
-	<div class="groups grid" class:stale={searching}>
+	<div class="groups pd-grid" class:stale={searching}>
 		{#each results as g (g.slug)}
 			<GroupCard group={g} href={`/g/${g.slug}`} />
 		{/each}

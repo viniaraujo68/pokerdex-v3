@@ -86,7 +86,7 @@
 </svelte:head>
 
 {#if error}
-	<div class="card empty">{error}</div>
+	<div class="pd-card empty">{error}</div>
 {:else if group}
 	<div class="head">
 		<span class="chip chip-felt">{t('public.badge')}</span>
@@ -106,11 +106,11 @@
 
 	<div id="public-panel" role="tabpanel" aria-labelledby={`ptab-${tab}`}>
 		{#if tab === 'ranking'}
-			<div class="card"><RankingTable ranking={group.stats.ranking} /></div>
+			<div class="pd-card"><RankingTable ranking={group.stats.ranking} /></div>
 		{:else if tab === 'stats'}
-			<div class="stack">
+			<div class="pd-stack">
 				<Records records={group.stats.records} totalNights={group.stats.total_nights} />
-				<div class="card stack">
+				<div class="pd-card pd-stack">
 					<h3>{t('stats.evolution')}</h3>
 					<EvolutionChart evolution={group.evolution} />
 				</div>
@@ -121,7 +121,7 @@
 	</div>
 
 	<p class="foot-cta faint">
-		{t('public.cta')} <a href="/" class="link">{t('public.ctaLink')}</a>
+		{t('public.cta')} <a href="/" class="pd-link">{t('public.ctaLink')}</a>
 	</p>
 {/if}
 

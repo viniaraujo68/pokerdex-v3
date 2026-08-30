@@ -84,7 +84,7 @@ button {
 	padding: 0 20px;
 }
 
-.stack {
+.pd-stack {
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
@@ -111,13 +111,13 @@ button {
 	color: var(--text-faint);
 }
 
-.grid {
+.pd-grid {
 	display: grid;
 	gap: 16px;
 }
 
 /* ---------- Card ---------- */
-.card {
+.pd-card {
 	background: linear-gradient(180deg, var(--surface), var(--bg-elev));
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius);
@@ -125,12 +125,12 @@ button {
 	box-shadow: var(--shadow);
 }
 
-.card-tight {
+.pd-card-tight {
 	padding: 16px;
 }
 
 /* ---------- Buttons ---------- */
-.btn {
+.pd-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -149,48 +149,48 @@ button {
 	white-space: nowrap;
 }
 
-.btn:active {
+.pd-btn:active {
 	transform: translateY(1px);
 }
 
-.btn:disabled {
+.pd-btn:disabled {
 	opacity: 0.45;
 	cursor: not-allowed;
 }
 
-.btn-primary {
+.pd-btn-primary {
 	background: linear-gradient(180deg, var(--felt-bright), var(--felt));
 	color: #ffffff;
 }
 
-.btn-primary:hover:not(:disabled) {
+.pd-btn-primary:hover:not(:disabled) {
 	background: linear-gradient(180deg, #b07cff, var(--felt-bright));
 }
 
-.btn-ghost {
+.pd-btn-ghost {
 	background: transparent;
 	border-color: var(--border-color);
 	color: var(--text);
 }
 
-.btn-ghost:hover:not(:disabled) {
+.pd-btn-ghost:hover:not(:disabled) {
 	border-color: var(--felt-bright);
 	background: rgba(124, 58, 237, 0.12);
 }
 
-.btn-danger {
+.pd-btn-danger {
 	background: transparent;
 	border-color: var(--red-soft);
 	color: var(--red);
 }
 
-.btn-danger:hover:not(:disabled) {
+.pd-btn-danger:hover:not(:disabled) {
 	/* mixed from the token instead of a frozen rgba(): the wash follows --red if it ever moves */
 	background: color-mix(in srgb, var(--red) 10%, transparent);
 	border-color: var(--red);
 }
 
-.btn-sm {
+.pd-btn-sm {
 	padding: 6px 12px;
 	font-size: 0.85rem;
 }
@@ -272,7 +272,7 @@ textarea:focus {
 
 /* ---------- Links ---------- */
 /* Inline text link that has to read as a link (the global `a` is colour-inherit). */
-.link {
+.pd-link {
 	color: var(--felt-bright);
 	font-weight: 600;
 }
@@ -297,26 +297,26 @@ textarea:focus {
 	color: var(--text-faint);
 }
 
-.toast {
+.pd-toast {
 	padding: 12px 16px;
 	border-radius: var(--radius-sm);
 	font-size: 0.9rem;
 	font-weight: 500;
 }
 
-.toast-error {
+.pd-toast-error {
 	background: var(--red-soft);
 	color: #ffb3ad;
 	border: 1px solid color-mix(in srgb, var(--red) 40%, transparent);
 }
 
-.toast-warn {
+.pd-toast-warn {
 	background: color-mix(in srgb, var(--gold) 10%, transparent);
 	color: var(--gold);
 	border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
 }
 
-.toast-success {
+.pd-toast-success {
 	background: rgba(74, 222, 128, 0.1);
 	color: var(--green-pos);
 	border: 1px solid rgba(74, 222, 128, 0.3);
@@ -440,7 +440,7 @@ textarea:focus-visible {
 	}
 
 	/* Instant-but-still-moving is no better than animated: drop the displacement entirely. */
-	.btn:active {
+	.pd-btn:active {
 		transform: none;
 	}
 }

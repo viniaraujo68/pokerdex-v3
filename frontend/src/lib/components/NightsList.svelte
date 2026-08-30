@@ -104,14 +104,14 @@
 </script>
 
 {#if nights.length === 0}
-	<div class="card empty stack empty-cta">
+	<div class="pd-card empty pd-stack empty-cta">
 		<p>{t('nights.empty')}</p>
 		{#if newNightHref}
-			<a href={newNightHref} class="btn btn-primary">{t('group.newNight')}</a>
+			<a href={newNightHref} class="pd-btn pd-btn-primary">{t('group.newNight')}</a>
 		{/if}
 	</div>
 {:else}
-	<div class="card card-tight filters">
+	<div class="pd-card pd-card-tight filters">
 		<!-- Mobile-only disclosure; `display:none` above the small breakpoint. -->
 		<button
 			type="button"
@@ -154,7 +154,7 @@
 					{#each players as p (p.id)}
 						<button
 							type="button"
-							class="chip toggle"
+							class="chip pd-toggle"
 							class:on={selectedPlayers.has(p.id)}
 							aria-pressed={selectedPlayers.has(p.id)}
 							onclick={() => togglePlayer(p.id)}
@@ -178,21 +178,21 @@
 				})}
 			</span>
 			{#if hasFilters}
-				<button class="btn btn-ghost btn-sm" onclick={clearFilters}>{t('filters.clear')}</button>
+				<button class="pd-btn pd-btn-ghost pd-btn-sm" onclick={clearFilters}>{t('filters.clear')}</button>
 			{/if}
 		</div>
 	</div>
 
 	{#if filtered.length === 0}
-		<div class="card empty">{t('nights.noneWithFilters')}</div>
+		<div class="pd-card empty">{t('nights.noneWithFilters')}</div>
 	{:else}
-		<div class="stack">
+		<div class="pd-stack">
 			{#each paged as night (night.id)}
 				<NightCard {night} {editable} {onEdit} {onDelete} {onQuickEdit} />
 			{/each}
 		</div>
 		{#if filtered.length > shown}
-			<button class="btn btn-ghost more" onclick={() => (shown += PAGE)}>
+			<button class="pd-btn pd-btn-ghost more" onclick={() => (shown += PAGE)}>
 				{t('nights.showMore', { remaining: filtered.length - shown })}
 			</button>
 		{/if}
@@ -287,7 +287,7 @@
 		flex-wrap: wrap;
 		gap: 8px;
 	}
-	.toggle {
+	.pd-toggle {
 		cursor: pointer;
 		background: var(--surface-2);
 		/* thumb-sized: these chips are the main filter control on a phone */
@@ -300,10 +300,10 @@
 			border-color 0.12s ease,
 			color 0.12s ease;
 	}
-	.toggle:hover {
+	.pd-toggle:hover {
 		border-color: var(--felt-bright);
 	}
-	.toggle.on {
+	.pd-toggle.on {
 		background: rgba(124, 58, 237, 0.2);
 		border-color: var(--felt-bright);
 		color: var(--felt-bright);

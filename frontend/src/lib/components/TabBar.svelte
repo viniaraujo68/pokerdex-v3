@@ -63,7 +63,7 @@
 <!-- The bar is the fade host; the inner strip is what actually scrolls. -->
 <div class="tabsbar" class:fade={fadeRight}>
 	<div
-		class="tabs"
+		class="pd-tabs"
 		class:center
 		role="tablist"
 		aria-label={label}
@@ -72,7 +72,7 @@
 	>
 		{#each tabs as item (item.id)}
 			<button
-				class="tab"
+				class="pd-tab"
 				class:active={active === item.id}
 				role="tab"
 				id={tabId(item.id)}
@@ -93,7 +93,7 @@
 		position: relative;
 		margin-bottom: 24px;
 	}
-	.tabs {
+	.pd-tabs {
 		display: flex;
 		gap: 4px;
 		border-bottom: 1px solid var(--border-color);
@@ -104,21 +104,21 @@
 	}
 	/* centred while they fit, scrollable (from the left) once they don't — the `safe`
 	   keyword is what keeps the first tab reachable; plain `center` is the fallback */
-	.tabs.center {
+	.pd-tabs.center {
 		justify-content: center;
 		justify-content: safe center;
 	}
-	.tabs::-webkit-scrollbar {
+	.pd-tabs::-webkit-scrollbar {
 		display: none;
 	}
 	/* Right-edge fade: the only hint that a 4th tab exists at 390px. A mask, not a gradient
 	   overlay — the page background is itself a gradient, so a painted "fade to --bg" would
 	   show as a smudge. Applied only while there's something scrolled off. */
-	.tabsbar.fade .tabs {
+	.tabsbar.fade .pd-tabs {
 		-webkit-mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
 		mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
 	}
-	.tab {
+	.pd-tab {
 		background: none;
 		border: none;
 		border-bottom: 2px solid transparent;
@@ -132,15 +132,15 @@
 		white-space: nowrap;
 		flex: 0 0 auto;
 	}
-	.tab:focus-visible {
+	.pd-tab:focus-visible {
 		/* inside a horizontal scroller an outset ring gets clipped — tuck it in */
 		outline-offset: -2px;
 	}
-	.tab.active {
+	.pd-tab.active {
 		color: var(--felt-bright);
 		border-bottom-color: var(--felt-bright);
 	}
-	.tab:hover {
+	.pd-tab:hover {
 		color: var(--text);
 	}
 </style>

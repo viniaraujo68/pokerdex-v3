@@ -25,6 +25,20 @@
 				</select>
 			</div>
 
+			<div class="flex flex-wrap items-center gap-4">
+				<button class="btn btn-primary">btn-primary</button>
+				<button class="btn btn-ghost">btn-ghost</button>
+				<button class="btn btn-sm">btn-sm</button>
+				<label class="toggle"><input type="checkbox" checked /></label>
+			</div>
+
+			<div class="card bg-base-200 w-72">
+				<div class="card-body">
+					<h3 class="card-title">daisyUI card</h3>
+					<p>Card body on plinth tokens.</p>
+				</div>
+			</div>
+
 			<div class="alert alert-info">daisyUI alert on plinth tokens</div>
 
 			<progress class="progress progress-primary w-56" value="40" max="100"></progress>
