@@ -245,7 +245,7 @@
 	.sk-tabs {
 		display: flex;
 		gap: 4px;
-		border-bottom: 1px solid var(--border);
+		border-bottom: 1px solid var(--border-color);
 		padding-bottom: 10px;
 		margin-bottom: 8px;
 	}

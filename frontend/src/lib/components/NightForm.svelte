@@ -915,7 +915,7 @@
 		min-width: 44px;
 		min-height: 44px;
 		border-radius: var(--radius-sm);
-		border: 1px solid var(--border);
+		border: 1px solid var(--border-color);
 		background: var(--surface-2);
 		color: var(--text);
 		font-weight: 700;
@@ -978,7 +978,7 @@
 		padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
 		background: rgba(12, 10, 18, 0.94);
 		backdrop-filter: blur(10px);
-		border-top: 1px solid var(--border);
+		border-top: 1px solid var(--border-color);
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
@@ -987,7 +987,7 @@
 		/* on wide screens, keep the bar inside the form column instead of full-bleed */
 		.bar {
 			margin: 4px 0 0;
-			border: 1px solid var(--border);
+			border: 1px solid var(--border-color);
 			border-radius: var(--radius);
 			padding: 12px 18px;
 			bottom: 12px;
