@@ -19,6 +19,7 @@ export default {
 	'common.loading': 'Loading…',
 
 	// ---------- header / footer ----------
+	'nav.home': 'Home',
 	'nav.explore': 'Explore',
 	'nav.login': 'Log in',
 	'nav.logout': 'Log out',
@@ -27,6 +28,9 @@ export default {
 	'nav.language': 'Language',
 	'nav.switchToPt': 'Switch to Portuguese',
 	'nav.switchToEn': 'Switch to English',
+	'nav.main': 'Main navigation',
+	'nav.collapse': 'Collapse the sidebar',
+	'nav.more': 'More',
 	'footer.tagline': "Pokerdex · your group's poker nights ♠ ♥ ♣ ♦",
 
 	// ---------- page titles (<title>, one per route) ----------

@@ -1,3 +1,5 @@
+@layer theme, base, pd-preflight, pd-legacy, components, utilities;
+
 @import '@viniaraujo68/plinth/theme.css';
 
 @source "../../node_modules/@viniaraujo68/plinth/dist";
