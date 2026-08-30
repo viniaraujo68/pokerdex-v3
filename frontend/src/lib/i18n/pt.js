@@ -19,6 +19,7 @@ export default {
 	'common.loading': 'Carregando…',
 
 	// ---------- header / footer ----------
+	'nav.home': 'Início',
 	'nav.explore': 'Explorar',
 	'nav.login': 'Entrar',
 	'nav.logout': 'Sair',
@@ -27,6 +28,9 @@ export default {
 	'nav.language': 'Idioma',
 	'nav.switchToPt': 'Mudar para português',
 	'nav.switchToEn': 'Mudar para inglês',
+	'nav.main': 'Navegação principal',
+	'nav.collapse': 'Recolher o menu lateral',
+	'nav.more': 'Mais',
 	'footer.tagline': 'Pokerdex · noites de poker do seu grupo ♠ ♥ ♣ ♦',
 
 	// ---------- títulos das páginas (<title>, um por rota) ----------

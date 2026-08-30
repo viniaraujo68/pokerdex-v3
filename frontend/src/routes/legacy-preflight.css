@@ -1,89 +1,91 @@
-h1 {
-	font-size: 2em;
-	font-weight: bold;
-	margin-block: 0.67em;
-}
+@layer pd-preflight {
+	h1 {
+		font-size: 2em;
+		font-weight: bold;
+		margin-block: 0.67em;
+	}
 
-h2 {
-	font-size: 1.5em;
-	font-weight: bold;
-	margin-block: 0.83em;
-}
+	h2 {
+		font-size: 1.5em;
+		font-weight: bold;
+		margin-block: 0.83em;
+	}
 
-h3 {
-	font-size: 1.17em;
-	font-weight: bold;
-	margin-block: 1em;
-}
+	h3 {
+		font-size: 1.17em;
+		font-weight: bold;
+		margin-block: 1em;
+	}
 
-h4 {
-	font-weight: bold;
-	margin-block: 1.33em;
-}
+	h4 {
+		font-weight: bold;
+		margin-block: 1.33em;
+	}
 
-h5 {
-	font-size: 0.83em;
-	font-weight: bold;
-	margin-block: 1.67em;
-}
+	h5 {
+		font-size: 0.83em;
+		font-weight: bold;
+		margin-block: 1.67em;
+	}
 
-h6 {
-	font-size: 0.67em;
-	font-weight: bold;
-	margin-block: 2.33em;
-}
+	h6 {
+		font-size: 0.67em;
+		font-weight: bold;
+		margin-block: 2.33em;
+	}
 
-p {
-	margin-block: 1em;
-}
+	p {
+		margin-block: 1em;
+	}
 
-ul,
-ol {
-	margin-block: 1em;
-	padding-inline-start: 40px;
-}
+	ul,
+	ol {
+		margin-block: 1em;
+		padding-inline-start: 40px;
+	}
 
-ul {
-	list-style: disc;
-}
+	ul {
+		list-style: disc;
+	}
 
-ol {
-	list-style: decimal;
-}
+	ol {
+		list-style: decimal;
+	}
 
-li {
-	display: list-item;
-}
+	li {
+		display: list-item;
+	}
 
-blockquote {
-	margin-block: 1em;
-	margin-inline: 40px;
-}
+	blockquote {
+		margin-block: 1em;
+		margin-inline: 40px;
+	}
 
-dl,
-dd,
-figure,
-pre {
-	margin-block: 1em;
-}
+	dl,
+	dd,
+	figure,
+	pre {
+		margin-block: 1em;
+	}
 
-hr {
-	border-block-start: 1px inset;
-	margin-block: 0.5em;
-}
+	hr {
+		border-block-start: 1px inset;
+		margin-block: 0.5em;
+	}
 
-b,
-strong {
-	font-weight: bolder;
-}
+	b,
+	strong {
+		font-weight: bolder;
+	}
 
-small {
-	font-size: smaller;
-}
+	small {
+		font-size: smaller;
+	}
 
-button,
-input,
-select,
-textarea {
-	line-height: normal;
+	button,
+	input,
+	select,
+	textarea {
+		line-height: normal;
+	}
 }

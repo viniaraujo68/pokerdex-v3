@@ -3,22 +3,23 @@
 	import './legacy-preflight.css';
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { navigating, page } from '$app/stores';
-	import { auth, loadUser, logout } from '$lib/stores/auth.svelte.js';
+	import { navigating } from '$app/stores';
+	import { page } from '$app/state';
+	import { RoutingContext, setRoutingContext } from '@viniaraujo68/plinth/routing';
+	import { AppShell } from '@viniaraujo68/plinth/shell';
+	import { setUserContext } from '@viniaraujo68/plinth/user';
+	import { routes } from '$lib/routes.js';
+	import { user } from '$lib/user.js';
+	import { loadUser } from '$lib/stores/auth.svelte.js';
 	import { i18n, setLocale, t } from '$lib/i18n.svelte.js';
 	import Toasts from '$lib/components/Toasts.svelte';
 
 	let { children } = $props();
 
+	setRoutingContext(new RoutingContext(routes, page));
+	setUserContext(user);
+
 	onMount(loadUser);
-
-	async function handleLogout() {
-		await logout();
-		goto('/');
-	}
-
-	const isPublic = $derived($page.url.pathname.startsWith('/g/'));
 
 	/* ---------- navigation progress ----------
 	   Most navigations here resolve from cache in a few frames, and a bar that flashes on
@@ -47,34 +48,54 @@
 	<div class="navbar-progress" aria-hidden="true"><span></span></div>
 {/if}
 
-<header class="nav">
-	<div class="container nav-inner">
-		<a href="/" class="brand">
-			<span class="logo">♠</span>
-			<span class="brand-name">Pokerdex</span>
-		</a>
+<div class="shell-host">
+	<AppShell
+		navLabel={t('nav.main')}
+		collapseLabel={t('nav.collapse')}
+		moreLabel={t('nav.more')}
+		closeLabel={t('common.close')}
+		logoutLabel={t('nav.logout')}
+	>
+		{#snippet brand({ collapsed })}
+			<a href="/" class="brand">
+				<span class="logo">♠</span>
+				{#if !collapsed}<span class="brand-name">Pokerdex</span>{/if}
+			</a>
+		{/snippet}
 
-		<div class="nav-right">
-			{#if !isPublic}
-				<nav class="nav-actions">
-					<a href="/explore" class="explore-link">{t('nav.explore')}</a>
-					{#if auth.ready && auth.user}
-						<a href="/account" class="user" title={t('nav.account')}>👤 {auth.user.username}</a>
-						<button class="pd-btn pd-btn-ghost pd-btn-sm" onclick={handleLogout}>{t('nav.logout')}</button>
-					{:else if auth.ready}
-						<a href="/login" class="pd-btn pd-btn-ghost pd-btn-sm">{t('nav.login')}</a>
-						<a href="/register" class="pd-btn pd-btn-primary pd-btn-sm">{t('nav.register')}</a>
-					{/if}
-				</nav>
-			{:else if auth.ready && !auth.user}
-				<!-- Public scoreboards stay chrome-free, but a visitor who likes what they see
-				     needs one way in. Owners already have the full nav elsewhere. -->
-				<nav class="nav-actions">
-					<a href="/register" class="pd-btn pd-btn-primary pd-btn-sm">{t('nav.register')}</a>
-				</nav>
-			{/if}
+		{#snippet icon(route)}
+			{@const name = route.meta.icon}
+			<svg
+				class="size-5"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.75"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				{#if name === 'home'}
+					<path d="M3 10.5 12 3l9 7.5" />
+					<path d="M5 9.5V21h14V9.5" />
+				{:else if name === 'explore'}
+					<circle cx="12" cy="12" r="9" />
+					<path d="m15.5 8.5-2 5-5 2 2-5z" />
+				{:else if name === 'account'}
+					<circle cx="12" cy="8" r="3.5" />
+					<path d="M5 20a7 7 0 0 1 14 0" />
+				{:else if name === 'login'}
+					<path d="M10 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4" />
+					<path d="m15 8 4 4-4 4M19 12H9" />
+				{:else if name === 'register'}
+					<circle cx="9" cy="8" r="3.5" />
+					<path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+					<path d="M19 8v6M22 11h-6" />
+				{/if}
+			</svg>
+		{/snippet}
 
-			<!-- Always visible, public scoreboards included. -->
+		{#snippet footer()}
 			<div class="lang" role="group" aria-label={t('nav.language')}>
 				<button
 					class="lang-opt"
@@ -91,25 +112,26 @@
 					onclick={() => setLocale('en')}>EN</button
 				>
 			</div>
+		{/snippet}
+
+		<div class="shell-page">
+			<div class="container page">
+				{@render children()}
+			</div>
+
+			<footer class="foot">
+				<div class="container faint">{t('footer.tagline')}</div>
+			</footer>
 		</div>
-	</div>
-</header>
-
-<main class="container page">
-	{@render children()}
-</main>
-
-<footer class="foot">
-	<div class="container faint">{t('footer.tagline')}</div>
-</footer>
+	</AppShell>
+</div>
 
 <!-- One overlay for the whole app: it outlives navigations, so a toast fired just before a
      goto() is still on screen when the next page renders. -->
 <Toasts />
 
 <style>
-	/* Above .nav (z-index 50) — the header is sticky, so a bar underneath it would vanish
-	   under the backdrop blur. */
+	/* Above the shell — the progress bar is fixed to the viewport, the shell is not. */
 	.navbar-progress {
 		position: fixed;
 		top: 0;
@@ -151,20 +173,10 @@
 		}
 	}
 
-	.nav {
-		position: sticky;
-		top: 0;
-		z-index: 50;
-		background: rgba(12, 10, 18, 0.8);
-		backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--border-color);
+	.shell-host {
+		height: 100dvh;
 	}
-	.nav-inner {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		height: 64px;
-	}
+
 	.brand {
 		display: flex;
 		align-items: center;
@@ -187,22 +199,15 @@
 		font-size: 1.2rem;
 		letter-spacing: -0.02em;
 	}
-	.nav-right {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-	.nav-actions {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
 	.lang {
 		display: flex;
 		border: 1px solid var(--border-color);
 		border-radius: var(--radius-sm);
 		overflow: hidden;
 		background: var(--bg-elev);
+	}
+	:global(.plinth-shell.collapsed) .lang {
+		flex-direction: column;
 	}
 	.lang-opt {
 		background: none;
@@ -225,48 +230,20 @@
 		background: var(--surface-2);
 		color: var(--felt-bright);
 	}
-	.user {
-		font-size: 0.9rem;
-		color: var(--text-muted);
-		padding: 6px 4px;
-	}
-	.user:hover {
-		color: var(--felt-bright);
-	}
-	.explore-link {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--text-muted);
-		padding: 6px 4px;
-	}
-	.explore-link:hover {
-		color: var(--felt-bright);
+	.shell-page {
+		display: flex;
+		min-height: 100%;
+		flex-direction: column;
 	}
 	.page {
+		flex: 1;
 		padding-top: 32px;
 		padding-bottom: 64px;
-		flex: 1;
 	}
 	.foot {
 		border-top: 1px solid var(--border-soft);
 		padding: 20px 0;
 		font-size: 0.82rem;
 		text-align: center;
-	}
-	@media (max-width: 560px) {
-		.user {
-			display: none;
-		}
-		.nav-actions {
-			gap: 6px;
-		}
-		.nav-right {
-			gap: 8px;
-		}
-	}
-	@media (max-width: 400px) {
-		.brand-name {
-			display: none;
-		}
 	}
 </style>
