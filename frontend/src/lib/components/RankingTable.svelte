@@ -74,7 +74,7 @@
 	<!-- Desktop: table. The wrapper owns the horizontal overflow so a narrow card scrolls the
 	     grid internally instead of widening the document. -->
 	<div class="table-wrap">
-		<div class="table" role="table" aria-label={t('tab.ranking')}>
+		<div class="rank-table" role="table" aria-label={t('tab.ranking')}>
 			<div class="thead" role="row">
 				<span class="col-rank" role="columnheader">#</span>
 				{#each columns as c (c.key)}
@@ -147,7 +147,7 @@
 		overflow-x: auto;
 		-webkit-overflow-scrolling: touch;
 	}
-	.table {
+	.rank-table {
 		display: flex;
 		flex-direction: column;
 		/* Sum of the fixed columns + gaps (~486px) plus room for a name. Below this the wrapper
@@ -165,7 +165,7 @@
 		padding: 12px 6px;
 	}
 	.thead {
-		border-bottom: 1px solid var(--border);
+		border-bottom: 1px solid var(--border-color);
 	}
 	.th-cell {
 		display: flex;
@@ -234,7 +234,7 @@
 	}
 	.sb {
 		background: var(--surface-2);
-		border: 1px solid var(--border);
+		border: 1px solid var(--border-color);
 		color: var(--text-muted);
 		border-radius: 999px;
 		/* these are the only way to re-sort on a phone — give them a thumb-sized target */

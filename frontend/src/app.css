@@ -7,7 +7,7 @@
 	--bg-elev: #131020;
 	--surface: #181327;
 	--surface-2: #211a38;
-	--border: #2c2348;
+	--border-color: #2c2348;
 	--border-soft: #211a36;
 
 	--text: #ece9f5;
@@ -119,7 +119,7 @@ button {
 /* ---------- Card ---------- */
 .card {
 	background: linear-gradient(180deg, var(--surface), var(--bg-elev));
-	border: 1px solid var(--border);
+	border: 1px solid var(--border-color);
 	border-radius: var(--radius);
 	padding: 22px;
 	box-shadow: var(--shadow);
@@ -169,7 +169,7 @@ button {
 
 .btn-ghost {
 	background: transparent;
-	border-color: var(--border);
+	border-color: var(--border-color);
 	color: var(--text);
 }
 
@@ -214,7 +214,7 @@ textarea {
 	font-family: inherit;
 	font-size: 0.95rem;
 	background: var(--bg-elev);
-	border: 1px solid var(--border);
+	border: 1px solid var(--border-color);
 	color: var(--text);
 	padding: 10px 12px;
 	border-radius: var(--radius-sm);
@@ -240,7 +240,7 @@ textarea:focus {
 	padding: 3px 10px;
 	border-radius: 999px;
 	background: var(--surface-2);
-	border: 1px solid var(--border);
+	border: 1px solid var(--border-color);
 	color: var(--text-muted);
 }
 
@@ -325,7 +325,7 @@ textarea:focus {
 .spinner {
 	width: 22px;
 	height: 22px;
-	border: 2.5px solid var(--border);
+	border: 2.5px solid var(--border-color);
 	border-top-color: var(--felt-bright);
 	border-radius: 50%;
 	animation: spin 0.7s linear infinite;
@@ -394,7 +394,7 @@ textarea:focus-visible {
 	background: linear-gradient(
 		90deg,
 		var(--surface-2) 0%,
-		var(--border) 40%,
+		var(--border-color) 40%,
 		var(--surface-2) 80%
 	);
 	background-size: 300% 100%;

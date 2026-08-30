@@ -1,4 +1,6 @@
 <script>
+	import './layout.css';
+	import './legacy-preflight.css';
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -155,7 +157,7 @@
 		z-index: 50;
 		background: rgba(12, 10, 18, 0.8);
 		backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--border);
+		border-bottom: 1px solid var(--border-color);
 	}
 	.nav-inner {
 		display: flex;
@@ -197,7 +199,7 @@
 	}
 	.lang {
 		display: flex;
-		border: 1px solid var(--border);
+		border: 1px solid var(--border-color);
 		border-radius: var(--radius-sm);
 		overflow: hidden;
 		background: var(--bg-elev);

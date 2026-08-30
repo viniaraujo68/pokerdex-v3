@@ -96,7 +96,7 @@
 	.tabs {
 		display: flex;
 		gap: 4px;
-		border-bottom: 1px solid var(--border);
+		border-bottom: 1px solid var(--border-color);
 		overflow-x: auto;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none; /* Firefox */

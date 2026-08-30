@@ -141,7 +141,7 @@
 		display: flex;
 		flex-direction: column;
 		background: linear-gradient(180deg, var(--surface), var(--bg-elev));
-		border: 1px solid var(--border);
+		border: 1px solid var(--border-color);
 		border-radius: 16px;
 		box-shadow: var(--shadow-lg);
 		animation: pop 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.1);

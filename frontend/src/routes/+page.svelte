@@ -312,7 +312,7 @@
 		text-align: left;
 		padding: 12px 14px;
 		border-radius: 10px;
-		border: 1px solid var(--border);
+		border: 1px solid var(--border-color);
 		background: var(--bg-elev);
 		color: var(--text);
 		cursor: pointer;
