@@ -1,7 +1,7 @@
 /**
  * Fetch helper for the *universal* loads of the public pages (`/g/[slug]`, `/explore`).
  *
- * Separate from `$lib/api.js` on purpose:
+ * Separate from `$lib/http.js` on purpose:
  *  - it takes the load event's `fetch`, so SSR responses are inlined into the HTML and the
  *    browser doesn't refetch them during hydration (and `handleFetch` can re-point `/api`
  *    at the backend on the server side);

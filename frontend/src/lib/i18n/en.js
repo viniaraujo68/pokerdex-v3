@@ -257,6 +257,7 @@ export default {
 		'Ends your session on every device, including this one. You will need to log in again.',
 
 	// ---------- feedback (toasts) ----------
+	'toast.region': 'Notifications',
 	'toast.nightSaved': 'Night saved ✓',
 	'toast.nightDeleted': 'Night deleted',
 	'toast.settingsSaved': 'Settings saved ✓',

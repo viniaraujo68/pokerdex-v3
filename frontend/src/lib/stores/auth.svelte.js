@@ -1,4 +1,4 @@
-import { get, post } from '$lib/api.js';
+import { get, post } from '$lib/http.js';
 
 /** Shared auth state (Svelte 5 runes module). */
 export const auth = $state({

@@ -1,16 +1,16 @@
 <script>
 	import { tick } from 'svelte';
 	import { beforeNavigate } from '$app/navigation';
-	import { post, errorMessage } from '$lib/api.js';
+	import { post, errorMessage } from '$lib/http.js';
 	import {
 		validateMoney,
 		formatMoney,
 		formatSigned,
 		moneyClass,
 		centsToInput
-	} from '$lib/money.js';
+	} from '$lib/money.svelte.js';
 	import { localeTag, t } from '$lib/i18n.svelte.js';
-	import { toast, setBottomGap } from '$lib/toast.svelte.js';
+	import { toast } from '@viniaraujo68/plinth/toast';
 
 	/**
 	 * The "night sheet": date/place/roster as chips, one labelled money row per selected
@@ -292,9 +292,6 @@
 		fields[fields.indexOf(el) + 1]?.focus();
 	}
 
-	/** @type {HTMLDivElement|undefined} */
-	let barEl = $state();
-
 	// ---------- draft ----------
 	// Deliberately not reactive: the key a draft was saved under has to stay the key it's read
 	// back and cleared under, for the whole life of this form.
@@ -404,28 +401,6 @@
 		});
 	}
 
-	/**
-	 * Keep toasts clear of the sticky bar. What matters is the bar's distance from the *viewport
-	 * bottom*, not its height: sticky stops at the end of the form, so the bar can sit above the
-	 * fold — and it reflows to two rows below 420px. Hence measuring instead of a constant.
-	 */
-	$effect(() => {
-		const el = barEl;
-		if (!el) return;
-		const update = () => setBottomGap(window.innerHeight - el.getBoundingClientRect().top);
-		update();
-		const ro = new ResizeObserver(update);
-		ro.observe(el);
-		window.addEventListener('scroll', update, { passive: true });
-		window.addEventListener('resize', update);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener('scroll', update);
-			window.removeEventListener('resize', update);
-			setBottomGap(0);
-		};
-	});
-
 	beforeNavigate((nav) => {
 		if (!dirty || submitting) return;
 		if (!confirm(t('night.leaveConfirm'))) nav.cancel();
@@ -486,7 +461,7 @@
 
 <form class="pd-stack sheet" onsubmit={submit}>
 	{#if draftPrompt}
-		<div class="pd-toast pd-toast-warn draft">
+		<div class="pd-alert pd-alert-warn draft">
 			<span>{t('night.draftFound', { date: draftDate(draftPrompt.savedAt) })}</span>
 			<span class="row draft-actions">
 				<button type="button" class="pd-btn pd-btn-ghost pd-btn-sm" onclick={restoreDraft}>
@@ -745,11 +720,11 @@
 	{/if}
 
 	{#if formError}
-		<div class="pd-toast pd-toast-error">{formError}</div>
+		<div class="pd-alert pd-alert-error">{formError}</div>
 	{/if}
 
 	<!-- ---------- sticky bar ---------- -->
-	<div class="bar" bind:this={barEl}>
+	<div class="bar">
 		{#if confirming}
 			<div class="confirm" role="alert">
 				<span>{t('night.confirmUnbalanced', { amount: formatMoney(Math.abs(remainderCents)) })}</span>

@@ -1,7 +1,7 @@
 <script>
 	import { tick } from 'svelte';
 	import { auth } from '$lib/stores/auth.svelte.js';
-	import { get, post, errorMessage } from '$lib/api.js';
+	import { get, post, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
 	import Modal from '$lib/components/Modal.svelte';
 	import GroupCard from '$lib/components/GroupCard.svelte';
@@ -120,12 +120,12 @@
 		<button class="pd-btn pd-btn-primary" onclick={() => (showForm = !showForm)}>{t('home.newGroup')}</button>
 	</div>
 
-	{#if error}<div class="pd-toast pd-toast-error">{error}</div>{/if}
+	{#if error}<div class="pd-alert pd-alert-error">{error}</div>{/if}
 
 	{#if showForm}
 		<Modal title={t('group.create')} onclose={() => (showForm = false)}>
 			<form class="pd-stack" onsubmit={createGroup}>
-				{#if createError}<div class="pd-toast pd-toast-error">{createError}</div>{/if}
+				{#if createError}<div class="pd-alert pd-alert-error">{createError}</div>{/if}
 				<div class="field">
 					<label for="g-name">{t('group.nameLabel')}</label>
 					<!-- svelte-ignore a11y_autofocus -->

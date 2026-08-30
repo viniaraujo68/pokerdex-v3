@@ -301,29 +301,23 @@
 	color: var(--text-faint);
 }
 
-.pd-toast {
+.pd-alert {
 	padding: 12px 16px;
 	border-radius: var(--radius-sm);
 	font-size: 0.9rem;
 	font-weight: 500;
 }
 
-.pd-toast-error {
+.pd-alert-error {
 	background: var(--red-soft);
 	color: #ffb3ad;
 	border: 1px solid color-mix(in srgb, var(--red) 40%, transparent);
 }
 
-.pd-toast-warn {
+.pd-alert-warn {
 	background: color-mix(in srgb, var(--gold) 10%, transparent);
 	color: var(--gold);
 	border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
-}
-
-.pd-toast-success {
-	background: rgba(74, 222, 128, 0.1);
-	color: var(--green-pos);
-	border: 1px solid rgba(74, 222, 128, 0.3);
 }
 
 .spinner {

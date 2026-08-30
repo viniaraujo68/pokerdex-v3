@@ -1,5 +1,5 @@
 <script>
-	import { formatSigned, formatMoney, moneyClass } from '$lib/money.js';
+	import { formatSigned, formatMoney, moneyClass } from '$lib/money.svelte.js';
 	import { t } from '$lib/i18n.svelte.js';
 
 	/** @type {{ ranking: import('$lib/types.js').RankingRow[] }} */

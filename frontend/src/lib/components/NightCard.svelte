@@ -1,6 +1,6 @@
 <script>
-	import { formatMoney, formatSigned, moneyClass, centsToInput, validateMoney } from '$lib/money.js';
-	import { errorMessage } from '$lib/api.js';
+	import { formatMoney, formatSigned, moneyClass, centsToInput, validateMoney } from '$lib/money.svelte.js';
+	import { errorMessage } from '$lib/http.js';
 	import { settle } from '$lib/settle.js';
 	import { localeTag, t } from '$lib/i18n.svelte.js';
 

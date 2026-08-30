@@ -1,9 +1,9 @@
 <script>
 	import { auth, changePassword, logoutEverywhere } from '$lib/stores/auth.svelte.js';
-	import { errorMessage } from '$lib/api.js';
+	import { errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
 	import { t } from '$lib/i18n.svelte.js';
-	import { toast } from '$lib/toast.svelte.js';
+	import { toast } from '@viniaraujo68/plinth/toast';
 
 	// Client-side guard: this page has no server load, so bounce anonymous visitors to login
 	// once the auth probe has settled (auth.ready).

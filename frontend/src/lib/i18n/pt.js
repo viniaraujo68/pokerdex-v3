@@ -258,6 +258,7 @@ export default {
 		'Encerra a sessão em todos os aparelhos, inclusive neste. Você precisará entrar de novo.',
 
 	// ---------- feedback (toasts) ----------
+	'toast.region': 'Notificações',
 	'toast.nightSaved': 'Noite salva ✓',
 	'toast.nightDeleted': 'Noite excluída',
 	'toast.settingsSaved': 'Configurações salvas ✓',

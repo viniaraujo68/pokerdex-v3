@@ -1,9 +1,9 @@
 <script>
-	import { get, post, patch, del, errorMessage } from '$lib/api.js';
+	import { get, post, patch, del, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
 	import Modal from './Modal.svelte';
 	import { t } from '$lib/i18n.svelte.js';
-	import { toast } from '$lib/toast.svelte.js';
+	import { toast } from '@viniaraujo68/plinth/toast';
 	import { unbalancedBadgeEnabled, setUnbalancedBadge } from '$lib/prefs.svelte.js';
 
 	/**
@@ -204,7 +204,7 @@
 	const catalogMeta = $derived([{ kind: 'places', title: t('settings.places') }]);
 </script>
 
-{#if loadError}<div class="pd-toast pd-toast-error">{loadError}</div>{/if}
+{#if loadError}<div class="pd-alert pd-alert-error">{loadError}</div>{/if}
 
 <div class="settings pd-stack">
 	<!-- Group basics -->
@@ -244,7 +244,7 @@
 		{/if}
 
 		{#if visibilityDirty}
-			<p class="pd-toast pd-toast-warn small">{t('settings.linkUnsavedHint')}</p>
+			<p class="pd-alert pd-alert-warn small">{t('settings.linkUnsavedHint')}</p>
 		{/if}
 
 		{#if linkReady}
