@@ -96,8 +96,6 @@ export default {
 	// ---------- public scoreboard ----------
 	'public.badge': 'public scoreboard ♠',
 	'public.errorPrivate': 'This group is private. You need a link with a valid token.',
-	'public.cta': "Want to track your own group's nights?",
-	'public.ctaLink': 'Check out Pokerdex',
 	// meta description / Open Graph — this is the WhatsApp/Discord unfurl card
 	'public.metaCounts': '{nights} · {players}',
 	'public.metaTagline': 'Public scoreboard on Pokerdex ♠',
@@ -193,6 +191,13 @@ export default {
 	// ---------- stats ----------
 	'stats.evolution': 'Profit over time',
 	'chart.empty': 'No chart data yet.',
+	'chart.series': 'Players',
+	'chart.showAll': 'All',
+	'chart.others': {
+		one: 'Other ({count})',
+		other: 'Others ({count})'
+	},
+	'chart.allHidden': 'Pick a player to see the chart.',
 	'records.totalNights': 'Nights recorded',
 	'records.bestWin': 'Biggest win in a night',
 	'records.worstLoss': 'Biggest loss in a night',
