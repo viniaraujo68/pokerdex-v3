@@ -6,6 +6,7 @@
 	import EvolutionChart from '$lib/components/EvolutionChart.svelte';
 	import NightsList from '$lib/components/NightsList.svelte';
 	import TabBar from '$lib/components/TabBar.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import { t } from '$lib/i18n.svelte.js';
 
 	/** Fetched in `+page.js` so the scoreboard is in the server-rendered HTML. */
@@ -86,12 +87,15 @@
 </svelte:head>
 
 {#if error}
-	<div class="card empty">{error}</div>
+	<div class="card bg-base-100 px-5 py-12 text-center text-base-content/65">{error}</div>
 {:else if group}
 	<div class="head">
-		<span class="chip chip-felt">{t('public.badge')}</span>
-		<h1>{group.name}</h1>
-		{#if group.description}<p class="muted">{group.description}</p>{/if}
+		<span class="badge badge-soft badge-primary">
+			<Icon name="spade" />
+			{t('public.badge')}
+		</span>
+		<h1 class="text-[2rem] font-semibold tracking-tight">{group.name}</h1>
+		{#if group.description}<p class="text-base-content/80">{group.description}</p>{/if}
 	</div>
 
 	<TabBar
@@ -106,12 +110,12 @@
 
 	<div id="public-panel" role="tabpanel" aria-labelledby={`ptab-${tab}`}>
 		{#if tab === 'ranking'}
-			<div class="card"><RankingTable ranking={group.stats.ranking} /></div>
+			<div class="card bg-base-100 p-5"><RankingTable ranking={group.stats.ranking} /></div>
 		{:else if tab === 'stats'}
-			<div class="stack">
+			<div class="flex flex-col gap-4">
 				<Records records={group.stats.records} totalNights={group.stats.total_nights} />
-				<div class="card stack">
-					<h3>{t('stats.evolution')}</h3>
+				<div class="card flex flex-col gap-4 bg-base-100 p-5">
+					<h3 class="font-semibold">{t('stats.evolution')}</h3>
 					<EvolutionChart evolution={group.evolution} />
 				</div>
 			</div>
@@ -119,10 +123,6 @@
 			<NightsList nights={group.nights} />
 		{/if}
 	</div>
-
-	<p class="foot-cta faint">
-		{t('public.cta')} <a href="/" class="link">{t('public.ctaLink')}</a>
-	</p>
 {/if}
 
 <style>
@@ -133,13 +133,5 @@
 		align-items: center;
 		text-align: center;
 		margin-bottom: 24px;
-	}
-	.head h1 {
-		font-size: 2.2rem;
-	}
-	.foot-cta {
-		text-align: center;
-		margin-top: 40px;
-		font-size: 0.9rem;
 	}
 </style>
