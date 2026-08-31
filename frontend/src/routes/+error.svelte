@@ -37,7 +37,7 @@
 		border-radius: var(--radius-box);
 		background-color: var(--color-primary);
 		color: var(--color-primary-content);
-		font-size: 1.8rem;
+		font-size: 2.45rem;
 	}
 	.detail {
 		font-size: 0.82rem;

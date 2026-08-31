@@ -267,7 +267,7 @@
 		border-radius: var(--radius-box);
 		background-color: var(--color-primary);
 		color: var(--color-primary-content);
-		font-size: 2.4rem;
+		font-size: 3.1rem;
 		box-shadow: 0 18px 40px -18px color-mix(in oklch, var(--color-primary) 70%, transparent);
 	}
 	.hero-title {

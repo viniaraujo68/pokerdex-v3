@@ -287,7 +287,7 @@
 		border-radius: var(--radius-field);
 		background-color: var(--color-primary);
 		color: var(--color-primary-content);
-		font-size: 1.2rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 	}
 	.brand-name {
