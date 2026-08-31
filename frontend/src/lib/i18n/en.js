@@ -31,6 +31,10 @@ export default {
 	'nav.main': 'Main navigation',
 	'nav.collapse': 'Collapse the sidebar',
 	'nav.more': 'More',
+	'theme.system': 'System',
+	'theme.light': 'Light',
+	'theme.dark': 'Dark',
+	'theme.switchTo': 'Theme: {current}. Switch to {next}.',
 	'footer.tagline': "Pokerdex · your group's poker nights ♠ ♥ ♣ ♦",
 
 	// ---------- page titles (<title>, one per route) ----------
