@@ -1,5 +1,6 @@
 <script>
 	import { t } from '$lib/i18n.svelte.js';
+	import Icon from './Icon.svelte';
 
 	/**
 	 * One group in a card grid — the home dashboard and /explore render the same card, so it
@@ -25,9 +26,13 @@
 		<p class="text-sm text-base-content/80">{group.description}</p>
 	{/if}
 	<div class="mt-auto flex flex-wrap items-center gap-2">
-		<span class="badge badge-soft">🃏 {t('group.nightCount', { count: group.night_count })}</span>
 		<span class="badge badge-soft">
-			👥 {t('group.playerCount', { count: group.participant_count })}
+			<Icon name="nights" />
+			{t('group.nightCount', { count: group.night_count })}
+		</span>
+		<span class="badge badge-soft">
+			<Icon name="players" />
+			{t('group.playerCount', { count: group.participant_count })}
 		</span>
 	</div>
 </a>

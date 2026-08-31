@@ -2,6 +2,7 @@
 	import { get, errorMessage } from '$lib/http.js';
 	import { t } from '$lib/i18n.svelte.js';
 	import GroupCard from '$lib/components/GroupCard.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	/** @type {{ data: { groups: import('$lib/types.js').PublicGroupSummary[], status: number } }} */
 	let { data } = $props();
@@ -82,11 +83,10 @@
 </div>
 
 <div class="mb-6 flex flex-wrap items-center gap-3">
-	<input
-		class="input search"
-		placeholder={t('explore.searchPlaceholder')}
-		bind:value={query}
-	/>
+	<label class="input search-field">
+		<Icon name="search" class="size-4 opacity-55" />
+		<input placeholder={t('explore.searchPlaceholder')} bind:value={query} />
+	</label>
 	<!-- Subtle and inline: the results below stay put while this is up. The live region itself is
 	     always mounted so the text landing inside it is what gets announced. -->
 	<span class="flex min-h-5 flex-none items-center gap-2 text-[0.82rem]" role="status">
@@ -115,7 +115,7 @@
 
 <style>
 	/* Fixed basis: the input's width must not depend on whether the indicator is showing. */
-	.search {
+	.search-field {
 		flex: 0 0 min(420px, 100%);
 	}
 	.stale {

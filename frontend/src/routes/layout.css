@@ -64,7 +64,8 @@
 
 @layer components {
 	/* A ::after overlay grows the tappable box to 44×44 without touching the visual size, so tiny
-	   glyph buttons (✕, ↺, ✎) stay small while the finger target stops being a lottery. */
+	   icon-only buttons (remove, restore, edit) stay small while the finger target stops being a
+	   lottery. */
 	.hit-44 {
 		position: relative;
 	}

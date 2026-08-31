@@ -6,6 +6,7 @@
 	import EvolutionChart from '$lib/components/EvolutionChart.svelte';
 	import NightsList from '$lib/components/NightsList.svelte';
 	import TabBar from '$lib/components/TabBar.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import { t } from '$lib/i18n.svelte.js';
 
 	/** Fetched in `+page.js` so the scoreboard is in the server-rendered HTML. */
@@ -89,7 +90,10 @@
 	<div class="card bg-base-100 px-5 py-12 text-center text-base-content/65">{error}</div>
 {:else if group}
 	<div class="head">
-		<span class="badge badge-soft badge-primary">{t('public.badge')}</span>
+		<span class="badge badge-soft badge-primary">
+			<Icon name="spade" />
+			{t('public.badge')}
+		</span>
 		<h1 class="text-[2rem] font-semibold tracking-tight">{group.name}</h1>
 		{#if group.description}<p class="text-base-content/80">{group.description}</p>{/if}
 	</div>

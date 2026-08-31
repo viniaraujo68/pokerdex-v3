@@ -9,6 +9,7 @@
 	import NightsList from '$lib/components/NightsList.svelte';
 	import GroupSettings from '$lib/components/GroupSettings.svelte';
 	import TabBar from '$lib/components/TabBar.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import { Skeleton } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
 	import { toast } from '@viniaraujo68/plinth/toast';
@@ -193,6 +194,7 @@
 		{#if tab === 'nights'}
 			<!-- already where the button would take you: a plain chip, not a dead control -->
 			<span class="badge badge-soft badge-warning warn">
+				<Icon name="warning" />
 				{t('group.unbalanced', { count: unbalancedCount })}
 			</span>
 		{:else}
@@ -201,6 +203,7 @@
 				title={t('group.unbalancedGoTo')}
 				onclick={() => setTab('nights')}
 			>
+				<Icon name="warning" />
 				{t('group.unbalanced', { count: unbalancedCount })}
 			</button>
 		{/if}

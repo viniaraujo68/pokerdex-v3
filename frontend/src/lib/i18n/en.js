@@ -35,7 +35,7 @@ export default {
 	'theme.light': 'Light',
 	'theme.dark': 'Dark',
 	'theme.switchTo': 'Theme: {current}. Switch to {next}.',
-	'footer.tagline': "Pokerdex · your group's poker nights ♠ ♥ ♣ ♦",
+	'footer.tagline': "Pokerdex · your group's poker nights",
 
 	// ---------- page titles (<title>, one per route) ----------
 	'title.home': 'Pokerdex',
@@ -56,10 +56,10 @@ export default {
 	// ---------- home ----------
 	'home.tagline': "Your group's poker nights, all in one place.",
 	'home.myGroups': 'My groups',
-	'home.greeting': 'Hi, {name} 👋',
+	'home.greeting': 'Hi, {name}',
 	'home.newGroup': '+ New group',
-	'home.empty': "You don't have any groups yet. Create the first one! ♠",
-	'home.searchPlaceholder': '🔎 Search my groups…',
+	'home.empty': "You don't have any groups yet. Create the first one!",
+	'home.searchPlaceholder': 'Search my groups…',
 	'home.noResults': 'No group found for “{query}”.',
 
 	// ---------- group ----------
@@ -80,25 +80,25 @@ export default {
 	'group.nightCount': { one: '{count} night', other: '{count} nights' },
 	'group.playerCount': { one: '{count} player', other: '{count} players' },
 	'group.unbalanced': {
-		one: "⚠️ {count} night whose pot doesn't close",
-		other: "⚠️ {count} nights whose pots don't close"
+		one: "{count} night whose pot doesn't close",
+		other: "{count} nights whose pots don't close"
 	},
 	'group.unbalancedGoTo': 'Show in the Nights tab',
 
 	// ---------- explore ----------
 	'explore.title': 'Explore groups',
 	'explore.subtitle': 'Browse public scoreboards from other groups.',
-	'explore.searchPlaceholder': '🔎 Search public groups by name…',
+	'explore.searchPlaceholder': 'Search public groups by name…',
 	'explore.noResults': 'No public group for “{query}”.',
 	'explore.empty': 'No public groups yet.',
 	'explore.searching': 'Searching…',
 
 	// ---------- public scoreboard ----------
-	'public.badge': 'public scoreboard ♠',
+	'public.badge': 'public scoreboard',
 	'public.errorPrivate': 'This group is private. You need a link with a valid token.',
 	// meta description / Open Graph — this is the WhatsApp/Discord unfurl card
 	'public.metaCounts': '{nights} · {players}',
-	'public.metaTagline': 'Public scoreboard on Pokerdex ♠',
+	'public.metaTagline': 'Public scoreboard on Pokerdex',
 
 	// ---------- tabs ----------
 	'tab.nights': 'Nights',
@@ -114,17 +114,19 @@ export default {
 	'night.date': 'Date',
 	'night.today': 'Today',
 	'night.yesterday': 'Yesterday',
-	'night.otherDate': '📅 other',
+	'night.otherDate': 'other',
 	'night.place': 'Place',
 	'night.noPlace': 'no place',
 	'night.placePlaceholder': 'Place name',
 	'night.addPlace': '+ Place',
 	'night.whoPlayed': 'Who played?',
-	'night.sameTable': '↺ same table as last night',
+	'night.sameTable': 'same table as last night',
 	'night.atTable': { one: '{count} at the table', other: '{count} at the table' },
 	'night.noPlayersYet': 'No players yet — add the first one below.',
 	'night.amounts': 'Amounts',
-	'night.standardBuyIn': 'standard buy-in {amount}',
+	'night.defaultBuyIn': 'Default buy-in',
+	'night.defaultBuyInHint':
+		'Fills players you add and any blank row. Not saved with the night.',
 	'night.rebuyTitle': 'One more buy-in of {amount}',
 	'night.rebuyMultiple': '{count}× · {amount}',
 	'night.invalidAmount': 'Invalid amount',
@@ -144,7 +146,7 @@ export default {
 	'night.buyInCol': 'Buy-in',
 	'night.cashOutCol': 'Cash-out',
 	'night.newPlayer': 'New player…',
-	'night.potMismatch': "⚠️ The pot doesn't add up — off by {amount}",
+	'night.potMismatch': "The pot doesn't add up — off by {amount}",
 	'night.save': 'Save night',
 	'night.saving': 'Saving…',
 	'night.buyInInline': 'buy-in {amount}',
@@ -158,7 +160,7 @@ export default {
 	'card.quickEditFailed': 'Could not save: {message}',
 
 	// ---------- nights list / filters ----------
-	'nights.empty': 'No nights recorded yet. 🃏',
+	'nights.empty': 'No nights recorded yet.',
 	'nights.noneWithFilters': 'No nights match these filters.',
 	'nights.showMore': 'Show more ({remaining} left)',
 	'filters.place': 'Place',
@@ -209,9 +211,9 @@ export default {
 	'settings.publicLinkHint': 'Anyone with this link can see the scoreboard (read-only).',
 	'settings.privateLinkHint':
 		'Private group: the link only works with the token below. Rotate the token to revoke old links.',
-	'settings.rotateToken': '🔄 Generate new token',
+	'settings.rotateToken': 'Generate new token',
 	'settings.noLinkYet': "This group is private and doesn't have a share link yet.",
-	'settings.generateLink': '🔗 Generate link',
+	'settings.generateLink': 'Generate link',
 	'settings.linkUnsavedHint':
 		'Visibility changed and is not saved yet — the link below reflects the saved state.',
 	'settings.options': 'Preferences for this group',
@@ -222,8 +224,8 @@ export default {
 	'settings.noPlayers': 'No players yet.',
 	'settings.reactivate': 'Reactivate {name}',
 	'settings.inactiveHint':
-		'Inactive players stay out of new nights but keep their history. Tap ↺ to reactivate.',
-	'settings.places': '📍 Places',
+		'Inactive players stay out of new nights but keep their history. Tap the restore button on a name to bring it back.',
+	'settings.places': 'Places',
 	'settings.addPlaceholder': 'Add…',
 	'settings.dangerZone': 'Danger zone',
 	'settings.deleteWarningPre': 'Deleting the group',
@@ -258,7 +260,7 @@ export default {
 	'account.newPassword': 'New password',
 	'account.confirmPassword': 'Confirm new password',
 	'account.passwordMismatch': 'The passwords do not match.',
-	'account.passwordChanged': 'Password changed ✓',
+	'account.passwordChanged': 'Password changed',
 	'account.sessions': 'Sessions',
 	'account.logoutAll': 'Log out everywhere',
 	'account.logoutAllHint':
@@ -266,15 +268,15 @@ export default {
 
 	// ---------- feedback (toasts) ----------
 	'toast.region': 'Notifications',
-	'toast.nightSaved': 'Night saved ✓',
+	'toast.nightSaved': 'Night saved',
 	'toast.nightDeleted': 'Night deleted',
-	'toast.settingsSaved': 'Settings saved ✓',
+	'toast.settingsSaved': 'Settings saved',
 	'toast.participantAdded': 'Player added: {name}',
 	'toast.participantReactivated': 'Player reactivated: {name}',
 	'toast.placeAdded': 'Place added: {name}',
-	'toast.linkCopied': 'Link copied ✓',
+	'toast.linkCopied': 'Link copied',
 	'toast.copyFailed': 'Could not copy the link — copy it manually.',
-	'toast.linkGenerated': 'Share link generated ✓',
+	'toast.linkGenerated': 'Share link generated',
 	'toast.tokenRotated': 'New token generated — old links are revoked.',
 
 	// ---------- errors ----------
