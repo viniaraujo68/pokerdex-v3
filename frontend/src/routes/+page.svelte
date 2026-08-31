@@ -4,6 +4,7 @@
 	import { get, post, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
 	import { Modal, Skeleton } from '@viniaraujo68/plinth/components';
+	import BrandMark from '$lib/components/BrandMark.svelte';
 	import GroupCard from '$lib/components/GroupCard.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import { t } from '$lib/i18n.svelte.js';
@@ -104,7 +105,7 @@
 {:else if !auth.user}
 	<!-- Landing -->
 	<section class="hero">
-		<span class="logo-big"><Icon name="spade" /></span>
+		<span class="logo-big"><BrandMark /></span>
 		<h1 class="hero-title">Pokerdex</h1>
 		<p class="text-lg text-base-content/80">{t('home.tagline')}</p>
 		<div class="mt-2.5 flex items-center gap-3">

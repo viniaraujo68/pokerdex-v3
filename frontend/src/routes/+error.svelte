@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { t } from '$lib/i18n.svelte.js';
-	import Icon from '$lib/components/Icon.svelte';
+	import BrandMark from '$lib/components/BrandMark.svelte';
 
 	// 404 is the one status worth its own copy — "not found" and "we broke" call for different
 	// next steps. Everything else shares the generic wording plus the status chip.
@@ -15,7 +15,7 @@
 </svelte:head>
 
 <div class="errbox card mx-auto mt-[8vh] max-w-[520px] items-center gap-3 bg-base-100 px-6 py-10">
-	<span class="glyph"><Icon name="spade" /></span>
+	<span class="glyph"><BrandMark /></span>
 	<span class="badge badge-soft">{t('error.http', { status: $page.status })}</span>
 	<h1 class="text-2xl font-semibold tracking-tight">{title}</h1>
 	<p class="text-base-content/80">{body}</p>
