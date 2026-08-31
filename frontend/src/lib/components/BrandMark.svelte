@@ -5,7 +5,7 @@
 
 <svg
 	class={className}
-	viewBox="0 0 32 32"
+	viewBox="5.6 2.4 20.8 27.2"
 	fill="currentColor"
 	role={label ? 'img' : undefined}
 	aria-label={label}
