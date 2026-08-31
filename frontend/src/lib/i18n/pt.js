@@ -2,6 +2,7 @@
 export default {
 	// ---------- comuns ----------
 	'common.cancel': 'Cancelar',
+	'common.confirm': 'Confirmar',
 	'common.save': 'Salvar',
 	'common.edit': 'Editar',
 	'common.delete': 'Excluir',
@@ -13,6 +14,7 @@ export default {
 	'common.retry': 'Tentar de novo',
 	'common.name': 'Nome',
 	'common.description': 'Descrição',
+	'common.typeToConfirm': 'Digite {value} para confirmar',
 	'common.optional': '(opcional)',
 	'common.players': 'Participantes',
 	'common.emptyList': 'vazio',
@@ -150,7 +152,9 @@ export default {
 	'night.saving': 'Salvando…',
 	'night.buyInInline': 'buy-in {amount}',
 	'night.cashOutInline': 'saiu {amount}',
-	'night.deleteConfirm': 'Excluir esta noite? As estatísticas serão recalculadas.',
+	'night.deleteTitle': 'Excluir a noite de {date}?',
+	'night.deleteBody':
+		'A noite e todos os resultados dela são apagados, e as estatísticas do grupo são recalculadas.',
 	'night.deleteFailed': 'Não foi possível excluir a noite: {message}',
 
 	// ---------- card da noite ----------
@@ -230,11 +234,8 @@ export default {
 	'settings.deleteWarningPost':
 		'todas as noites, participantes e locais. Não dá pra desfazer.',
 	'settings.deleteGroup': 'Excluir grupo',
-	'settings.deleteConfirmPre': 'Isso vai apagar',
-	'settings.deleteConfirmPost':
-		'e tudo dentro dele para sempre. Para confirmar, digite o nome do grupo abaixo:',
+	'settings.deleteConfirmBody': 'Isso vai apagar {name} e tudo dentro dele para sempre.',
 	'settings.deletePermanently': 'Excluir permanentemente',
-	'settings.deleting': 'Excluindo…',
 
 	// ---------- autenticação ----------
 	'auth.login': 'Entrar',

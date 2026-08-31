@@ -13,6 +13,8 @@
 	import { Skeleton } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
 	import { toast } from '@viniaraujo68/plinth/toast';
+	import { confirm } from '@viniaraujo68/plinth/confirm';
+	import { formatNightDate } from '$lib/dates.js';
 	import { loginUrl } from '$lib/nav.js';
 	import { unbalancedBadgeEnabled } from '$lib/prefs.svelte.js';
 
@@ -136,8 +138,13 @@
 
 	/** @param {import('$lib/types.js').Night} night */
 	async function deleteNight(night) {
-		// Still a native confirm: the destructive-action dialog is the next wave's job.
-		if (!confirm(t('night.deleteConfirm'))) return;
+		const confirmed = await confirm({
+			title: t('night.deleteTitle', { date: formatNightDate(night.date) }),
+			description: t('night.deleteBody'),
+			confirmLabel: t('common.delete'),
+			danger: true
+		});
+		if (!confirmed) return;
 		try {
 			await del(`/groups/${groupId}/nights/${night.id}`);
 		} catch (e) {

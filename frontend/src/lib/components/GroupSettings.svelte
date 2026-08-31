@@ -1,7 +1,8 @@
 <script>
 	import { get, post, patch, del, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
-	import { Modal, Select } from '@viniaraujo68/plinth/components';
+	import { Select } from '@viniaraujo68/plinth/components';
+	import { confirm } from '@viniaraujo68/plinth/confirm';
 	import { t } from '$lib/i18n.svelte.js';
 	import Icon from './Icon.svelte';
 	import { toast } from '@viniaraujo68/plinth/toast';
@@ -23,22 +24,20 @@
 	/** Only the initial load gets an inline message — with no catalog, empty cards would lie. */
 	let loadError = $state('');
 
-	// delete-group flow (double confirmation: type the group name)
-	let deleteModal = $state(
-		/** @type {import('@viniaraujo68/plinth/components').Modal|undefined} */ (undefined)
-	);
-	let confirmName = $state('');
-	let deleting = $state(false);
-
 	async function deleteGroup() {
-		deleting = true;
+		const confirmed = await confirm({
+			title: t('settings.deleteGroup'),
+			description: t('settings.deleteConfirmBody', { name: group.name }),
+			confirmLabel: t('settings.deletePermanently'),
+			challenge: group.name,
+			danger: true
+		});
+		if (!confirmed) return;
 		try {
 			await del(`/groups/${group.id}`);
 			goto('/');
 		} catch (e) {
 			toast.error(errorMessage(e));
-			deleting = false;
-			deleteModal?.close();
 		}
 	}
 
@@ -387,49 +386,12 @@
 			{t('settings.deleteWarningPost')}
 		</p>
 		<div>
-			<button
-				class="btn btn-sm btn-soft btn-error"
-				onclick={() => {
-					confirmName = '';
-					deleteModal?.show();
-				}}
-			>
+			<button class="btn btn-sm btn-soft btn-error" onclick={deleteGroup}>
 				{t('settings.deleteGroup')}
 			</button>
 		</div>
 	</div>
 </div>
-
-<Modal
-	bind:this={deleteModal}
-	title={t('settings.deleteGroup')}
-	closeLabel={t('common.close')}
-	class="max-w-[460px]"
->
-	<div class="flex flex-col gap-4">
-		<p class="text-base-content/80">
-			{t('settings.deleteConfirmPre')} <strong>{group.name}</strong>
-			{t('settings.deleteConfirmPost')}
-		</p>
-		<input
-			class="input w-full"
-			placeholder={group.name}
-			bind:value={confirmName}
-			onkeydown={(e) => e.key === 'Enter' && confirmName === group.name && deleteGroup()}
-		/>
-	</div>
-
-	{#snippet footer()}
-		<button class="btn" onclick={() => deleteModal?.close()}>{t('common.cancel')}</button>
-		<button
-			class="btn btn-error"
-			disabled={confirmName !== group.name || deleting}
-			onclick={deleteGroup}
-		>
-			{deleting ? t('settings.deleting') : t('settings.deletePermanently')}
-		</button>
-	{/snippet}
-</Modal>
 
 <style>
 	.slabel {

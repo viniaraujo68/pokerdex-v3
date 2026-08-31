@@ -15,6 +15,7 @@
 	} from '@viniaraujo68/plinth/theme';
 	import { setUserContext } from '@viniaraujo68/plinth/user';
 	import { Toaster } from '@viniaraujo68/plinth/toast';
+	import { Confirmer } from '@viniaraujo68/plinth/confirm';
 	import { routes } from '$lib/routes.js';
 	import { user } from '$lib/user.js';
 	import { auth, loadUser } from '$lib/stores/auth.svelte.js';
@@ -188,6 +189,13 @@
 	position="top-end"
 	label={t('toast.region')}
 	dismissLabel={t('common.close')}
+/>
+
+<Confirmer
+	confirmLabel={t('common.confirm')}
+	cancelLabel={t('common.cancel')}
+	closeLabel={t('common.close')}
+	challengeLabel={(value) => t('common.typeToConfirm', { value })}
 />
 
 <style>
