@@ -76,33 +76,37 @@
 	<meta name="description" content={t('explore.subtitle')} />
 </svelte:head>
 
-<div class="head">
-	<h1>{t('explore.title')}</h1>
-	<p class="muted">{t('explore.subtitle')}</p>
+<div class="mb-5">
+	<h1 class="text-2xl font-semibold tracking-tight">{t('explore.title')}</h1>
+	<p class="mt-1 text-base-content/80">{t('explore.subtitle')}</p>
 </div>
 
-<div class="searchbar">
-	<input class="search" placeholder={t('explore.searchPlaceholder')} bind:value={query} />
+<div class="mb-6 flex flex-wrap items-center gap-3">
+	<input
+		class="input search"
+		placeholder={t('explore.searchPlaceholder')}
+		bind:value={query}
+	/>
 	<!-- Subtle and inline: the results below stay put while this is up. The live region itself is
 	     always mounted so the text landing inside it is what gets announced. -->
-	<span class="searching" role="status">
+	<span class="flex min-h-5 flex-none items-center gap-2 text-[0.82rem]" role="status">
 		{#if searching}
-			<span class="spinner spinner-sm" aria-hidden="true"></span>
-			<span class="faint">{t('explore.searching')}</span>
+			<span class="loading loading-spinner loading-xs" aria-hidden="true"></span>
+			<span class="text-base-content/65">{t('explore.searching')}</span>
 		{/if}
 	</span>
 </div>
 
 {#if error}
-	<div class="pd-alert pd-alert-error">{error}</div>
+	<div class="alert alert-soft alert-error">{error}</div>
 {:else if results.length === 0}
-	<div class="pd-card empty">
+	<div class="card bg-base-100 px-5 py-12 text-center text-base-content/65">
 		{shownQuery.trim() ? t('explore.noResults', { query: shownQuery }) : t('explore.empty')}
 	</div>
 {:else}
 	<!-- `stale` only dims: replacing the grid with a spinner on every keystroke made the page
 	     flash and lose the user's place. -->
-	<div class="groups pd-grid" class:stale={searching}>
+	<div class="groups grid gap-4" class:stale={searching}>
 		{#each results as g (g.slug)}
 			<GroupCard group={g} href={`/g/${g.slug}`} />
 		{/each}
@@ -110,32 +114,9 @@
 {/if}
 
 <style>
-	.head {
-		margin-bottom: 20px;
-	}
-	.searchbar {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		flex-wrap: wrap;
-		margin-bottom: 24px;
-	}
 	/* Fixed basis: the input's width must not depend on whether the indicator is showing. */
 	.search {
 		flex: 0 0 min(420px, 100%);
-	}
-	.searching {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		min-height: 20px;
-		font-size: 0.82rem;
-		flex: 0 0 auto;
-	}
-	.spinner-sm {
-		width: 14px;
-		height: 14px;
-		border-width: 2px;
 	}
 	.stale {
 		opacity: 0.55;

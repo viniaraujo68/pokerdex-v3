@@ -1,12 +1,18 @@
 <script>
 	import './layout.css';
-	import './legacy-preflight.css';
-	import '../app.css';
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { navigating } from '$app/stores';
 	import { page } from '$app/state';
 	import { RoutingContext, setRoutingContext } from '@viniaraujo68/plinth/routing';
 	import { AppShell } from '@viniaraujo68/plinth/shell';
+	import {
+		readThemePreference,
+		setThemeContext,
+		ThemeContext,
+		ThemeController,
+		ThemeToggle
+	} from '@viniaraujo68/plinth/theme';
 	import { setUserContext } from '@viniaraujo68/plinth/user';
 	import { Toaster } from '@viniaraujo68/plinth/toast';
 	import { routes } from '$lib/routes.js';
@@ -18,6 +24,11 @@
 
 	setRoutingContext(new RoutingContext(routes, page));
 	setUserContext(user);
+
+	/* The cookie is read on the client only: the authenticated routes are `ssr = false`, so there
+	   is no server render to seed. The first paint is already correct anyway — `hooks.server.js`
+	   stamps `data-theme` on `<html>` from the same cookie before the shell leaves the server. */
+	setThemeContext(new ThemeContext(browser ? readThemePreference() : 'system'));
 
 	onMount(loadUser);
 
@@ -42,6 +53,9 @@
 		return () => clearTimeout(timer);
 	});
 </script>
+
+<!-- Exactly once, unconditionally: this hidden checkbox is what the theme stylesheet keys on. -->
+<ThemeController />
 
 <!-- Progress, not percentage: SvelteKit exposes no load fraction, so this is an indeterminate
      sweep. aria-hidden because `navigating` is not something to narrate on every click; the
@@ -78,7 +92,7 @@
 
 {#snippet tagline()}
 	<footer class="foot">
-		<div class="container faint">{t('footer.tagline')}</div>
+		<div class="container text-base-content/65">{t('footer.tagline')}</div>
 	</footer>
 {/snippet}
 
@@ -89,9 +103,10 @@
 
 			<div class="public-nav-right">
 				{#if auth.ready && !auth.user}
-					<a href="/register" class="pd-btn pd-btn-primary pd-btn-sm">{t('nav.register')}</a>
+					<a href="/register" class="btn btn-sm btn-primary">{t('nav.register')}</a>
 				{/if}
 				{@render langToggle()}
+				<ThemeToggle iconOnly />
 			</div>
 		</div>
 	</header>
@@ -147,7 +162,10 @@
 			{/snippet}
 
 			{#snippet footer()}
-				{@render langToggle()}
+				<div class="shell-controls">
+					{@render langToggle()}
+					<ThemeToggle iconOnly />
+				</div>
 			{/snippet}
 
 			<div class="shell-page">
@@ -171,6 +189,13 @@
 />
 
 <style>
+	.container {
+		width: 100%;
+		max-width: 1080px;
+		margin: 0 auto;
+		padding: 0 20px;
+	}
+
 	/* Above the shell — the progress bar is fixed to the viewport, the shell is not. */
 	.navbar-progress {
 		position: fixed;
@@ -190,7 +215,7 @@
 		width: 40%;
 		height: 100%;
 		border-radius: 0 2px 2px 0;
-		background: linear-gradient(90deg, transparent, var(--felt-bright));
+		background: linear-gradient(90deg, transparent, var(--color-primary));
 		animation: navbar-progress-sweep 1.1s ease-in-out infinite;
 	}
 	@keyframes navbar-progress-sweep {
@@ -202,14 +227,14 @@
 		}
 	}
 
-	/* app.css clamps every animation to 0.01ms under reduced motion, which would leave this
-	   parked off-screen and invisible. Same call as the .spinner there: swap the motion for a
-	   static state rather than losing the indicator — a calm full-width bar. */
+	/* layout.css clamps every animation to 0.01ms under reduced motion, which would leave this
+	   parked off-screen and invisible. Swap the motion for a static state rather than losing the
+	   indicator — a calm full-width bar. */
 	@media (prefers-reduced-motion: reduce) {
 		.navbar-progress span {
 			width: 100%;
 			animation: none !important;
-			background: var(--felt-bright);
+			background: var(--color-primary);
 		}
 	}
 
@@ -221,9 +246,9 @@
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: rgba(12, 10, 18, 0.8);
+		background: color-mix(in oklch, var(--color-base-100) 82%, transparent);
 		backdrop-filter: blur(12px);
-		border-bottom: 1px solid var(--border-color);
+		border-bottom: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
 	}
 	.public-nav-inner {
 		display: flex;
@@ -257,24 +282,36 @@
 		place-items: center;
 		width: 34px;
 		height: 34px;
-		border-radius: 9px;
-		background: linear-gradient(180deg, var(--felt-bright), var(--felt-deep));
-		color: #ffffff;
+		border-radius: var(--radius-field);
+		background-color: var(--color-primary);
+		color: var(--color-primary-content);
 		font-size: 1.2rem;
-		font-weight: 800;
+		font-weight: 700;
 	}
 	.brand-name {
-		font-family: var(--font-display);
-		font-weight: 800;
-		font-size: 1.2rem;
+		font-weight: 700;
+		font-size: 1.15rem;
 		letter-spacing: -0.02em;
 	}
+
+	.shell-controls {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	:global(.plinth-shell.collapsed .shell-sidebar) .shell-controls {
+		flex-direction: column;
+	}
+	:global(.plinth-sheet) .shell-controls {
+		flex-direction: row;
+	}
+
 	.lang {
 		display: flex;
-		border: 1px solid var(--border-color);
-		border-radius: var(--radius-sm);
+		border: 1px solid color-mix(in oklch, var(--color-base-content) 15%, transparent);
+		border-radius: var(--radius-field);
 		overflow: hidden;
-		background: var(--bg-elev);
+		background: var(--color-base-100);
 	}
 	:global(.plinth-shell.collapsed .shell-sidebar) .lang {
 		flex-direction: column;
@@ -289,10 +326,10 @@
 	.lang-opt {
 		background: none;
 		border: none;
-		color: var(--text-faint);
-		font-family: var(--font);
+		color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
+		font-family: inherit;
 		font-size: 0.72rem;
-		font-weight: 700;
+		font-weight: 600;
 		letter-spacing: 0.04em;
 		padding: 6px 9px;
 		cursor: pointer;
@@ -301,12 +338,13 @@
 			color 0.12s ease;
 	}
 	.lang-opt:hover:not(.sel) {
-		color: var(--text);
+		color: var(--color-base-content);
 	}
 	.lang-opt.sel {
-		background: var(--surface-2);
-		color: var(--felt-bright);
+		background: color-mix(in oklch, var(--color-primary) 14%, transparent);
+		color: var(--ink-primary);
 	}
+
 	.shell-page {
 		display: flex;
 		min-height: 100%;
@@ -318,7 +356,7 @@
 		padding-bottom: 64px;
 	}
 	.foot {
-		border-top: 1px solid var(--border-soft);
+		border-top: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
 		padding: 20px 0;
 		font-size: 0.82rem;
 		text-align: center;

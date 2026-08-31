@@ -459,15 +459,15 @@
 
 <svelte:window onbeforeunload={onBeforeUnload} />
 
-<form class="pd-stack sheet" onsubmit={submit}>
+<form class="sheet flex flex-col gap-4" onsubmit={submit}>
 	{#if draftPrompt}
-		<div class="pd-alert pd-alert-warn draft">
+		<div class="alert alert-soft alert-warning draft">
 			<span>{t('night.draftFound', { date: draftDate(draftPrompt.savedAt) })}</span>
-			<span class="row draft-actions">
-				<button type="button" class="pd-btn pd-btn-ghost pd-btn-sm" onclick={restoreDraft}>
+			<span class="flex items-center gap-2">
+				<button type="button" class="btn btn-sm" onclick={restoreDraft}>
 					{t('night.draftRestore')}
 				</button>
-				<button type="button" class="pd-btn pd-btn-ghost pd-btn-sm" onclick={discardDraft}>
+				<button type="button" class="btn btn-sm" onclick={discardDraft}>
 					{t('night.draftDiscard')}
 				</button>
 			</span>
@@ -475,30 +475,33 @@
 	{/if}
 
 	<!-- ---------- when / where ---------- -->
-	<div class="pd-card pd-stack">
+	<div class="card flex flex-col gap-4 bg-base-100 p-5">
 		<div class="block">
 			<span class="blabel" id="date-label">{t('night.date')}</span>
 			<div class="chips" role="group" aria-labelledby="date-label">
 				<button
 					type="button"
-					class="chip tap"
-					class:on={!showDateInput && date === today}
+					class="btn btn-sm tap"
+					class:btn-soft={!showDateInput && date === today}
+					class:btn-primary={!showDateInput && date === today}
 					onclick={() => pickDate(today)}
 				>
 					{t('night.today')}
 				</button>
 				<button
 					type="button"
-					class="chip tap"
-					class:on={!showDateInput && date === yesterday}
+					class="btn btn-sm tap"
+					class:btn-soft={!showDateInput && date === yesterday}
+					class:btn-primary={!showDateInput && date === yesterday}
 					onclick={() => pickDate(yesterday)}
 				>
 					{t('night.yesterday')}
 				</button>
 				<button
 					type="button"
-					class="chip tap"
-					class:on={showDateInput}
+					class="btn btn-sm tap"
+					class:btn-soft={showDateInput}
+					class:btn-primary={showDateInput}
 					onclick={() => (showDateInput = true)}
 				>
 					{t('night.otherDate')}
@@ -507,6 +510,7 @@
 			{#if showDateInput}
 				<input
 					id="date"
+					class="input w-full"
 					type="date"
 					aria-label={t('night.date')}
 					bind:value={date}
@@ -521,8 +525,9 @@
 			<div class="chips" role="group" aria-labelledby="place-label">
 				<button
 					type="button"
-					class="chip tap"
-					class:on={place_id === ''}
+					class="btn btn-sm tap"
+					class:btn-soft={place_id === ''}
+					class:btn-primary={place_id === ''}
 					onclick={() => (place_id = '')}
 				>
 					{t('night.noPlace')}
@@ -530,15 +535,20 @@
 				{#each places as p (p.id)}
 					<button
 						type="button"
-						class="chip tap"
-						class:on={Number(place_id) === p.id}
+						class="btn btn-sm tap"
+						class:btn-soft={Number(place_id) === p.id}
+						class:btn-primary={Number(place_id) === p.id}
 						onclick={() => (place_id = p.id)}
 					>
 						📍 {p.name}
 					</button>
 				{/each}
 				{#if !showNewPlace}
-					<button type="button" class="chip tap ghost" onclick={() => (showNewPlace = true)}>
+					<button
+						type="button"
+						class="btn btn-sm btn-dash tap"
+						onclick={() => (showNewPlace = true)}
+					>
 						{t('night.addPlace')}
 					</button>
 				{/if}
@@ -546,22 +556,18 @@
 			{#if showNewPlace}
 				<div class="inline-add">
 					<input
+						class="input w-full"
 						aria-label={t('night.placePlaceholder')}
 						placeholder={t('night.placePlaceholder')}
 						bind:value={newPlace}
 						onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addPlace())}
 					/>
-					<button
-						type="button"
-						class="pd-btn pd-btn-primary pd-btn-sm"
-						disabled={addingPlace}
-						onclick={addPlace}
-					>
+					<button type="button" class="btn btn-sm btn-primary" disabled={addingPlace} onclick={addPlace}>
 						{t('common.save')}
 					</button>
 					<button
 						type="button"
-						class="pd-btn pd-btn-ghost pd-btn-sm"
+						class="btn btn-sm"
 						aria-label={t('common.cancel')}
 						onclick={() => (showNewPlace = false)}
 					>
@@ -573,16 +579,22 @@
 	</div>
 
 	<!-- ---------- roster ---------- -->
-	<div class="pd-card pd-stack">
-		<div class="spread">
+	<div class="card flex flex-col gap-4 bg-base-100 p-5">
+		<div class="flex items-center justify-between gap-3">
 			<span class="blabel" id="roster-label">{t('night.whoPlayed')}</span>
 			{#if rows.length}
-				<span class="faint count">{t('night.atTable', { count: rows.length })}</span>
+				<span class="text-[0.8rem] text-base-content/65">
+					{t('night.atTable', { count: rows.length })}
+				</span>
 			{/if}
 		</div>
 
 		{#if lastLineupMissing.length}
-			<button type="button" class="chip tap same-table" onclick={sameTableAsLastNight}>
+			<button
+				type="button"
+				class="btn btn-sm btn-soft btn-warning tap same-table"
+				onclick={sameTableAsLastNight}
+			>
 				{t('night.sameTable')}
 			</button>
 		{/if}
@@ -592,8 +604,9 @@
 				{#each rosterChips as p (p.id)}
 					<button
 						type="button"
-						class="chip tap"
-						class:on={selectedIds.has(p.id)}
+						class="btn btn-sm tap"
+						class:btn-soft={selectedIds.has(p.id)}
+						class:btn-primary={selectedIds.has(p.id)}
 						aria-pressed={selectedIds.has(p.id)}
 						onclick={() => togglePlayer(p.id)}
 					>
@@ -602,22 +615,18 @@
 				{/each}
 			</div>
 		{:else}
-			<p class="faint hint">{t('night.noPlayersYet')}</p>
+			<p class="m-0 text-[0.85rem] text-base-content/65">{t('night.noPlayersYet')}</p>
 		{/if}
 
 		<div class="inline-add">
 			<input
+				class="input w-full"
 				aria-label={t('night.newPlayer')}
 				placeholder={t('night.newPlayer')}
 				bind:value={newParticipant}
 				onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addParticipant())}
 			/>
-			<button
-				type="button"
-				class="pd-btn pd-btn-ghost pd-btn-sm"
-				disabled={addingParticipant}
-				onclick={addParticipant}
-			>
+			<button type="button" class="btn btn-sm" disabled={addingParticipant} onclick={addParticipant}>
 				{t('common.add')}
 			</button>
 		</div>
@@ -626,11 +635,11 @@
 	<!-- ---------- money ---------- -->
 	{#if rows.length}
 		<!-- card-tight: every horizontal pixel goes to the amount inputs at 375px -->
-		<div class="pd-card pd-card-tight pd-stack money-card">
-			<div class="spread">
+		<div class="card flex flex-col gap-4 bg-base-100 p-4">
+			<div class="flex items-center justify-between gap-3">
 				<span class="blabel">{t('night.amounts')}</span>
 				{#if defaultBuyIn}
-					<span class="faint count">
+					<span class="text-[0.8rem] text-base-content/65">
 						{t('night.standardBuyIn', { amount: formatMoney(defaultBuyIn) })}
 					</span>
 				{/if}
@@ -656,11 +665,12 @@
 						</div>
 
 						<div class="mfields">
-							<div class="field">
-								<label for={`bi-${row.participant_id}`}>{t('night.buyInCol')}</label>
+							<div class="flex flex-col gap-1.5">
+								<label class="mlabel" for={`bi-${row.participant_id}`}>{t('night.buyInCol')}</label>
 								<div class="amount">
 									<input
 										id={`bi-${row.participant_id}`}
+										class="input w-full"
 										inputmode="decimal"
 										class:invalid={bad(row.buy_in)}
 										aria-invalid={bad(row.buy_in)}
@@ -672,7 +682,7 @@
 									{#if defaultBuyIn}
 										<button
 											type="button"
-											class="plus"
+											class="btn plus"
 											disabled={bad(row.buy_in)}
 											title={t('night.rebuyTitle', { amount: formatMoney(defaultBuyIn) })}
 											onclick={() => rebuy(i)}
@@ -684,7 +694,7 @@
 								{#if bad(row.buy_in)}
 									<span class="err">{t('night.invalidAmount')}</span>
 								{:else if rebuyCount(row)}
-									<span class="ann faint">
+									<span class="ann text-base-content/65">
 										{t('night.rebuyMultiple', {
 											count: rebuyCount(row),
 											amount: formatMoney(defaultBuyIn)
@@ -693,10 +703,11 @@
 								{/if}
 							</div>
 
-							<div class="field">
-								<label for={`co-${row.participant_id}`}>{t('night.cashOutCol')}</label>
+							<div class="flex flex-col gap-1.5">
+								<label class="mlabel" for={`co-${row.participant_id}`}>{t('night.cashOutCol')}</label>
 								<input
 									id={`co-${row.participant_id}`}
+									class="input w-full"
 									inputmode="decimal"
 									class:invalid={bad(row.cash_out)}
 									aria-invalid={bad(row.cash_out)}
@@ -707,7 +718,11 @@
 								{#if bad(row.cash_out)}
 									<span class="err">{t('night.invalidAmount')}</span>
 								{:else if suggestIndex === i}
-									<button type="button" class="chip tap suggest" onclick={() => fillRemainder(i)}>
+									<button
+										type="button"
+										class="btn btn-sm btn-soft btn-info suggest"
+										onclick={() => fillRemainder(i)}
+									>
 										{t('night.fillRemainder', { amount: formatMoney(remainderCents) })}
 									</button>
 								{/if}
@@ -720,24 +735,24 @@
 	{/if}
 
 	{#if formError}
-		<div class="pd-alert pd-alert-error">{formError}</div>
+		<div class="alert alert-soft alert-error">{formError}</div>
 	{/if}
 
 	<!-- ---------- sticky bar ---------- -->
 	<div class="bar">
 		{#if confirming}
-			<div class="confirm" role="alert">
+			<div class="alert alert-soft alert-warning confirm" role="alert">
 				<span>{t('night.confirmUnbalanced', { amount: formatMoney(Math.abs(remainderCents)) })}</span>
-				<span class="row">
+				<span class="flex items-center gap-2">
 					<button
 						type="button"
-						class="pd-btn pd-btn-primary pd-btn-sm"
+						class="btn btn-sm btn-primary"
 						bind:this={confirmButton}
 						onclick={doSubmit}
 					>
 						{t('night.saveAnyway')}
 					</button>
-					<button type="button" class="pd-btn pd-btn-ghost pd-btn-sm" onclick={() => (confirming = false)}>
+					<button type="button" class="btn btn-sm" onclick={() => (confirming = false)}>
 						{t('common.cancel')}
 					</button>
 				</span>
@@ -747,23 +762,25 @@
 		<div class="bar-inner">
 			<div class="sums">
 				<span class="sum">
-					<span class="faint slabel">{t('night.pot')}</span>
+					<span class="slabel text-base-content/65">{t('night.pot')}</span>
 					<span class="money">{formatMoney(potCents)}</span>
 				</span>
 				<span class="sum">
-					<span class="faint slabel">
+					<span class="slabel text-base-content/65">
 						{closed ? t('night.potClosedShort') : t('night.toDistribute')}
 					</span>
-					<span class="money rem" class:ok={closed} class:over={remainderCents < 0}>
+					<span
+						class="money rem"
+						class:money-pos={closed}
+						class:money-neg={remainderCents < 0}
+					>
 						{closed ? '✓' : formatMoney(remainderCents)}
 					</span>
 				</span>
 			</div>
 			<div class="bactions">
-				<button type="button" class="pd-btn pd-btn-ghost" onclick={() => oncancel()}>
-					{t('common.cancel')}
-				</button>
-				<button class="pd-btn pd-btn-primary save" disabled={saving || submitting || rows.length === 0}>
+				<button type="button" class="btn" onclick={() => oncancel()}>{t('common.cancel')}</button>
+				<button class="btn btn-primary save" disabled={saving || submitting || rows.length === 0}>
 					{saving || submitting ? t('night.saving') : t('night.save')}
 				</button>
 			</div>
@@ -782,16 +799,16 @@
 		gap: 10px;
 	}
 	.blabel {
-		font-size: 0.82rem;
-		font-weight: 600;
-		color: var(--text-muted);
+		font-size: 0.75rem;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 	}
-	.count {
-		font-size: 0.8rem;
-	}
-	.hint {
-		margin: 0;
-		font-size: 0.85rem;
+	.mlabel {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: color-mix(in oklch, var(--color-base-content) 80%, transparent);
 	}
 	.chips {
 		display: flex;
@@ -801,36 +818,11 @@
 	/* Chips double as the primary controls here, so they need a real touch target. */
 	.tap {
 		min-height: 44px;
-		padding: 8px 14px;
+		border-radius: 999px;
 		font-size: 0.9rem;
-		cursor: pointer;
-		color: var(--text);
-		transition:
-			background 0.12s ease,
-			border-color 0.12s ease,
-			color 0.12s ease;
-	}
-	.tap:hover {
-		border-color: var(--felt-bright);
-	}
-	.tap.on {
-		background: rgba(124, 58, 237, 0.2);
-		border-color: var(--felt-bright);
-		color: var(--felt-bright);
-	}
-	.tap.ghost {
-		background: transparent;
-		border-style: dashed;
-		color: var(--text-muted);
 	}
 	.same-table {
 		align-self: flex-start;
-		background: rgba(255, 210, 63, 0.1);
-		border-color: rgba(255, 210, 63, 0.35);
-		color: var(--gold);
-	}
-	.same-table:hover {
-		border-color: var(--gold);
 	}
 	.inline-add {
 		display: flex;
@@ -849,8 +841,8 @@
 		gap: 10px;
 	}
 	.mrow {
-		border: 1px solid var(--border-soft);
-		border-radius: var(--radius-sm);
+		border: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
+		border-radius: var(--radius-field);
 		padding: 10px;
 		display: flex;
 		flex-direction: column;
@@ -858,8 +850,8 @@
 	}
 	/* Amounts read as numbers, and every pixel of width counts on a phone. */
 	.mrow input {
+		font-family: var(--font-mono);
 		font-size: 0.9rem;
-		padding: 10px 8px;
 		font-variant-numeric: tabular-nums;
 	}
 	.mtop {
@@ -889,40 +881,29 @@
 		flex: 0 0 auto;
 		min-width: 44px;
 		min-height: 44px;
-		border-radius: var(--radius-sm);
-		border: 1px solid var(--border-color);
-		background: var(--surface-2);
-		color: var(--text);
-		font-weight: 700;
+		height: auto;
+		font-weight: 600;
 		font-size: 0.85rem;
-		cursor: pointer;
 	}
 	.plus:hover:not(:disabled) {
-		border-color: var(--felt-bright);
-		color: var(--felt-bright);
-	}
-	.plus:disabled {
-		opacity: 0.45;
-		cursor: not-allowed;
+		border-color: color-mix(in oklch, var(--color-primary) 55%, transparent);
+		color: var(--ink-primary);
 	}
 	.ann {
 		font-size: 0.75rem;
 	}
 	.err {
 		font-size: 0.75rem;
-		color: var(--red);
+		color: var(--color-error);
 	}
 	.invalid {
-		border-color: var(--red);
+		border-color: var(--color-error);
 	}
 	.suggest {
 		align-self: stretch;
-		justify-content: center;
 		min-height: 44px;
+		height: auto;
 		font-size: 0.78rem;
-		background: rgba(96, 165, 250, 0.12);
-		border-color: rgba(96, 165, 250, 0.35);
-		color: var(--blue);
 	}
 	/* Dropping someone from the night: 40×44 visible box, widened to 44 by the .hit-44 overlay. */
 	.x {
@@ -932,16 +913,16 @@
 		min-height: 44px;
 		background: none;
 		border: none;
-		border-radius: var(--radius-sm);
-		color: var(--text-faint);
+		border-radius: var(--radius-field);
+		color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 		cursor: pointer;
 		font-size: 0.9rem;
 		padding: 0;
 		line-height: 1;
 	}
 	.x:hover {
-		color: var(--red);
-		background: rgba(240, 88, 106, 0.1);
+		color: var(--color-error);
+		background: color-mix(in oklch, var(--color-error) 10%, transparent);
 	}
 
 	/* ---------- sticky bar ---------- */
@@ -951,9 +932,9 @@
 		z-index: 20;
 		margin: 4px -20px 0;
 		padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
-		background: rgba(12, 10, 18, 0.94);
+		background: color-mix(in oklch, var(--color-base-100) 92%, transparent);
 		backdrop-filter: blur(10px);
-		border-top: 1px solid var(--border-color);
+		border-top: 1px solid color-mix(in oklch, var(--color-base-content) 15%, transparent);
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
@@ -962,8 +943,8 @@
 		/* on wide screens, keep the bar inside the form column instead of full-bleed */
 		.bar {
 			margin: 4px 0 0;
-			border: 1px solid var(--border-color);
-			border-radius: var(--radius);
+			border: 1px solid color-mix(in oklch, var(--color-base-content) 15%, transparent);
+			border-radius: var(--radius-box);
 			padding: 12px 18px;
 			bottom: 12px;
 		}
@@ -986,16 +967,10 @@
 	.slabel {
 		font-size: 0.7rem;
 		text-transform: uppercase;
-		letter-spacing: 0.04em;
+		letter-spacing: 0.06em;
 	}
 	.rem {
 		font-size: 1.05rem;
-	}
-	.rem.ok {
-		color: var(--green-pos);
-	}
-	.rem.over {
-		color: var(--red);
 	}
 	.bactions {
 		display: flex;
@@ -1003,6 +978,7 @@
 	}
 	.save {
 		min-height: 44px;
+		height: auto;
 	}
 	.confirm {
 		display: flex;
@@ -1010,11 +986,6 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 10px;
-		background: rgba(231, 196, 107, 0.1);
-		border: 1px solid rgba(231, 196, 107, 0.3);
-		color: var(--gold);
-		border-radius: var(--radius-sm);
-		padding: 10px 12px;
 		font-size: 0.88rem;
 	}
 	.draft {
@@ -1023,9 +994,6 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 10px;
-	}
-	.draft-actions {
-		gap: 8px;
 	}
 
 	/* 560px = the app's "small" breakpoint (was an ad-hoc 420) */

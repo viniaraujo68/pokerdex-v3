@@ -57,7 +57,7 @@
 {/snippet}
 
 {#snippet nightsCell(/** @type {Row} */ r)}
-	<span class="muted">{r.nights_played}</span>
+	<span class="text-base-content/80">{r.nights_played}</span>
 {/snippet}
 
 {#snippet avgCell(/** @type {Row} */ r)}
@@ -65,7 +65,7 @@
 {/snippet}
 
 {#snippet roiCell(/** @type {Row} */ r)}
-	<span class={r.roi != null ? moneyClass(r.roi) : 'faint'}>{roiText(r)}</span>
+	<span class={r.roi != null ? moneyClass(r.roi) : 'text-base-content/65'}>{roiText(r)}</span>
 {/snippet}
 
 {#snippet playerCard(/** @type {Row} */ r)}
@@ -73,7 +73,7 @@
 		<span class="rc-rank">{rankLabel(r)}</span>
 		<div class="rc-mid">
 			<span class="rc-name">{r.name}</span>
-			<span class="rc-sub faint">
+			<span class="rc-sub text-base-content/65">
 				{t('ranking.cardSub', {
 					count: r.nights_played,
 					avg: formatMoney(r.avg_profit_cents),
@@ -88,7 +88,7 @@
 {/snippet}
 
 {#if ranking.length === 0}
-	<div class="empty">{t('ranking.empty')}</div>
+	<div class="px-5 py-12 text-center text-base-content/65">{t('ranking.empty')}</div>
 {:else}
 	<div class="ranking">
 		<DataTable
@@ -104,6 +104,10 @@
 {/if}
 
 <style>
+	.ranking :global(.table) {
+		--table-ink-muted: var(--ink-muted);
+	}
+
 	@container plinth-table (max-width: 40rem) {
 		.ranking :global(.plinth-table th),
 		.ranking :global(.plinth-table td.plinth-card) {

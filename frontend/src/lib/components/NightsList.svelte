@@ -104,14 +104,14 @@
 </script>
 
 {#if nights.length === 0}
-	<div class="pd-card empty pd-stack empty-cta">
-		<p>{t('nights.empty')}</p>
+	<div class="card items-center gap-4 bg-base-100 px-5 py-12 text-center">
+		<p class="text-base-content/65">{t('nights.empty')}</p>
 		{#if newNightHref}
-			<a href={newNightHref} class="pd-btn pd-btn-primary">{t('group.newNight')}</a>
+			<a href={newNightHref} class="btn btn-primary">{t('group.newNight')}</a>
 		{/if}
 	</div>
 {:else}
-	<div class="pd-card pd-card-tight filters">
+	<div class="card filters bg-base-100 p-4">
 		<!-- Mobile-only disclosure; `display:none` above the small breakpoint. -->
 		<button
 			type="button"
@@ -122,7 +122,7 @@
 		>
 			<span class="fs-label">{t('filters.title')}</span>
 			{#if activeFilterCount > 0}
-				<span class="chip chip-felt fs-badge">
+				<span class="badge badge-soft badge-primary flex-none">
 					{t('filters.activeCount', { count: activeFilterCount })}
 				</span>
 			{/if}
@@ -132,30 +132,43 @@
 		<div class="fbody" id="nights-filters" class:open={filtersOpen}>
 			<div class="ftop">
 				<div class="frow">
-					<label for="pf">{t('filters.place')}</label>
-					<select id="pf" bind:value={placeFilter}>
+					<label class="flabel" for="pf">{t('filters.place')}</label>
+					<select id="pf" class="select w-full" bind:value={placeFilter}>
 						<option value="">{t('filters.allPlaces')}</option>
 						{#each places as p (p.id)}<option value={p.id}>{p.name}</option>{/each}
 					</select>
 				</div>
 				<div class="frow">
-					<label for="df">{t('filters.from')}</label>
-					<input id="df" type="date" bind:value={dateFrom} max={dateTo || undefined} />
+					<label class="flabel" for="df">{t('filters.from')}</label>
+					<input
+						id="df"
+						class="input w-full"
+						type="date"
+						bind:value={dateFrom}
+						max={dateTo || undefined}
+					/>
 				</div>
 				<div class="frow">
-					<label for="dt">{t('filters.to')}</label>
-					<input id="dt" type="date" bind:value={dateTo} min={dateFrom || undefined} />
+					<label class="flabel" for="dt">{t('filters.to')}</label>
+					<input
+						id="dt"
+						class="input w-full"
+						type="date"
+						bind:value={dateTo}
+						min={dateFrom || undefined}
+					/>
 				</div>
 			</div>
 
 			<div class="frow players">
-				<span class="flabel" id="players-filter-label">{t('filters.playersPresent')}</span>
-				<div class="chips" role="group" aria-labelledby="players-filter-label">
+				<span class="flabel mb-0.5" id="players-filter-label">{t('filters.playersPresent')}</span>
+				<div class="flex flex-wrap gap-2" role="group" aria-labelledby="players-filter-label">
 					{#each players as p (p.id)}
 						<button
 							type="button"
-							class="chip pd-toggle"
-							class:on={selectedPlayers.has(p.id)}
+							class="btn btn-sm toggle-chip"
+							class:btn-soft={selectedPlayers.has(p.id)}
+							class:btn-primary={selectedPlayers.has(p.id)}
 							aria-pressed={selectedPlayers.has(p.id)}
 							onclick={() => togglePlayer(p.id)}
 						>
@@ -164,13 +177,13 @@
 					{/each}
 				</div>
 				{#if selectedPlayers.size > 1}
-					<span class="faint hint">{t('filters.andHint')}</span>
+					<span class="text-[0.78rem] text-base-content/65">{t('filters.andHint')}</span>
 				{/if}
 			</div>
 		</div>
 
 		<div class="fmeta">
-			<span class="muted">
+			<span class="text-base-content/80">
 				{t('filters.nightCount', {
 					shown: filtered.length,
 					total: nights.length,
@@ -178,21 +191,23 @@
 				})}
 			</span>
 			{#if hasFilters}
-				<button class="pd-btn pd-btn-ghost pd-btn-sm" onclick={clearFilters}>{t('filters.clear')}</button>
+				<button class="btn btn-sm" onclick={clearFilters}>{t('filters.clear')}</button>
 			{/if}
 		</div>
 	</div>
 
 	{#if filtered.length === 0}
-		<div class="pd-card empty">{t('nights.noneWithFilters')}</div>
+		<div class="card bg-base-100 px-5 py-12 text-center text-base-content/65">
+			{t('nights.noneWithFilters')}
+		</div>
 	{:else}
-		<div class="pd-stack">
+		<div class="flex flex-col gap-4">
 			{#each paged as night (night.id)}
 				<NightCard {night} {editable} {onEdit} {onDelete} {onQuickEdit} />
 			{/each}
 		</div>
 		{#if filtered.length > shown}
-			<button class="pd-btn pd-btn-ghost more" onclick={() => (shown += PAGE)}>
+			<button class="btn mt-1 w-full" onclick={() => (shown += PAGE)}>
 				{t('nights.showMore', { remaining: filtered.length - shown })}
 			</button>
 		{/if}
@@ -200,12 +215,6 @@
 {/if}
 
 <style>
-	.empty-cta {
-		align-items: center;
-	}
-	.empty-cta p {
-		margin: 0;
-	}
 	.filters {
 		display: flex;
 		flex-direction: column;
@@ -231,7 +240,7 @@
 			background: none;
 			border: none;
 			padding: 0;
-			color: var(--text);
+			color: var(--color-base-content);
 			font-family: inherit;
 			font-size: 0.92rem;
 			font-weight: 600;
@@ -242,14 +251,11 @@
 			flex: 1;
 			min-width: 0;
 		}
-		.fs-badge {
-			flex: 0 0 auto;
-		}
 		.fs-caret {
 			flex: 0 0 auto;
 			font-size: 1.3rem;
 			line-height: 1;
-			color: var(--text-faint);
+			color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 			transition: transform 0.2s ease;
 		}
 		.fs-caret.open {
@@ -277,51 +283,22 @@
 		gap: 6px;
 	}
 	.flabel {
-		font-size: 0.82rem;
-		font-weight: 600;
-		color: var(--text-muted);
-		margin-bottom: 2px;
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: color-mix(in oklch, var(--color-base-content) 80%, transparent);
 	}
-	.chips {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-	.pd-toggle {
-		cursor: pointer;
-		background: var(--surface-2);
-		/* thumb-sized: these chips are the main filter control on a phone */
+	/* thumb-sized: these chips are the main filter control on a phone */
+	.toggle-chip {
 		min-height: 44px;
-		padding: 6px 14px;
-		font-size: 0.85rem;
-		color: var(--text);
-		transition:
-			background 0.12s ease,
-			border-color 0.12s ease,
-			color 0.12s ease;
-	}
-	.pd-toggle:hover {
-		border-color: var(--felt-bright);
-	}
-	.pd-toggle.on {
-		background: rgba(124, 58, 237, 0.2);
-		border-color: var(--felt-bright);
-		color: var(--felt-bright);
-	}
-	.hint {
-		font-size: 0.78rem;
+		border-radius: 999px;
 	}
 	.fmeta {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 12px;
-		border-top: 1px solid var(--border-soft);
+		border-top: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
 		padding-top: 12px;
 		font-size: 0.9rem;
-	}
-	.more {
-		width: 100%;
-		margin-top: 4px;
 	}
 </style>

@@ -33,24 +33,34 @@
 	<title>{t('title.login')}</title>
 </svelte:head>
 
-<!-- .auth / .auth-alt / .pd-link are shared with /register, so they live in app.css -->
-<div class="auth">
-	<form class="pd-card pd-stack" onsubmit={submit}>
-		<h1>{t('auth.login')}</h1>
-		<p class="muted">{t('auth.loginSubtitle')}</p>
-		{#if error}<div class="pd-alert pd-alert-error">{error}</div>{/if}
-		<div class="field">
-			<label for="u">{t('auth.username')}</label>
-			<input id="u" bind:value={username} autocomplete="username" required />
+<div class="mx-auto mt-[6vh] max-w-[400px]">
+	<form class="card flex flex-col gap-4 bg-base-100 p-5" onsubmit={submit}>
+		<h1 class="text-xl font-semibold tracking-tight">{t('auth.login')}</h1>
+		<p class="-mt-2 text-base-content/80">{t('auth.loginSubtitle')}</p>
+		{#if error}<div class="alert alert-soft alert-error">{error}</div>{/if}
+		<div class="flex flex-col gap-1.5">
+			<label class="text-xs font-medium text-base-content/80" for="u">{t('auth.username')}</label>
+			<input id="u" class="input w-full" bind:value={username} autocomplete="username" required />
 		</div>
-		<div class="field">
-			<label for="p">{t('auth.password')}</label>
-			<input id="p" type="password" bind:value={password} autocomplete="current-password" required />
+		<div class="flex flex-col gap-1.5">
+			<label class="text-xs font-medium text-base-content/80" for="p">{t('auth.password')}</label>
+			<input
+				id="p"
+				class="input w-full"
+				type="password"
+				bind:value={password}
+				autocomplete="current-password"
+				required
+			/>
 		</div>
-		<button class="pd-btn pd-btn-primary" disabled={busy}>{busy ? t('auth.loggingIn') : t('auth.login')}</button>
-		<p class="muted auth-alt">
+		<button class="btn btn-primary" disabled={busy}>
+			{busy ? t('auth.loggingIn') : t('auth.login')}
+		</button>
+		<p class="text-center text-sm text-base-content/80">
 			{t('auth.noAccount')}
-			<a href={withNext('/register', next)} class="pd-link">{t('auth.createOne')}</a>
+			<a href={withNext('/register', next)} class="link link-primary font-medium">
+				{t('auth.createOne')}
+			</a>
 		</p>
 	</form>
 </div>
