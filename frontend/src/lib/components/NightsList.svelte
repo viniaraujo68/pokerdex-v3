@@ -1,7 +1,7 @@
 <script>
 	import NightCard from './NightCard.svelte';
 	import Icon from './Icon.svelte';
-	import { Select } from '@viniaraujo68/plinth/components';
+	import { Combobox } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
 
 	/**
@@ -23,7 +23,7 @@
 	 */
 	let { nights, editable = false, newNightHref = '', onEdit, onDelete, onQuickEdit } = $props();
 
-	let placeFilter = $state(/** @type {string | null} */ (''));
+	let placeFilter = $state('');
 	let dateFrom = $state('');
 	let dateTo = $state('');
 	/** @type {Set<number>} */
@@ -141,14 +141,15 @@
 			<div class="ftop">
 				<div class="frow">
 					<label class="flabel" id="pf-label" for="pf">{t('filters.place')}</label>
-					<Select
+					<Combobox
 						id="pf"
-						bind:value={placeFilter}
+						bind:value={() => placeFilter, (value) => (placeFilter = value ?? '')}
 						options={placeOptions}
 						aria-labelledby="pf-label"
-						placeholder={t('filters.allPlaces')}
-						searchPlaceholder={t('filters.searchPlaces')}
+						placeholder={t('filters.searchPlaces')}
 						emptyLabel={t('filters.noPlaceMatch')}
+						clearable={placeFilter !== ''}
+						clearLabel={t('filters.clearPlace')}
 						class="w-full"
 					/>
 				</div>
