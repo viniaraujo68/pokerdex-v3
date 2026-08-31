@@ -1,5 +1,5 @@
 <script>
-	import { DataTable, sortRows } from '@viniaraujo68/plinth/table';
+	import { DataTable } from '@viniaraujo68/plinth/table';
 	import { formatSigned, formatMoney, moneyClass } from '$lib/money.svelte.js';
 	import { t, localeTag } from '$lib/i18n.svelte.js';
 
@@ -28,24 +28,15 @@
 		{ key: 'roi', label: t('ranking.roi'), numeric: true, cell: roiCell }
 	]);
 
-	const rankOf = $derived.by(() => {
-		const column = columns.find((c) => c.key === sort.key);
-		const ordered = column ? sortRows(ranking, column, sort.direction, localeTag()) : ranking;
-		return new Map(ordered.map((r, i) => [r.participant_id, i + 1]));
-	});
-
-	/** @param {Row} r */
-	const rankLabel = (r) => {
-		const rank = rankOf.get(r.participant_id) ?? 0;
-		return rank <= 3 ? medals[rank - 1] : String(rank);
-	};
+	/** @param {number} index */
+	const rankLabel = (index) => medals[index] ?? String(index + 1);
 
 	/** @param {Row} r */
 	const roiText = (r) => (r.roi != null ? (r.roi * 100).toFixed(0) + '%' : '—');
 </script>
 
-{#snippet rankCell(/** @type {Row} */ r)}
-	<span class="rank">{rankLabel(r)}</span>
+{#snippet rankCell(/** @type {Row} */ _r, /** @type {number} */ index)}
+	<span class="rank">{rankLabel(index)}</span>
 {/snippet}
 
 {#snippet nameCell(/** @type {Row} */ r)}
@@ -68,9 +59,9 @@
 	<span class={r.roi != null ? moneyClass(r.roi) : 'text-base-content/65'}>{roiText(r)}</span>
 {/snippet}
 
-{#snippet playerCard(/** @type {Row} */ r)}
+{#snippet playerCard(/** @type {Row} */ r, /** @type {number} */ index)}
 	<div class="rcard">
-		<span class="rc-rank">{rankLabel(r)}</span>
+		<span class="rc-rank">{rankLabel(index)}</span>
 		<div class="rc-mid">
 			<span class="rc-name">{r.name}</span>
 			<span class="rc-sub text-base-content/65">
@@ -98,6 +89,7 @@
 			bind:sort
 			locale={localeTag()}
 			label={t('tab.ranking')}
+			sortLabel={(column) => t('ranking.sortByColumn', { column: column.label })}
 			card={playerCard}
 		/>
 	</div>
@@ -106,13 +98,6 @@
 <style>
 	.ranking :global(.table) {
 		--table-ink-muted: var(--ink-muted);
-	}
-
-	@container plinth-table (max-width: 40rem) {
-		.ranking :global(.plinth-table th),
-		.ranking :global(.plinth-table td.plinth-card) {
-			border-bottom: 0;
-		}
 	}
 
 	.rank {

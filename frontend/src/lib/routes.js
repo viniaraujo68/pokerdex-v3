@@ -11,8 +11,7 @@ export const routes = {
 
 		'/groups/[id]': {},
 		'/groups/[id]/nights/new': {},
-		'/g/[slug]': {},
-		'/_plinth-probe': {}
+		'/g/[slug]': {}
 	},
 
 	pages: import.meta.glob('/src/routes/**/+page.svelte')

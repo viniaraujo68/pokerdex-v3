@@ -44,11 +44,12 @@ export default [
 			/*
 			 * Off: the rule flags any `new Map()`/`new Set()` in a `.svelte`/`.svelte.js` file and
 			 * can't see how it's used. All five sites it caught are deliberately *not* reactive
-			 * containers: three are built fresh inside a `$derived` (the derived re-runs, the map
-			 * never mutates), one is the copy-on-write `selectedPlayers` filter (a new Set is
-			 * assigned, never mutated in place), and one is `toast.svelte.js`'s table of pending
-			 * `setTimeout` handles, which nothing renders. `SvelteMap`/`SvelteSet` would add
-			 * per-key subscription overhead for no behaviour change.
+			 * containers: two are built fresh inside a `$derived` (the derived re-runs, the map
+			 * never mutates), one is a local tally inside `NightForm`'s `standardBuyIn`, one is the
+			 * copy-on-write `selectedPlayers` filter (a new Set is assigned, never mutated in
+			 * place), and one is `money.svelte.js`'s per-locale formatter cache, which nothing
+			 * renders. `SvelteMap`/`SvelteSet` would add per-key subscription overhead for no
+			 * behaviour change.
 			 */
 			'svelte/prefer-svelte-reactivity': 'off',
 			// Leading `_` marks "required by the signature, unused by us".
