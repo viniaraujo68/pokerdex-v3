@@ -164,6 +164,8 @@ export default {
 	'nights.showMore': 'Mostrar mais ({remaining} restantes)',
 	'filters.place': 'Local',
 	'filters.allPlaces': 'Todos os locais',
+	'filters.searchPlaces': 'Buscar locais',
+	'filters.noPlaceMatch': 'Nenhum local com esse nome',
 	'filters.from': 'De',
 	'filters.to': 'Até',
 	'filters.playersPresent': 'Participantes presentes',
