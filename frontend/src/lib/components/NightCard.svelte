@@ -21,8 +21,10 @@
 	let { night, editable = false, onEdit, onDelete, onQuickEdit } = $props();
 
 	let open = $state(false);
+	let settleOpen = $state(false);
 	/** Ties the header button to the panel it opens, for `aria-controls`. */
 	const bodyId = $derived(`night-${night.id}-detail`);
+	const settleId = $derived(`night-${night.id}-settlement`);
 
 	/** @param {string} d */
 	function fmtDate(d) {
@@ -204,15 +206,26 @@
 
 			{#if transfers.length}
 				<div class="settle">
-					<span class="slabel text-base-content/65">{t('card.settlement')}</span>
-					<ul class="tlist">
-						{#each transfers as tr (tr.from + '\u2192' + tr.to)}
-							<li>
-								<span class="tnames">{tr.from} → {tr.to}</span>
-								<span class="money">{formatMoney(tr.cents)}</span>
-							</li>
-						{/each}
-					</ul>
+					<button
+						type="button"
+						class="slabel text-base-content/65"
+						aria-expanded={settleOpen}
+						aria-controls={settleId}
+						onclick={() => (settleOpen = !settleOpen)}
+					>
+						{t('card.settlement')}
+						<span class="scaret" class:open={settleOpen}><Icon name="chevron" /></span>
+					</button>
+					{#if settleOpen}
+						<ul class="tlist" id={settleId}>
+							{#each transfers as tr (tr.from + '\u2192' + tr.to)}
+								<li>
+									<span class="tnames">{tr.from} → {tr.to}</span>
+									<span class="money">{formatMoney(tr.cents)}</span>
+								</li>
+							{/each}
+						</ul>
+					{/if}
 				</div>
 			{/if}
 
@@ -350,10 +363,32 @@
 		gap: 6px;
 	}
 	.slabel {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		align-self: flex-start;
+		min-height: 1.75rem;
+		border: 0;
+		background: none;
+		padding: 0;
 		font-size: 0.6875rem;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		font-weight: 500;
+		cursor: pointer;
+	}
+	.slabel:hover {
+		color: var(--color-base-content);
+	}
+	.scaret {
+		display: grid;
+		place-items: center;
+		font-size: 0.9rem;
+		transition: transform 0.2s ease;
+		line-height: 1;
+	}
+	.scaret.open {
+		transform: rotate(180deg);
 	}
 	.tlist {
 		list-style: none;
