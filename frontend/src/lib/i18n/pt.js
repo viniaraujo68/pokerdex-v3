@@ -170,6 +170,7 @@ export default {
 	'filters.allPlaces': 'Todos os locais',
 	'filters.searchPlaces': 'Buscar locais',
 	'filters.noPlaceMatch': 'Nenhum local com esse nome',
+	'filters.clearPlace': 'Limpar o filtro de local',
 	'filters.from': 'De',
 	'filters.to': 'Até',
 	'filters.playersPresent': 'Participantes presentes',

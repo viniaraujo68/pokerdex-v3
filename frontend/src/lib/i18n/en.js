@@ -170,6 +170,7 @@ export default {
 	'filters.allPlaces': 'All places',
 	'filters.searchPlaces': 'Search places',
 	'filters.noPlaceMatch': 'No place by that name',
+	'filters.clearPlace': 'Clear the place filter',
 	'filters.from': 'From',
 	'filters.to': 'To',
 	'filters.playersPresent': 'Players present',
