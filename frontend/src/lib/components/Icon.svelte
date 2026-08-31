@@ -1,13 +1,13 @@
 <script>
 	/**
-	 * @typedef {'spade'|'heart'|'club'|'diamond'|'place'|'players'|'nights'|'pot'|'globe'|'lock'
+	 * @typedef {'spade'|'place'|'players'|'nights'|'pot'|'globe'|'lock'
 	 *   |'search'|'warning'|'edit'|'restore'|'close'|'chevron'} IconName
 	 */
 
 	/** @type {{ name: IconName, class?: string, label?: string }} */
 	let { name, class: className = 'size-[1em]', label } = $props();
 
-	const filled = $derived(['spade', 'heart', 'club', 'diamond'].includes(name));
+	const filled = $derived(name === 'spade');
 </script>
 
 <svg
@@ -26,16 +26,6 @@
 		<path
 			d="M12 2.2c-.4 0-1.7 1.1-3.9 3.3C5.4 8.3 4 10.9 4 13c0 1.5.5 2.7 1.4 3.6.9.9 2 1.4 3.3 1.4 1 0 1.9-.3 2.6-.9.1 2.4-.9 4.1-3 5.2h7.4c-2.1-1.1-3.1-2.8-3-5.2.7.6 1.6.9 2.6.9 1.3 0 2.4-.5 3.3-1.4.9-.9 1.4-2.1 1.4-3.6 0-2.1-1.4-4.7-4.1-7.5C13.7 3.3 12.4 2.2 12 2.2Z"
 		/>
-	{:else if name === 'heart'}
-		<path
-			d="M12 21c-.3 0-3.1-2.1-5.6-4.8C4.3 14 3.2 12.1 3.2 10.3c0-1.6.5-2.9 1.5-3.9 1-1 2.2-1.5 3.6-1.5 1.5 0 2.7.6 3.7 1.9 1-1.3 2.2-1.9 3.7-1.9 1.4 0 2.6.5 3.6 1.5 1 1 1.5 2.3 1.5 3.9 0 1.8-1.1 3.7-3.2 5.9C15.1 18.9 12.3 21 12 21Z"
-		/>
-	{:else if name === 'club'}
-		<path
-			d="M12 2.6a4 4 0 0 0-3.2 6.4 4 4 0 1 0 2.5 6.9c.1 2.1-.6 3.7-2.2 4.8h5.8c-1.6-1.1-2.3-2.7-2.2-4.8a4 4 0 1 0 2.5-6.9A4 4 0 0 0 12 2.6Z"
-		/>
-	{:else if name === 'diamond'}
-		<path d="M12 2.4 20.4 12 12 21.6 3.6 12 12 2.4Z" />
 	{:else if name === 'place'}
 		<path d="M12 21.2c4.4-4.3 6.6-7.7 6.6-10.3a6.6 6.6 0 1 0-13.2 0c0 2.6 2.2 6 6.6 10.3Z" />
 		<circle cx="12" cy="10.4" r="2.4" />

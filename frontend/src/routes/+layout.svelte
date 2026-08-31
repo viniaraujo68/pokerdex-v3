@@ -104,20 +104,6 @@
 	</div>
 {/snippet}
 
-{#snippet tagline()}
-	<footer class="foot">
-		<div class="container text-base-content/65">
-			{t('footer.tagline')}
-			<span class="suits">
-				<Icon name="spade" />
-				<Icon name="heart" />
-				<Icon name="club" />
-				<Icon name="diamond" />
-			</span>
-		</div>
-	</footer>
-{/snippet}
-
 {#if isPublicScoreboard}
 	<header class="public-nav">
 		<div class="container public-nav-inner">
@@ -136,8 +122,6 @@
 	<main class="container page">
 		{@render children()}
 	</main>
-
-	{@render tagline()}
 {:else}
 	<div class="shell-host">
 		<AppShell
@@ -190,12 +174,8 @@
 				</div>
 			{/snippet}
 
-			<div class="shell-page">
-				<div class="container page">
-					{@render children()}
-				</div>
-
-				{@render tagline()}
+			<div class="container page">
+				{@render children()}
 			</div>
 		</AppShell>
 	</div>
@@ -367,28 +347,8 @@
 		color: var(--ink-primary);
 	}
 
-	.shell-page {
-		display: flex;
-		min-height: 100%;
-		flex-direction: column;
-	}
 	.page {
-		flex: 1;
 		padding-top: 32px;
 		padding-bottom: 64px;
-	}
-	.foot {
-		border-top: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
-		padding: 20px 0;
-		font-size: 0.82rem;
-		text-align: center;
-	}
-	.suits {
-		display: inline-flex;
-		align-items: center;
-		gap: 5px;
-		margin-left: 7px;
-		vertical-align: -0.1em;
-		opacity: 0.8;
 	}
 </style>

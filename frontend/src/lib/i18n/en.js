@@ -35,7 +35,6 @@ export default {
 	'theme.light': 'Light',
 	'theme.dark': 'Dark',
 	'theme.switchTo': 'Theme: {current}. Switch to {next}.',
-	'footer.tagline': "Pokerdex · your group's poker nights",
 
 	// ---------- page titles (<title>, one per route) ----------
 	'title.home': 'Pokerdex',
