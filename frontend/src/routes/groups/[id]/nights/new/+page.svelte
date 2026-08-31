@@ -19,7 +19,7 @@
 	let night = $state(/** @type {import('$lib/types.js').Night|null} */ (null));
 	/** Only for the document title — the form itself needs nothing from the group. */
 	let group = $state(/** @type {import('$lib/types.js').Group|null} */ (null));
-	/** Most recent night of the group — seeds place, standard buy-in and "same table". */
+	/** Most recent night of the group — seeds place and "same table". */
 	let lastNight = $state(/** @type {import('$lib/types.js').Night|null} */ (null));
 	let loading = $state(true);
 	let saving = $state(false);

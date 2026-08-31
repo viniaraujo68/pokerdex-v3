@@ -106,46 +106,33 @@
 	);
 	const lastLineupMissing = $derived(lastLineup.filter((id) => !selectedIds.has(id)));
 
-	// ---------- standard buy-in ----------
+	// ---------- default buy-in ----------
 	/**
-	 * Most common buy-in of a night — the group's de-facto standard.
-	 * @param {import('$lib/types.js').Night|null} n
-	 * @returns {number|null}
+	 * Tonight's default buy-in: a helper the user owns, never a field of the night. It seeds the
+	 * rows and drives the rebuy stepper, and is never part of the payload.
 	 */
-	function standardBuyIn(n) {
-		/** buy-in cents -> how many players paid it. @type {Map<number, number>} */
-		const counts = new Map();
-		for (const e of n?.entries ?? []) {
-			if (!e.buy_in_cents) continue;
-			counts.set(e.buy_in_cents, (counts.get(e.buy_in_cents) ?? 0) + 1);
-		}
-		let best = null;
-		let bestCount = 0;
-		for (const [amount, count] of counts) {
-			// Ties go to the smaller amount: the table's floor is the likelier standard.
-			if (count > bestCount || (count === bestCount && best !== null && amount < best)) {
-				best = amount;
-				bestCount = count;
-			}
-		}
-		return best;
+	let defaultBuyInInput = $state('');
+	const defaultBuyIn = $derived(validateMoney(defaultBuyInInput) || null);
+
+	function applyDefaultToBlankRows() {
+		const amount = defaultBuyIn;
+		if (!amount) return;
+		const seeded = centsToInput(amount);
+		rows = rows.map((r) => (isBlank(r.buy_in) ? { ...r, buy_in: seeded } : r));
 	}
 
-	// When editing, the night's own values are the better reference than some other night's.
-	const historyDefault = $derived(standardBuyIn(editing ? night : lastNight));
-	// No history at all: the first buy-in typed tonight becomes tonight's default.
-	let typedDefault = $state(/** @type {number|null} */ (null));
-	const defaultBuyIn = $derived(historyDefault ?? typedDefault);
-
 	/**
-	 * With no history, tonight's first buy-in sets tonight's default. Read on `change`
-	 * (blur/Enter), not on every keystroke — "5" on the way to "50" is not a default.
+	 * While the helper is still empty, the first buy-in typed into a row becomes the default —
+	 * one amount typed instead of one per player. Read on `change` (blur/Enter), not on every
+	 * keystroke: "5" on the way to "50" is not a default.
 	 */
 	/** @param {string} value */
-	function rememberTypedDefault(value) {
-		if (historyDefault !== null || typedDefault !== null) return;
+	function mirrorFirstTypedBuyIn(value) {
+		if (!isBlank(defaultBuyInInput)) return;
 		const amount = validateMoney(value);
-		if (amount) typedDefault = amount;
+		if (!amount) return;
+		defaultBuyInInput = centsToInput(amount);
+		applyDefaultToBlankRows();
 	}
 
 	// ---------- money ----------
@@ -305,7 +292,7 @@
 			date,
 			showDateInput,
 			place_id,
-			typedDefault,
+			defaultBuyInInput,
 			rows: rows.map((r) => ({ ...r }))
 		};
 	}
@@ -348,7 +335,7 @@
 		date = s.date ?? date;
 		showDateInput = !!s.showDateInput;
 		place_id = s.place_id ?? '';
-		typedDefault = s.typedDefault ?? null;
+		defaultBuyInInput = s.defaultBuyInInput ?? '';
 		rows = (s.rows ?? []).map((/** @type {Row} */ r) => ({
 			participant_id: r.participant_id,
 			buy_in: r.buy_in ?? '',
@@ -504,6 +491,19 @@
 					class:btn-primary={showDateInput}
 					onclick={() => (showDateInput = true)}
 				>
+					<svg
+						class="icon"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<rect x="3.4" y="5.2" width="17.2" height="15.4" rx="2.6" />
+						<path d="M3.4 10.2h17.2M8 2.8v3.2M16 2.8v3.2" />
+					</svg>
 					{t('night.otherDate')}
 				</button>
 			</div>
@@ -540,7 +540,20 @@
 						class:btn-primary={Number(place_id) === p.id}
 						onclick={() => (place_id = p.id)}
 					>
-						📍 {p.name}
+						<svg
+							class="icon"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<path d="M12 21.2c4.4-4.3 6.6-7.7 6.6-10.3a6.6 6.6 0 1 0-13.2 0c0 2.6 2.2 6 6.6 10.3Z" />
+							<circle cx="12" cy="10.4" r="2.4" />
+						</svg>
+						{p.name}
 					</button>
 				{/each}
 				{#if !showNewPlace}
@@ -571,7 +584,18 @@
 						aria-label={t('common.cancel')}
 						onclick={() => (showNewPlace = false)}
 					>
-						✕
+						<svg
+							class="icon"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<path d="m6.4 6.4 11.2 11.2M17.6 6.4 6.4 17.6" />
+						</svg>
 					</button>
 				</div>
 			{/if}
@@ -595,6 +619,19 @@
 				class="btn btn-sm btn-soft btn-warning tap same-table"
 				onclick={sameTableAsLastNight}
 			>
+				<svg
+					class="icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M3.2 12a8.8 8.8 0 1 0 8.8-8.8 9.5 9.5 0 0 0-6.6 2.7L3.2 8" />
+					<path d="M3.2 3.2v4.9h4.9" />
+				</svg>
 				{t('night.sameTable')}
 			</button>
 		{/if}
@@ -630,20 +667,35 @@
 				{t('common.add')}
 			</button>
 		</div>
+
+		<div class="helper">
+			<label class="mlabel" for="default-buy-in">{t('night.defaultBuyIn')}</label>
+			<input
+				id="default-buy-in"
+				class="input hinput"
+				inputmode="decimal"
+				class:invalid={bad(defaultBuyInInput)}
+				aria-invalid={bad(defaultBuyInInput)}
+				aria-describedby="default-buy-in-hint"
+				placeholder={t('money.placeholder')}
+				bind:value={defaultBuyInInput}
+				onchange={applyDefaultToBlankRows}
+				onkeydown={enterNext}
+			/>
+			{#if bad(defaultBuyInInput)}
+				<span class="err">{t('night.invalidAmount')}</span>
+			{/if}
+			<span class="hint text-base-content/65" id="default-buy-in-hint">
+				{t('night.defaultBuyInHint')}
+			</span>
+		</div>
 	</div>
 
 	<!-- ---------- money ---------- -->
 	{#if rows.length}
 		<!-- card-tight: every horizontal pixel goes to the amount inputs at 375px -->
 		<div class="card flex flex-col gap-4 bg-base-100 p-4">
-			<div class="flex items-center justify-between gap-3">
-				<span class="blabel">{t('night.amounts')}</span>
-				{#if defaultBuyIn}
-					<span class="text-[0.8rem] text-base-content/65">
-						{t('night.standardBuyIn', { amount: formatMoney(defaultBuyIn) })}
-					</span>
-				{/if}
-			</div>
+			<span class="blabel">{t('night.amounts')}</span>
 
 			<div class="mrows">
 				{#each rows as row, i (row.participant_id)}
@@ -660,7 +712,18 @@
 								title={t('common.remove')}
 								onclick={() => togglePlayer(row.participant_id)}
 							>
-								✕
+								<svg
+									class="icon"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path d="m6.4 6.4 11.2 11.2M17.6 6.4 6.4 17.6" />
+								</svg>
 							</button>
 						</div>
 
@@ -676,7 +739,7 @@
 										aria-invalid={bad(row.buy_in)}
 										placeholder={t('money.placeholder')}
 										bind:value={row.buy_in}
-										onchange={() => rememberTypedDefault(row.buy_in)}
+										onchange={() => mirrorFirstTypedBuyIn(row.buy_in)}
 										onkeydown={enterNext}
 									/>
 									{#if defaultBuyIn}
@@ -774,7 +837,23 @@
 						class:money-pos={closed}
 						class:money-neg={remainderCents < 0}
 					>
-						{closed ? '✓' : formatMoney(remainderCents)}
+						{#if closed}
+							<svg
+								class="icon check"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								role="img"
+								aria-label={t('night.potClosedShort')}
+							>
+								<path d="m4.8 12.8 4.6 4.6L19.2 7" />
+							</svg>
+						{:else}
+							{formatMoney(remainderCents)}
+						{/if}
 					</span>
 				</span>
 			</div>
@@ -831,6 +910,34 @@
 	.inline-add input {
 		flex: 1;
 		min-width: 0;
+	}
+	.icon {
+		width: 1em;
+		height: 1em;
+		flex: 0 0 auto;
+	}
+	.check {
+		width: 1.1em;
+		height: 1.1em;
+	}
+
+	.helper {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		align-items: flex-start;
+		padding-top: 12px;
+		border-top: 1px dashed color-mix(in oklch, var(--color-base-content) 15%, transparent);
+	}
+	.hinput {
+		width: 9rem;
+		font-family: var(--font-mono);
+		font-variant-numeric: tabular-nums;
+	}
+	.hint {
+		font-size: 0.75rem;
+		max-width: 44ch;
+		line-height: 1.35;
 	}
 
 	/* ---------- money rows ---------- */
