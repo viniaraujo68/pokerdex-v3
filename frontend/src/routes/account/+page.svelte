@@ -57,28 +57,36 @@
 </svelte:head>
 
 {#if auth.ready && auth.user}
-	<div class="account pd-stack">
+	<div class="mx-auto flex max-w-[460px] flex-col gap-4">
 		<div>
-			<h1>{t('account.title')}</h1>
-			<p class="muted">{t('account.subtitle', { name: auth.user.username })}</p>
+			<h1 class="text-2xl font-semibold tracking-tight">{t('account.title')}</h1>
+			<p class="mt-1 text-base-content/80">
+				{t('account.subtitle', { name: auth.user.username })}
+			</p>
 		</div>
 
-		<form class="pd-card pd-stack" onsubmit={submit}>
-			<h2>{t('account.changePassword')}</h2>
-			<div class="field">
-				<label for="cur">{t('account.currentPassword')}</label>
+		<form class="card flex flex-col gap-4 bg-base-100 p-5" onsubmit={submit}>
+			<h2 class="text-lg font-semibold">{t('account.changePassword')}</h2>
+			<div class="flex flex-col gap-1.5">
+				<label class="text-xs font-medium text-base-content/80" for="cur">
+					{t('account.currentPassword')}
+				</label>
 				<input
 					id="cur"
+					class="input w-full"
 					type="password"
 					bind:value={current}
 					autocomplete="current-password"
 					required
 				/>
 			</div>
-			<div class="field">
-				<label for="new">{t('account.newPassword')}</label>
+			<div class="flex flex-col gap-1.5">
+				<label class="text-xs font-medium text-base-content/80" for="new">
+					{t('account.newPassword')}
+				</label>
 				<input
 					id="new"
+					class="input w-full"
 					type="password"
 					bind:value={next}
 					autocomplete="new-password"
@@ -86,10 +94,13 @@
 					required
 				/>
 			</div>
-			<div class="field">
-				<label for="cfm">{t('account.confirmPassword')}</label>
+			<div class="flex flex-col gap-1.5">
+				<label class="text-xs font-medium text-base-content/80" for="cfm">
+					{t('account.confirmPassword')}
+				</label>
 				<input
 					id="cfm"
+					class="input w-full"
 					type="password"
 					bind:value={confirm}
 					autocomplete="new-password"
@@ -97,28 +108,15 @@
 					required
 				/>
 			</div>
-			<button class="pd-btn pd-btn-primary" disabled={busy}>
+			<button class="btn btn-primary" disabled={busy}>
 				{busy ? t('common.saving') : t('account.changePassword')}
 			</button>
 		</form>
 
-		<div class="pd-card pd-stack">
-			<h2>{t('account.sessions')}</h2>
-			<p class="muted">{t('account.logoutAllHint')}</p>
-			<button class="pd-btn pd-btn-ghost" onclick={logoutAll} disabled={leaving}>
-				{t('account.logoutAll')}
-			</button>
+		<div class="card flex flex-col gap-4 bg-base-100 p-5">
+			<h2 class="text-lg font-semibold">{t('account.sessions')}</h2>
+			<p class="text-base-content/80">{t('account.logoutAllHint')}</p>
+			<button class="btn" onclick={logoutAll} disabled={leaving}>{t('account.logoutAll')}</button>
 		</div>
 	</div>
 {/if}
-
-<style>
-	.account {
-		max-width: 460px;
-		margin: 0 auto;
-	}
-	h2 {
-		font-size: 1.1rem;
-		margin: 0;
-	}
-</style>

@@ -93,23 +93,30 @@
 	<title>{title}</title>
 </svelte:head>
 
-<div class="head">
-	<a href={`/groups/${groupId}`} class="muted back">{t('night.backToGroup')}</a>
-	<h1>{editId ? t('night.edit') : t('night.new')}</h1>
+<div class="mb-5">
+	<a
+		href={`/groups/${groupId}`}
+		class="mb-2 inline-block text-sm text-base-content/80 hover:text-base-content"
+	>
+		{t('night.backToGroup')}
+	</a>
+	<h1 class="text-2xl font-semibold tracking-tight">{editId ? t('night.edit') : t('night.new')}</h1>
 </div>
 
 {#if loading}
-	<div class="center"><div class="spinner"></div></div>
+	<div class="grid min-h-[30dvh] place-items-center">
+		<span class="loading loading-spinner loading-lg" aria-label={t('common.loading')}></span>
+	</div>
 {:else if !ready}
-	<div class="pd-stack">
-		<div class="pd-alert pd-alert-error">
+	<div class="flex flex-col gap-4">
+		<div class="alert alert-soft alert-error">
 			{editId
 				? t('night.loadFailed', { message: loadError || t('night.notLoaded') })
 				: loadError || t('night.notLoaded')}
 		</div>
-		<div class="row">
-			<button class="pd-btn pd-btn-primary" onclick={load}>{t('common.retry')}</button>
-			<a href={`/groups/${groupId}`} class="pd-btn pd-btn-ghost">{t('group.back')}</a>
+		<div class="flex items-center gap-3">
+			<button class="btn btn-primary" onclick={load}>{t('common.retry')}</button>
+			<a href={`/groups/${groupId}`} class="btn">{t('group.back')}</a>
 		</div>
 	</div>
 <!-- `catalogs` is what `ready` above is mostly about; re-testing it here is what narrows it. -->
@@ -125,19 +132,3 @@
 		oncancel={() => goto(`/groups/${groupId}`)}
 	/>
 {/if}
-
-<style>
-	.head {
-		margin-bottom: 20px;
-	}
-	.back {
-		font-size: 0.9rem;
-		display: inline-block;
-		margin-bottom: 8px;
-	}
-	.center {
-		display: grid;
-		place-items: center;
-		min-height: 30dvh;
-	}
-</style>

@@ -94,7 +94,7 @@ export function centsToInput(cents) {
 /** @param {number|null|undefined} cents */
 export function moneyClass(cents) {
 	if (cents == null) return '';
-	if (cents > 0) return 'pos';
-	if (cents < 0) return 'neg';
+	if (cents > 0) return 'money-pos';
+	if (cents < 0) return 'money-neg';
 	return '';
 }

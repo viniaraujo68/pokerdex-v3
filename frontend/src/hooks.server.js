@@ -10,6 +10,36 @@
  */
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
+import { DARK_THEME, LIGHT_THEME, parseThemePreference, THEME_COOKIE } from '@viniaraujo68/plinth/theme';
+
+/**
+ * Flash-free theming for a mostly-client-rendered app.
+ *
+ * The `ThemeController` checkbox is what CSS keys on once the app is alive, but on the very first
+ * paint there is no checkbox: the authenticated routes are `ssr = false`, so the server sends a
+ * shell and the browser paints it before a single line of app code runs. Stamping `data-theme` on
+ * `<html>` from the cookie is what colours that shell correctly.
+ *
+ * The attribute is left in place afterwards rather than cleaned up on hydration: the theme
+ * stylesheet's `:root:has(input.theme-controller…)` rules outrank a bare `[data-theme]`, so the
+ * live control always wins over the stamp. "system" gets no attribute at all, which is what hands
+ * the choice back to `color-scheme: light dark` and the OS.
+ *
+ * @type {import('@sveltejs/kit').Handle}
+ */
+export async function handle({ event, resolve }) {
+	const preference = parseThemePreference(event.cookies.get(THEME_COOKIE));
+	const attribute =
+		preference === 'light'
+			? `data-theme="${LIGHT_THEME}"`
+			: preference === 'dark'
+				? `data-theme="${DARK_THEME}"`
+				: '';
+
+	return resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('%pokerdex.theme%', attribute)
+	});
+}
 
 /** Compose puts the API on the internal network; `vite dev` runs it on localhost:8000. */
 const FALLBACK_BASE = dev ? 'http://localhost:8000' : 'http://backend:8000';

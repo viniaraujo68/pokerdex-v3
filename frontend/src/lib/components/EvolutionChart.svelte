@@ -1,10 +1,13 @@
 <script>
 	import { onMount } from 'svelte';
+	import { getThemeContext } from '@viniaraujo68/plinth/theme';
 	import { formatMoney, formatMoneyAxis } from '$lib/money.svelte.js';
 	import { i18n, localeTag, t } from '$lib/i18n.svelte.js';
 
 	/** @type {{ evolution: import('$lib/types.js').Evolution }} */
 	let { evolution } = $props();
+
+	const theme = getThemeContext();
 
 	/** $state so the render effect below re-runs when `bind:this` first hands us the element. */
 	let canvas = $state(/** @type {HTMLCanvasElement|undefined} */ (undefined));
@@ -14,26 +17,46 @@
 	let renderTicket = 0;
 
 	/**
-	 * Series palette as `[custom property, fallback]`. Chart.js needs concrete colours (it
-	 * paints to a canvas, where `var(--x)` means nothing), so the tokens are resolved off
-	 * `:root` at render time — a token edit in app.css lands here with no change to this file.
-	 * The last three have no token of their own; they only exist to keep 8 series apart.
+	 * Series palette, written as CSS colour expressions. Chart.js paints to a canvas, where
+	 * `var(--x)` means nothing and `light-dark()` — which every theme token is declared through —
+	 * cannot be read back off a custom property at all: `getPropertyValue` hands back the literal
+	 * `light-dark(a, b)` text. So each entry is resolved through a real element instead (see
+	 * `colorResolver`), which is also what makes the palette follow a subtree `[data-theme]`.
+	 * The last two are outside the theme: eight series need more hues than it defines.
 	 */
 	const PALETTE = [
-		['--felt-bright', '#9d5cff'],
-		['--gold', '#ffd23f'],
-		['', '#c084fc'],
-		['--blue', '#60a5fa'],
-		['--red', '#f0586a'],
-		['--green-pos', '#4ade80'],
-		['', '#f59e0b'],
-		['', '#e879f9']
+		'var(--color-primary)',
+		'var(--color-warning)',
+		'var(--color-info)',
+		'var(--color-success)',
+		'var(--color-error)',
+		'var(--color-secondary)',
+		'#d946ef',
+		'#0d9488'
 	];
 
-	/** Resolved token values for one render. @returns {(name: string, fallback: string) => string} */
-	function tokenReader() {
-		const styles = typeof document === 'undefined' ? null : getComputedStyle(document.documentElement);
-		return (name, fallback) => (name && styles?.getPropertyValue(name).trim()) || fallback;
+	/**
+	 * Resolves any CSS colour expression against the chart's own place in the tree, by parking a
+	 * probe element there and reading its computed `color` back as `rgb(...)`.
+	 * @param {HTMLElement} host
+	 */
+	function colorResolver(host) {
+		const probe = document.createElement('span');
+		probe.style.position = 'absolute';
+		probe.style.visibility = 'hidden';
+		probe.style.pointerEvents = 'none';
+		host.appendChild(probe);
+		return {
+			/** @param {string} expression @param {string} fallback */
+			read(expression, fallback) {
+				probe.style.color = '';
+				probe.style.color = expression;
+				return getComputedStyle(probe).color || fallback;
+			},
+			done() {
+				probe.remove();
+			}
+		};
 	}
 
 	/** @param {string} d */
@@ -55,16 +78,17 @@
 		if (chart) chart.destroy();
 		if (!canvas) return;
 
-		const token = tokenReader();
-		const legendColor = token('--text-muted', '#9a92b5');
-		const axisColor = token('--text-faint', '#857da3');
-		// No token for the gridlines: a hairline of the page's own white, not part of the palette.
-		const gridColor = 'rgba(255,255,255,0.05)';
+		const resolve = colorResolver(canvas.parentElement ?? document.body);
+		const ink = (/** @type {number} */ percent, /** @type {string} */ fallback) =>
+			resolve.read(`color-mix(in oklch, var(--color-base-content) ${percent}%, transparent)`, fallback);
+		const legendColor = ink(80, '#9a92b5');
+		const axisColor = ink(65, '#857da3');
+		// The gridlines are the page's own ink at a hairline strength, not part of the palette.
+		const gridColor = ink(10, 'rgba(127,127,127,0.12)');
 
 		const labels = dates.map(labelFor);
 		const datasets = series.map((s, i) => {
-			const [name, fallback] = PALETTE[i % PALETTE.length];
-			const color = token(name, fallback);
+			const color = resolve.read(PALETTE[i % PALETTE.length], '#6f4bd4');
 			return {
 				label: s.name,
 				// null = before this player's first night; Chart.js skips those points.
@@ -111,6 +135,8 @@
 				}
 			}
 		});
+
+		resolve.done();
 	}
 
 	// Cleanup only. `onMount(render)` used to run alongside the $effect below, building the chart
@@ -127,13 +153,17 @@
 		const dates = evolution?.dates;
 		const series = evolution?.series;
 		i18n.locale; // tracked: labelFor()/the money callbacks are locale-dependent
+		// Both tracked: `preference` catches an explicit pick (including one that lands on the
+		// scheme the OS was already showing), `dark` catches the OS moving under "system".
+		theme.preference;
+		theme.dark;
 		if (!canvas || !dates || !series) return;
 		render(dates, series);
 	});
 </script>
 
 {#if evolution.dates.length === 0}
-	<div class="empty">{t('chart.empty')}</div>
+	<div class="px-5 py-12 text-center text-base-content/65">{t('chart.empty')}</div>
 {:else}
 	<div class="chart-wrap">
 		<canvas bind:this={canvas}></canvas>

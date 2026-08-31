@@ -86,12 +86,12 @@
 </svelte:head>
 
 {#if error}
-	<div class="pd-card empty">{error}</div>
+	<div class="card bg-base-100 px-5 py-12 text-center text-base-content/65">{error}</div>
 {:else if group}
 	<div class="head">
-		<span class="chip chip-felt">{t('public.badge')}</span>
-		<h1>{group.name}</h1>
-		{#if group.description}<p class="muted">{group.description}</p>{/if}
+		<span class="badge badge-soft badge-primary">{t('public.badge')}</span>
+		<h1 class="text-[2rem] font-semibold tracking-tight">{group.name}</h1>
+		{#if group.description}<p class="text-base-content/80">{group.description}</p>{/if}
 	</div>
 
 	<TabBar
@@ -106,12 +106,12 @@
 
 	<div id="public-panel" role="tabpanel" aria-labelledby={`ptab-${tab}`}>
 		{#if tab === 'ranking'}
-			<div class="pd-card"><RankingTable ranking={group.stats.ranking} /></div>
+			<div class="card bg-base-100 p-5"><RankingTable ranking={group.stats.ranking} /></div>
 		{:else if tab === 'stats'}
-			<div class="pd-stack">
+			<div class="flex flex-col gap-4">
 				<Records records={group.stats.records} totalNights={group.stats.total_nights} />
-				<div class="pd-card pd-stack">
-					<h3>{t('stats.evolution')}</h3>
+				<div class="card flex flex-col gap-4 bg-base-100 p-5">
+					<h3 class="font-semibold">{t('stats.evolution')}</h3>
 					<EvolutionChart evolution={group.evolution} />
 				</div>
 			</div>
@@ -120,8 +120,9 @@
 		{/if}
 	</div>
 
-	<p class="foot-cta faint">
-		{t('public.cta')} <a href="/" class="pd-link">{t('public.ctaLink')}</a>
+	<p class="mt-10 text-center text-sm text-base-content/65">
+		{t('public.cta')}
+		<a href="/" class="link link-primary font-medium">{t('public.ctaLink')}</a>
 	</p>
 {/if}
 
@@ -133,13 +134,5 @@
 		align-items: center;
 		text-align: center;
 		margin-bottom: 24px;
-	}
-	.head h1 {
-		font-size: 2.2rem;
-	}
-	.foot-cta {
-		text-align: center;
-		margin-top: 40px;
-		font-size: 0.9rem;
 	}
 </style>

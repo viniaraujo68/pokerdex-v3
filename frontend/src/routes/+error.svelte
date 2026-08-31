@@ -13,42 +13,30 @@
 	<title>{notFound ? t('title.notFound') : t('title.error')}</title>
 </svelte:head>
 
-<div class="pd-card empty pd-stack errbox">
+<div class="errbox card mx-auto mt-[8vh] max-w-[520px] items-center gap-3 bg-base-100 px-6 py-10">
 	<span class="glyph" aria-hidden="true">♠</span>
-	<span class="chip">{t('error.http', { status: $page.status })}</span>
-	<h1>{title}</h1>
-	<p class="muted">{body}</p>
+	<span class="badge badge-soft">{t('error.http', { status: $page.status })}</span>
+	<h1 class="text-2xl font-semibold tracking-tight">{title}</h1>
+	<p class="text-base-content/80">{body}</p>
 	{#if $page.error?.message && !notFound}
-		<p class="faint detail">{$page.error.message}</p>
+		<p class="detail text-base-content/65">{$page.error.message}</p>
 	{/if}
-	<a href="/" class="pd-btn pd-btn-ghost">{t('error.home')}</a>
+	<a href="/" class="btn">{t('error.home')}</a>
 </div>
 
 <style>
 	.errbox {
-		align-items: center;
-		gap: 12px;
-		max-width: 520px;
-		margin: 8vh auto 0;
-		/* .empty ships 48px of vertical padding; the card supplies the horizontal side */
-		padding: 40px 22px;
+		text-align: center;
 	}
 	.glyph {
 		display: grid;
 		place-items: center;
 		width: 56px;
 		height: 56px;
-		border-radius: 16px;
-		background: linear-gradient(180deg, var(--felt-bright), var(--felt-deep));
-		color: #fff;
+		border-radius: var(--radius-box);
+		background-color: var(--color-primary);
+		color: var(--color-primary-content);
 		font-size: 1.8rem;
-	}
-	.errbox h1 {
-		font-size: 1.5rem;
-		color: var(--text);
-	}
-	.errbox p {
-		margin: 0;
 	}
 	.detail {
 		font-size: 0.82rem;

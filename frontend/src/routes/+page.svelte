@@ -3,7 +3,7 @@
 	import { auth } from '$lib/stores/auth.svelte.js';
 	import { get, post, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
-	import { Modal } from '@viniaraujo68/plinth/components';
+	import { Modal, Skeleton } from '@viniaraujo68/plinth/components';
 	import GroupCard from '$lib/components/GroupCard.svelte';
 	import { t } from '$lib/i18n.svelte.js';
 
@@ -83,18 +83,18 @@
 
 {#if !auth.ready || loading}
 	<!-- Skeleton of the dashboard we're most likely about to render: a heading and a card grid. -->
-	<div class="skel" role="status">
+	<div class="flex flex-col gap-2.5" role="status">
 		<span class="sr-only">{t('common.loading')}</span>
-		<div class="sk sk-h1"></div>
-		<div class="sk sk-line sk-sub"></div>
-		<div class="groups pd-grid">
+		<Skeleton class="h-[30px] w-[min(240px,60%)]" />
+		<Skeleton class="mb-3.5 h-3 w-[min(160px,45%)]" />
+		<div class="groups grid gap-4">
 			{#each [0, 1, 2] as i (i)}
-				<div class="pd-card sk-card">
-					<div class="sk sk-line sk-cardtitle"></div>
-					<div class="sk sk-line sk-cardline"></div>
-					<div class="sk-chips">
-						<div class="sk sk-chip"></div>
-						<div class="sk sk-chip"></div>
+				<div class="card flex flex-col gap-3 bg-base-100 p-5">
+					<Skeleton class="h-[18px] w-3/5" />
+					<Skeleton class="h-3 w-[85%]" />
+					<div class="mt-auto flex gap-2">
+						<Skeleton class="h-[22px] w-[84px]" rounded="full" />
+						<Skeleton class="h-[22px] w-[84px]" rounded="full" />
 					</div>
 				</div>
 			{/each}
@@ -102,26 +102,26 @@
 	</div>
 {:else if !auth.user}
 	<!-- Landing -->
-	<section class="pd-hero">
+	<section class="hero">
 		<span class="logo-big">♠</span>
-		<h1>Pokerdex</h1>
-		<p class="muted lead">{t('home.tagline')}</p>
-		<div class="row pd-hero-cta">
-			<a href="/register" class="pd-btn pd-btn-primary">{t('nav.register')}</a>
-			<a href="/login" class="pd-btn pd-btn-ghost">{t('nav.login')}</a>
+		<h1 class="hero-title">Pokerdex</h1>
+		<p class="text-lg text-base-content/80">{t('home.tagline')}</p>
+		<div class="mt-2.5 flex items-center gap-3">
+			<a href="/register" class="btn btn-primary">{t('nav.register')}</a>
+			<a href="/login" class="btn">{t('nav.login')}</a>
 		</div>
 	</section>
 {:else}
 	<!-- Dashboard -->
-	<div class="spread head">
+	<div class="head flex items-start justify-between gap-3">
 		<div>
-			<h1>{t('home.myGroups')}</h1>
-			<p class="muted">{t('home.greeting', { name: auth.user.username })}</p>
+			<h1 class="text-2xl font-semibold tracking-tight">{t('home.myGroups')}</h1>
+			<p class="mt-1 text-base-content/80">{t('home.greeting', { name: auth.user.username })}</p>
 		</div>
-		<button class="pd-btn pd-btn-primary" onclick={() => createModal?.show()}>{t('home.newGroup')}</button>
+		<button class="btn btn-primary" onclick={() => createModal?.show()}>{t('home.newGroup')}</button>
 	</div>
 
-	{#if error}<div class="pd-alert pd-alert-error">{error}</div>{/if}
+	{#if error}<div class="alert alert-soft alert-error">{error}</div>{/if}
 
 	<Modal
 		bind:this={createModal}
@@ -129,19 +129,26 @@
 		closeLabel={t('common.close')}
 		class="max-w-[460px]"
 	>
-		<form id="create-group" class="pd-stack" onsubmit={createGroup}>
-			{#if createError}<div class="pd-alert pd-alert-error">{createError}</div>{/if}
-			<div class="field">
-				<label for="g-name">{t('group.nameLabel')}</label>
+		<form id="create-group" class="flex flex-col gap-4" onsubmit={createGroup}>
+			{#if createError}<div class="alert alert-soft alert-error">{createError}</div>{/if}
+			<div class="flex flex-col gap-1.5">
+				<label class="text-xs font-medium text-base-content/80" for="g-name">
+					{t('group.nameLabel')}
+				</label>
 				<!-- svelte-ignore a11y_autofocus -->
-				<input id="g-name" bind:value={name} autofocus required />
+				<input id="g-name" class="input w-full" bind:value={name} autofocus required />
 			</div>
-			<div class="field">
-				<label for="g-desc">{t('common.description')} <span class="faint">{t('common.optional')}</span></label>
-				<input id="g-desc" bind:value={description} />
+			<div class="flex flex-col gap-1.5">
+				<label class="text-xs font-medium text-base-content/80" for="g-desc">
+					{t('common.description')}
+					<span class="font-normal text-base-content/65">{t('common.optional')}</span>
+				</label>
+				<input id="g-desc" class="input w-full" bind:value={description} />
 			</div>
-			<div class="field">
-				<span class="lbl" id="vis-label">{t('group.visibility')}</span>
+			<div class="flex flex-col gap-1.5">
+				<span class="text-xs font-medium text-base-content/80" id="vis-label">
+					{t('group.visibility')}
+				</span>
 				<div class="vis" role="radiogroup" aria-labelledby="vis-label">
 					<button
 						type="button"
@@ -154,9 +161,9 @@
 						onkeydown={onVisKey}
 						onclick={() => (visibility = 'public')}
 					>
-						<span class="vis-ic" aria-hidden="true">🌐</span>
-						<span class="vis-t">{t('group.public')}</span>
-						<span class="vis-d faint">{t('group.publicHint')}</span>
+						<span class="text-xl" aria-hidden="true">🌐</span>
+						<span class="font-semibold">{t('group.public')}</span>
+						<span class="vis-d text-base-content/65">{t('group.publicHint')}</span>
 					</button>
 					<button
 						type="button"
@@ -169,37 +176,45 @@
 						onkeydown={onVisKey}
 						onclick={() => (visibility = 'private')}
 					>
-						<span class="vis-ic" aria-hidden="true">🔒</span>
-						<span class="vis-t">{t('group.private')}</span>
-						<span class="vis-d faint">{t('group.privateHint')}</span>
+						<span class="text-xl" aria-hidden="true">🔒</span>
+						<span class="font-semibold">{t('group.private')}</span>
+						<span class="vis-d text-base-content/65">{t('group.privateHint')}</span>
 					</button>
 				</div>
 			</div>
 		</form>
 
 		{#snippet footer()}
-			<button type="button" class="pd-btn pd-btn-ghost" onclick={() => createModal?.close()}>
+			<button type="button" class="btn" onclick={() => createModal?.close()}>
 				{t('common.cancel')}
 			</button>
-			<button class="pd-btn pd-btn-primary" form="create-group" disabled={creating || !name}>
+			<button class="btn btn-primary" form="create-group" disabled={creating || !name}>
 				{creating ? t('group.creating') : t('group.create')}
 			</button>
 		{/snippet}
 	</Modal>
 
 	{#if groups.length === 0}
-		<div class="pd-card empty pd-stack empty-cta">
-			<p>{t('home.empty')}</p>
-			<button class="pd-btn pd-btn-primary" onclick={() => createModal?.show()}>{t('home.newGroup')}</button>
+		<div class="card items-center gap-4 bg-base-100 px-5 py-12 text-center">
+			<p class="text-base-content/65">{t('home.empty')}</p>
+			<button class="btn btn-primary" onclick={() => createModal?.show()}>
+				{t('home.newGroup')}
+			</button>
 		</div>
 	{:else}
 		{#if groups.length > 3}
-			<input class="search" placeholder={t('home.searchPlaceholder')} bind:value={query} />
+			<input
+				class="input search mb-4.5 w-full"
+				placeholder={t('home.searchPlaceholder')}
+				bind:value={query}
+			/>
 		{/if}
 		{#if filteredGroups.length === 0}
-			<div class="pd-card empty">{t('home.noResults', { query })}</div>
+			<div class="card bg-base-100 px-5 py-12 text-center text-base-content/65">
+				{t('home.noResults', { query })}
+			</div>
 		{:else}
-			<div class="groups pd-grid">
+			<div class="groups grid gap-4">
 				{#each filteredGroups as g (g.id)}
 					<GroupCard group={g} href={`/groups/${g.id}`} visibility={g.visibility} />
 				{/each}
@@ -209,79 +224,59 @@
 {/if}
 
 <style>
-	/* ---------- loading skeleton (mirrors the dashboard head + group grid) ---------- */
-	.skel {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-	.sk-h1 {
-		height: 30px;
-		width: min(240px, 60%);
-	}
-	.sk-sub {
-		width: min(160px, 45%);
-		margin-bottom: 14px;
-	}
-	.sk-card {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-	.sk-cardtitle {
-		height: 18px;
-		width: 60%;
-	}
-	.sk-cardline {
-		width: 85%;
-	}
-	.sk-chips {
-		display: flex;
-		gap: 8px;
-		margin-top: auto;
-	}
-	.sk-chip {
-		height: 22px;
-		width: 84px;
-		border-radius: 999px;
-	}
-	.pd-hero {
+	/* The landing's one piece of personality: a primary wash bleeding out from behind the mark,
+	   mixed from the theme so it reads the same way in both schemes. */
+	.hero {
+		position: relative;
+		/* Own stacking context, so the wash below can sit at a negative z-index without falling
+		   behind the shell's own base-100 backdrop. */
+		isolation: isolate;
 		text-align: center;
 		max-width: 560px;
-		margin: 12vh auto 0;
+		margin: 10vh auto 0;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 14px;
+	}
+	.hero::before {
+		content: '';
+		position: absolute;
+		inset: -16vh -26% auto;
+		height: 42vh;
+		z-index: -1;
+		pointer-events: none;
+		background:
+			radial-gradient(
+				48% 52% at 50% 42%,
+				color-mix(in oklch, var(--color-primary) 20%, transparent),
+				transparent 72%
+			),
+			radial-gradient(
+				34% 34% at 72% 74%,
+				color-mix(in oklch, var(--color-warning) 11%, transparent),
+				transparent 72%
+			);
 	}
 	.logo-big {
 		display: grid;
 		place-items: center;
 		width: 72px;
 		height: 72px;
-		border-radius: 18px;
-		background: linear-gradient(180deg, var(--felt-bright), var(--felt-deep));
-		color: #fff;
+		border-radius: var(--radius-box);
+		background-color: var(--color-primary);
+		color: var(--color-primary-content);
 		font-size: 2.4rem;
-		box-shadow: var(--shadow-lg);
+		box-shadow: 0 18px 40px -18px color-mix(in oklch, var(--color-primary) 70%, transparent);
 	}
-	.pd-hero h1 {
+	.hero-title {
 		font-size: clamp(2.2rem, 6vw, 3rem);
-	}
-	.lead {
-		font-size: 1.1rem;
-	}
-	.pd-hero-cta {
-		margin-top: 10px;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
 	}
 	.head {
 		margin-bottom: 24px;
-	}
-	.empty-cta {
-		align-items: center;
-	}
-	.empty-cta p {
-		margin: 0;
 	}
 	@media (max-width: 560px) {
 		.head {
@@ -289,17 +284,12 @@
 			align-items: stretch;
 			gap: 12px;
 		}
-		.head :global(.pd-btn) {
+		.head :global(.btn) {
 			width: 100%;
 		}
 		.search {
 			max-width: none;
 		}
-	}
-	.lbl {
-		font-size: 0.82rem;
-		font-weight: 600;
-		color: var(--text-muted);
 	}
 	.vis {
 		display: grid;
@@ -318,28 +308,21 @@
 		gap: 3px;
 		text-align: left;
 		padding: 12px 14px;
-		border-radius: 10px;
-		border: 1px solid var(--border-color);
-		background: var(--bg-elev);
-		color: var(--text);
+		border-radius: var(--radius-field);
+		border: 1px solid color-mix(in oklch, var(--color-base-content) 15%, transparent);
+		background: var(--color-base-100);
+		color: var(--color-base-content);
 		cursor: pointer;
 		transition:
 			border-color 0.12s ease,
 			background 0.12s ease;
 	}
 	.vis-opt:hover {
-		border-color: var(--felt);
+		border-color: color-mix(in oklch, var(--color-primary) 55%, transparent);
 	}
 	.vis-opt.sel {
-		border-color: var(--felt-bright);
-		background: rgba(124, 58, 237, 0.14);
-	}
-	.vis-ic {
-		font-size: 1.2rem;
-	}
-	.vis-t {
-		font-weight: 700;
-		font-family: var(--font-display);
+		border-color: var(--color-primary);
+		background: color-mix(in oklch, var(--color-primary) 12%, transparent);
 	}
 	.vis-d {
 		font-size: 0.74rem;
@@ -347,7 +330,6 @@
 	}
 	.search {
 		max-width: 360px;
-		margin-bottom: 18px;
 	}
 	.groups {
 		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

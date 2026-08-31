@@ -9,6 +9,7 @@
 	import NightsList from '$lib/components/NightsList.svelte';
 	import GroupSettings from '$lib/components/GroupSettings.svelte';
 	import TabBar from '$lib/components/TabBar.svelte';
+	import { Skeleton } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
 	import { toast } from '@viniaraujo68/plinth/toast';
 	import { loginUrl } from '$lib/nav.js';
@@ -153,35 +154,37 @@
 
 {#if loading}
 	<!-- Skeleton, not a spinner: it reserves the real geometry, so nothing jumps on arrival. -->
-	<div class="skel" role="status">
+	<div class="flex flex-col gap-4" role="status">
 		<span class="sr-only">{t('common.loading')}</span>
-		<div class="sk sk-h1"></div>
-		<div class="sk sk-line sk-desc"></div>
-		<div class="sk-tabs">
-			{#each TAB_IDS as id (id)}<div class="sk sk-tab"></div>{/each}
+		<Skeleton class="h-[30px] w-[min(280px,70%)]" />
+		<Skeleton class="mb-2 h-3 w-[min(200px,50%)]" />
+		<div class="mb-2 flex gap-1 border-b border-base-content/10 pb-2.5">
+			{#each TAB_IDS as id (id)}<Skeleton class="h-[18px] w-[72px]" />{/each}
 		</div>
 		{#each [0, 1, 2] as i (i)}
-			<div class="pd-card pd-card-tight sk-card">
-				<div class="sk sk-line sk-date"></div>
-				<div class="sk-chips">
-					<div class="sk sk-chip"></div>
-					<div class="sk sk-chip"></div>
-					<div class="sk sk-chip"></div>
+			<div class="card flex flex-col gap-2.5 bg-base-100 p-4">
+				<Skeleton class="h-4 w-2/5" />
+				<div class="flex gap-1.5">
+					<Skeleton class="h-[22px] w-[68px]" rounded="full" />
+					<Skeleton class="h-[22px] w-[68px]" rounded="full" />
+					<Skeleton class="h-[22px] w-[68px]" rounded="full" />
 				</div>
 			</div>
 		{/each}
 	</div>
 {:else if error}
-	<div class="pd-alert pd-alert-error">{error}</div>
-	<a href="/" class="pd-btn pd-btn-ghost" style="margin-top:16px">{t('group.back')}</a>
+	<div class="alert alert-soft alert-error">{error}</div>
+	<a href="/" class="btn mt-4">{t('group.back')}</a>
 {:else if group && stats && evolution}
-	<div class="spread head">
+	<div class="head flex items-start justify-between gap-3">
 		<div>
-			<a href="/" class="muted back">{t('group.back')}</a>
-			<h1>{group.name}</h1>
-			{#if group.description}<p class="muted">{group.description}</p>{/if}
+			<a href="/" class="mb-2 inline-block text-sm text-base-content/80 hover:text-base-content">
+				{t('group.back')}
+			</a>
+			<h1 class="text-2xl font-semibold tracking-tight">{group.name}</h1>
+			{#if group.description}<p class="mt-1 text-base-content/80">{group.description}</p>{/if}
 		</div>
-		<a href={`/groups/${groupId}/nights/new`} class="pd-btn pd-btn-primary">{t('group.newNight')}</a>
+		<a href={`/groups/${groupId}/nights/new`} class="btn btn-primary">{t('group.newNight')}</a>
 	</div>
 
 	<TabBar {tabs} active={tab} onChange={setTab} label={t('tab.sections')} controls="group-panel" />
@@ -189,10 +192,12 @@
 	{#if showUnbalancedBadge && unbalancedCount > 0}
 		{#if tab === 'nights'}
 			<!-- already where the button would take you: a plain chip, not a dead control -->
-			<span class="chip chip-gold warn">{t('group.unbalanced', { count: unbalancedCount })}</span>
+			<span class="badge badge-soft badge-warning warn">
+				{t('group.unbalanced', { count: unbalancedCount })}
+			</span>
 		{:else}
 			<button
-				class="chip chip-gold warn tappable"
+				class="badge badge-soft badge-warning warn tappable"
 				title={t('group.unbalancedGoTo')}
 				onclick={() => setTab('nights')}
 			>
@@ -212,12 +217,12 @@
 				onQuickEdit={quickEditEntry}
 			/>
 		{:else if tab === 'ranking'}
-			<div class="pd-card"><RankingTable ranking={stats.ranking} /></div>
+			<div class="card bg-base-100 p-5"><RankingTable ranking={stats.ranking} /></div>
 		{:else if tab === 'stats'}
-			<div class="pd-stack">
+			<div class="flex flex-col gap-4">
 				<Records records={stats.records} totalNights={stats.total_nights} />
-				<div class="pd-card pd-stack">
-					<h3>{t('stats.evolution')}</h3>
+				<div class="card flex flex-col gap-4 bg-base-100 p-5">
+					<h3 class="font-semibold">{t('stats.evolution')}</h3>
 					<EvolutionChart {evolution} />
 				</div>
 			</div>
@@ -228,57 +233,8 @@
 {/if}
 
 <style>
-	/* ---------- loading skeleton (mirrors head + tabs + night cards) ---------- */
-	.skel {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-	.sk-h1 {
-		height: 30px;
-		width: min(280px, 70%);
-	}
-	.sk-desc {
-		width: min(200px, 50%);
-		margin-bottom: 8px;
-	}
-	.sk-tabs {
-		display: flex;
-		gap: 4px;
-		border-bottom: 1px solid var(--border-color);
-		padding-bottom: 10px;
-		margin-bottom: 8px;
-	}
-	.sk-tab {
-		height: 18px;
-		width: 72px;
-	}
-	.sk-card {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-	.sk-date {
-		height: 16px;
-		width: 40%;
-	}
-	.sk-chips {
-		display: flex;
-		gap: 6px;
-	}
-	.sk-chip {
-		height: 22px;
-		width: 68px;
-		border-radius: 999px;
-	}
 	.head {
-		align-items: flex-start;
 		margin-bottom: 20px;
-	}
-	.back {
-		font-size: 0.9rem;
-		display: inline-block;
-		margin-bottom: 8px;
 	}
 	@media (max-width: 560px) {
 		.head {
@@ -286,7 +242,7 @@
 			align-items: stretch;
 			gap: 12px;
 		}
-		.head :global(.pd-btn) {
+		.head :global(.btn) {
 			width: 100%;
 		}
 	}
@@ -294,12 +250,14 @@
 	.warn {
 		display: inline-flex;
 		align-items: flex-start;
+		height: auto;
 		/* pulled up under the tab rule so it reads as part of that band */
 		margin: -14px 0 20px;
 		padding: 6px 12px;
 		font-size: 0.8rem;
 		text-align: left;
 		line-height: 1.35;
+		white-space: normal;
 		max-width: 100%;
 	}
 	@media (max-width: 560px) {
@@ -313,7 +271,6 @@
 		cursor: pointer;
 	}
 	.tappable:hover {
-		border-color: var(--gold);
-		color: var(--gold);
+		border-color: var(--color-warning);
 	}
 </style>
