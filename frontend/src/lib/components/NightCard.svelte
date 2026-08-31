@@ -2,7 +2,8 @@
 	import { formatMoney, formatSigned, moneyClass, centsToInput, validateMoney } from '$lib/money.svelte.js';
 	import { errorMessage } from '$lib/http.js';
 	import { settle } from '$lib/settle.js';
-	import { localeTag, t } from '$lib/i18n.svelte.js';
+	import { t } from '$lib/i18n.svelte.js';
+	import { formatNightDate } from '$lib/dates.js';
 	import Icon from './Icon.svelte';
 
 	/**
@@ -25,15 +26,6 @@
 	/** Ties the header button to the panel it opens, for `aria-controls`. */
 	const bodyId = $derived(`night-${night.id}-detail`);
 	const settleId = $derived(`night-${night.id}-settlement`);
-
-	/** @param {string} d */
-	function fmtDate(d) {
-		return new Date(d + 'T00:00:00').toLocaleDateString(localeTag(), {
-			day: '2-digit',
-			month: 'long',
-			year: 'numeric'
-		});
-	}
 
 	const sorted = $derived([...night.entries].sort((a, b) => b.profit_cents - a.profit_cents));
 	const balanced = $derived(Math.abs(night.balance_cents) < 1);
@@ -107,7 +99,7 @@
 		onclick={() => (open = !open)}
 	>
 		<div>
-			<span class="date">{fmtDate(night.date)}</span>
+			<span class="date">{formatNightDate(night.date)}</span>
 			<div class="meta">
 				{#if night.place_name}
 					<span class="badge badge-soft">

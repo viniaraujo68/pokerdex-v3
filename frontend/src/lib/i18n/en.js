@@ -2,6 +2,7 @@
 export default {
 	// ---------- common ----------
 	'common.cancel': 'Cancel',
+	'common.confirm': 'Confirm',
 	'common.save': 'Save',
 	'common.edit': 'Edit',
 	'common.delete': 'Delete',
@@ -13,6 +14,7 @@ export default {
 	'common.retry': 'Try again',
 	'common.name': 'Name',
 	'common.description': 'Description',
+	'common.typeToConfirm': 'Type {value} to confirm',
 	'common.optional': '(optional)',
 	'common.players': 'Players',
 	'common.emptyList': 'empty',
@@ -150,7 +152,9 @@ export default {
 	'night.saving': 'Saving…',
 	'night.buyInInline': 'buy-in {amount}',
 	'night.cashOutInline': 'cash-out {amount}',
-	'night.deleteConfirm': 'Delete this night? Stats will be recalculated.',
+	'night.deleteTitle': 'Delete the night of {date}?',
+	'night.deleteBody':
+		'The night and every result in it are erased, and the group stats are recalculated.',
 	'night.deleteFailed': 'Could not delete the night: {message}',
 
 	// ---------- night card ----------
@@ -229,11 +233,8 @@ export default {
 	'settings.deleteWarningStrong': 'permanently',
 	'settings.deleteWarningPost': 'erases every night, player and place. This cannot be undone.',
 	'settings.deleteGroup': 'Delete group',
-	'settings.deleteConfirmPre': 'This will erase',
-	'settings.deleteConfirmPost':
-		'and everything in it, forever. To confirm, type the group name below:',
+	'settings.deleteConfirmBody': 'This will erase {name} and everything in it, forever.',
 	'settings.deletePermanently': 'Delete permanently',
-	'settings.deleting': 'Deleting…',
 
 	// ---------- auth ----------
 	'auth.login': 'Log in',
