@@ -127,7 +127,7 @@ export default {
 	'night.amounts': 'Valores',
 	'night.defaultBuyIn': 'Buy-in padrão',
 	'night.defaultBuyInHint':
-		'Preenche quem você adicionar e as linhas em branco. Não é salvo na noite.',
+		'Preenche quem você adicionar e as linhas em branco.',
 	'night.rebuyTitle': 'Mais um buy-in de {amount}',
 	'night.rebuyMultiple': '{count}× · {amount}',
 	'night.invalidAmount': 'Valor inválido',
