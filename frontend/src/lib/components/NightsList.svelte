@@ -290,7 +290,6 @@
 	/* thumb-sized: these chips are the main filter control on a phone */
 	.toggle-chip {
 		min-height: 44px;
-		border-radius: 999px;
 	}
 	.fmeta {
 		display: flex;
