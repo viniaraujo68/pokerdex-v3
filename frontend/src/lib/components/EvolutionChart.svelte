@@ -14,11 +14,14 @@
 	 * @property {string} id
 	 * @property {string} label
 	 * @property {string} color CSS colour expression, resolved per scheme by the probe.
+	 * @property {number[]} dash Canvas dash pattern; empty for a solid line.
+	 * @property {string} fill CSS background for the legend swatch, mirroring `dash`.
 	 * @property {(number|null)[]} values Cents, `null` where the series has no data yet.
 	 */
 
-	const SLOT_COUNT = 8;
-	const OTHERS_ID = 'others';
+	const HUE_COUNT = 8;
+	const DASH_PATTERNS = [[], [7, 5], [10, 4, 2, 4]];
+	const SWATCH_DASH_SCALE = 0.62;
 	const DIRECT_LABEL_MAX_SERIES = 4;
 	const DIRECT_LABEL_MIN_CANVAS = 520;
 	const DIRECT_LABEL_MAX_WIDTH = 120;
@@ -76,16 +79,17 @@
 		return Array.from({ length }, (_, i) => s.points[i]?.cumulative_cents ?? null);
 	}
 
-	/**
-	 * @param {(number|null)[][]} lists
-	 * @param {number} length
-	 * @returns {(number|null)[]}
-	 */
-	function sumOf(lists, length) {
-		return Array.from({ length }, (_, i) => {
-			const present = lists.map((l) => l[i]).filter((v) => v !== null);
-			return present.length === 0 ? null : present.reduce((a, b) => a + Number(b), 0);
+	/** @param {number[]} dash */
+	function swatchFill(dash) {
+		if (dash.length === 0) return 'var(--swatch)';
+		let offset = 0;
+		const stops = dash.map((run, i) => {
+			const start = offset;
+			offset += run * SWATCH_DASH_SCALE;
+			const paint = i % 2 === 0 ? 'var(--swatch)' : 'transparent';
+			return `${paint} ${start.toFixed(2)}px ${offset.toFixed(2)}px`;
 		});
+		return `repeating-linear-gradient(90deg, ${stops.join(', ')})`;
 	}
 
 	/**
@@ -99,38 +103,20 @@
 		const slots = new Map();
 		[...incoming]
 			.sort((a, b) => a.participant_id - b.participant_id)
-			.slice(0, SLOT_COUNT)
-			.forEach((s, i) => slots.set(s.participant_id, i + 1));
+			.forEach((s, i) => slots.set(s.participant_id, i));
 
-		/** @type {Series[]} */
-		const built = [];
-		/** @type {import('$lib/types.js').EvolutionSeries[]} */
-		const rest = [];
-		for (const s of incoming) {
-			const slot = slots.get(s.participant_id);
-			if (slot === undefined) {
-				rest.push(s);
-				continue;
-			}
-			built.push({
+		return incoming.map((s) => {
+			const slot = slots.get(s.participant_id) ?? 0;
+			const dash = DASH_PATTERNS[Math.min(Math.floor(slot / HUE_COUNT), DASH_PATTERNS.length - 1)];
+			return {
 				id: String(s.participant_id),
 				label: s.name,
-				color: `var(--series-${slot})`,
+				color: `var(--series-${(slot % HUE_COUNT) + 1})`,
+				dash,
+				fill: swatchFill(dash),
 				values: centsOf(s, length)
-			});
-		}
-		if (rest.length > 0) {
-			built.push({
-				id: OTHERS_ID,
-				label: t('chart.others', { count: rest.length }),
-				color: 'var(--series-other)',
-				values: sumOf(
-					rest.map((s) => centsOf(s, length)),
-					length
-				)
-			});
-		}
-		return built;
+			};
+		});
 	}
 
 	/** @param {Series} s */
@@ -211,6 +197,7 @@
 				hidden: hiddenNow.has(s.id),
 				tension: 0.3,
 				borderWidth: 2,
+				borderDash: s.dash,
 				pointRadius,
 				pointBorderColor: surface,
 				pointBorderWidth: pointRadius > 0 ? 2 : 0,
@@ -405,7 +392,7 @@
 						aria-pressed={!isHidden(s.id)}
 						onclick={() => toggle(s.id)}
 					>
-						<span class="swatch" style="--swatch: {s.color}"></span>
+						<span class="swatch" style="--swatch: {s.color}; --fill: {s.fill}"></span>
 						<span class="name">{s.label}</span>
 						<span class="value">{formatSigned(currentValue(s))}</span>
 					</button>
@@ -428,7 +415,6 @@
 		--series-6: light-dark(#008300, #008300);
 		--series-7: light-dark(#4a3aa7, #9085e9);
 		--series-8: light-dark(#e34948, #e66767);
-		--series-other: color-mix(in oklch, var(--color-base-content) 45%, var(--color-base-100));
 		display: flex;
 		flex-direction: column;
 		gap: 14px;
@@ -488,10 +474,10 @@
 
 	.swatch {
 		flex: none;
-		width: 12px;
-		height: 12px;
-		border-radius: 3px;
-		background-color: var(--swatch);
+		width: 18px;
+		height: 7px;
+		border-radius: 2px;
+		background: var(--fill);
 	}
 
 	.name {
@@ -510,8 +496,8 @@
 	}
 
 	.chip.off .swatch {
-		background-color: transparent;
-		box-shadow: inset 0 0 0 2px var(--swatch);
+		background: none;
+		box-shadow: inset 0 0 0 1.5px var(--swatch);
 	}
 
 	.chip.off .name {

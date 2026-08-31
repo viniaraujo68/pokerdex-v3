@@ -194,10 +194,6 @@ export default {
 	'chart.empty': 'Sem dados para o gráfico ainda.',
 	'chart.series': 'Jogadores',
 	'chart.showAll': 'Todos',
-	'chart.others': {
-		one: 'Outro ({count})',
-		other: 'Outros ({count})'
-	},
 	'chart.allHidden': 'Selecione um jogador para ver o gráfico.',
 	'records.totalNights': 'Noites registradas',
 	'records.bestWin': 'Maior vitória numa noite',
