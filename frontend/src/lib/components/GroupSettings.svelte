@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { Modal } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
+	import Icon from './Icon.svelte';
 	import { toast } from '@viniaraujo68/plinth/toast';
 	import { unbalancedBadgeEnabled, setUnbalancedBadge } from '$lib/prefs.svelte.js';
 
@@ -308,15 +309,19 @@
 							class="chip-x"
 							aria-label={t('common.remove')}
 							title={t('common.remove')}
-							onclick={() => removeParticipant(p)}>✕</button
+							onclick={() => removeParticipant(p)}
 						>
+							<Icon name="close" class="size-3.5" />
+						</button>
 					{:else}
 						<button
 							class="chip-x revive"
 							aria-label={t('settings.reactivate', { name: p.name })}
 							title={t('settings.reactivate', { name: p.name })}
-							onclick={() => reactivateParticipant(p)}>↺</button
+							onclick={() => reactivateParticipant(p)}
 						>
+							<Icon name="restore" class="size-3.5" />
+						</button>
 					{/if}
 				</span>
 			{/each}
@@ -351,8 +356,10 @@
 								class="chip-x"
 								aria-label={t('common.remove')}
 								title={t('common.remove')}
-								onclick={() => removeItem(meta.kind, item.id)}>✕</button
+								onclick={() => removeItem(meta.kind, item.id)}
 							>
+								<Icon name="close" class="size-3.5" />
+							</button>
 						</span>
 					{/each}
 					{#if lists[meta.kind].length === 0}
@@ -465,9 +472,9 @@
 		flex-wrap: wrap;
 		gap: 8px;
 	}
-	/* The ✕/↺ used to be a ~13px target. Rather than float a 44px overlay that would spill into
-	   the neighbouring chip (the gap is only 8px), the chip grows to 44px tall and the button
-	   fills it: a full-height target with no overlap. */
+	/* The remove/restore buttons used to be a ~13px target. Rather than float a 44px overlay that
+	   would spill into the neighbouring chip (the gap is only 8px), the chip grows to 44px tall
+	   and the button fills it: a full-height target with no overlap. */
 	.tag {
 		gap: 2px;
 		height: auto;

@@ -35,7 +35,7 @@ export default {
 	'theme.light': 'Claro',
 	'theme.dark': 'Escuro',
 	'theme.switchTo': 'Tema: {current}. Mudar para {next}.',
-	'footer.tagline': 'Pokerdex · noites de poker do seu grupo ♠ ♥ ♣ ♦',
+	'footer.tagline': 'Pokerdex · noites de poker do seu grupo',
 
 	// ---------- títulos das páginas (<title>, um por rota) ----------
 	'title.home': 'Pokerdex',
@@ -56,10 +56,10 @@ export default {
 	// ---------- home ----------
 	'home.tagline': 'As noites de poker do seu grupo, organizadas.',
 	'home.myGroups': 'Meus grupos',
-	'home.greeting': 'Olá, {name} 👋',
+	'home.greeting': 'Olá, {name}',
 	'home.newGroup': '+ Novo grupo',
-	'home.empty': 'Você ainda não tem grupos. Crie o primeiro! ♠',
-	'home.searchPlaceholder': '🔎 Buscar nos meus grupos…',
+	'home.empty': 'Você ainda não tem grupos. Crie o primeiro!',
+	'home.searchPlaceholder': 'Buscar nos meus grupos…',
 	'home.noResults': 'Nenhum grupo encontrado para “{query}”.',
 
 	// ---------- grupo ----------
@@ -80,25 +80,25 @@ export default {
 	'group.nightCount': { one: '{count} noite', other: '{count} noites' },
 	'group.playerCount': { one: '{count} participante', other: '{count} participantes' },
 	'group.unbalanced': {
-		one: '⚠️ {count} noite com pote aberto',
-		other: '⚠️ {count} noites com pote aberto'
+		one: '{count} noite com pote aberto',
+		other: '{count} noites com pote aberto'
 	},
 	'group.unbalancedGoTo': 'Ver na aba Noites',
 
 	// ---------- explore ----------
 	'explore.title': 'Explorar grupos',
 	'explore.subtitle': 'Descubra placares públicos de outros grupos.',
-	'explore.searchPlaceholder': '🔎 Buscar grupos públicos pelo nome…',
+	'explore.searchPlaceholder': 'Buscar grupos públicos pelo nome…',
 	'explore.noResults': 'Nenhum grupo público para “{query}”.',
 	'explore.empty': 'Nenhum grupo público ainda.',
 	'explore.searching': 'Buscando…',
 
 	// ---------- placar público ----------
-	'public.badge': 'placar público ♠',
+	'public.badge': 'placar público',
 	'public.errorPrivate': 'Este grupo é privado. Você precisa de um link com token válido.',
 	// meta description / Open Graph — é o que aparece no card do WhatsApp/Discord
 	'public.metaCounts': '{nights} · {players}',
-	'public.metaTagline': 'Placar público no Pokerdex ♠',
+	'public.metaTagline': 'Placar público no Pokerdex',
 
 	// ---------- abas ----------
 	'tab.nights': 'Noites',
@@ -114,17 +114,19 @@ export default {
 	'night.date': 'Data',
 	'night.today': 'Hoje',
 	'night.yesterday': 'Ontem',
-	'night.otherDate': '📅 outra',
+	'night.otherDate': 'outra',
 	'night.place': 'Local',
 	'night.noPlace': 'sem local',
 	'night.placePlaceholder': 'Nome do local',
 	'night.addPlace': '+ Local',
 	'night.whoPlayed': 'Quem jogou?',
-	'night.sameTable': '↺ mesma mesa da última noite',
+	'night.sameTable': 'mesma mesa da última noite',
 	'night.atTable': { one: '{count} na mesa', other: '{count} na mesa' },
 	'night.noPlayersYet': 'Nenhum participante ainda — cadastre o primeiro abaixo.',
 	'night.amounts': 'Valores',
-	'night.standardBuyIn': 'buy-in padrão {amount}',
+	'night.defaultBuyIn': 'Buy-in padrão',
+	'night.defaultBuyInHint':
+		'Preenche quem você adicionar e as linhas em branco. Não é salvo na noite.',
 	'night.rebuyTitle': 'Mais um buy-in de {amount}',
 	'night.rebuyMultiple': '{count}× · {amount}',
 	'night.invalidAmount': 'Valor inválido',
@@ -144,7 +146,7 @@ export default {
 	'night.buyInCol': 'Buy-in',
 	'night.cashOutCol': 'Cash-out',
 	'night.newPlayer': 'Novo participante…',
-	'night.potMismatch': '⚠️ O pote não fecha — diferença de {amount}',
+	'night.potMismatch': 'O pote não fecha — diferença de {amount}',
 	'night.save': 'Salvar noite',
 	'night.saving': 'Salvando…',
 	'night.buyInInline': 'buy-in {amount}',
@@ -158,7 +160,7 @@ export default {
 	'card.quickEditFailed': 'Não foi possível salvar: {message}',
 
 	// ---------- lista de noites / filtros ----------
-	'nights.empty': 'Nenhuma noite registrada ainda. 🃏',
+	'nights.empty': 'Nenhuma noite registrada ainda.',
 	'nights.noneWithFilters': 'Nenhuma noite com esses filtros.',
 	'nights.showMore': 'Mostrar mais ({remaining} restantes)',
 	'filters.place': 'Local',
@@ -209,9 +211,9 @@ export default {
 	'settings.publicLinkHint': 'Qualquer pessoa com este link vê o placar (somente leitura).',
 	'settings.privateLinkHint':
 		'Grupo privado: o link só funciona com o token abaixo. Gire o token para revogar links antigos.',
-	'settings.rotateToken': '🔄 Gerar novo token',
+	'settings.rotateToken': 'Gerar novo token',
 	'settings.noLinkYet': 'Este grupo é privado e ainda não tem link de compartilhamento.',
-	'settings.generateLink': '🔗 Gerar link',
+	'settings.generateLink': 'Gerar link',
 	'settings.linkUnsavedHint':
 		'A visibilidade mudou e ainda não foi salva — o link abaixo reflete o estado salvo.',
 	'settings.options': 'Preferências deste grupo',
@@ -222,8 +224,8 @@ export default {
 	'settings.noPlayers': 'Nenhum participante ainda.',
 	'settings.reactivate': 'Reativar {name}',
 	'settings.inactiveHint':
-		'Participantes inativos ficam de fora de novas noites, mas seguem no histórico. Toque em ↺ para reativar.',
-	'settings.places': '📍 Locais',
+		'Participantes inativos ficam de fora de novas noites, mas seguem no histórico. Toque no botão de restaurar em um nome para reativá-lo.',
+	'settings.places': 'Locais',
 	'settings.addPlaceholder': 'Adicionar…',
 	'settings.dangerZone': 'Zona de perigo',
 	'settings.deleteWarningPre': 'Excluir o grupo apaga',
@@ -259,7 +261,7 @@ export default {
 	'account.newPassword': 'Nova senha',
 	'account.confirmPassword': 'Confirmar nova senha',
 	'account.passwordMismatch': 'As senhas não coincidem.',
-	'account.passwordChanged': 'Senha alterada ✓',
+	'account.passwordChanged': 'Senha alterada',
 	'account.sessions': 'Sessões',
 	'account.logoutAll': 'Sair de todos os dispositivos',
 	'account.logoutAllHint':
@@ -267,15 +269,15 @@ export default {
 
 	// ---------- feedback (toasts) ----------
 	'toast.region': 'Notificações',
-	'toast.nightSaved': 'Noite salva ✓',
+	'toast.nightSaved': 'Noite salva',
 	'toast.nightDeleted': 'Noite excluída',
-	'toast.settingsSaved': 'Configurações salvas ✓',
+	'toast.settingsSaved': 'Configurações salvas',
 	'toast.participantAdded': 'Participante adicionado: {name}',
 	'toast.participantReactivated': 'Participante reativado: {name}',
 	'toast.placeAdded': 'Local adicionado: {name}',
-	'toast.linkCopied': 'Link copiado ✓',
+	'toast.linkCopied': 'Link copiado',
 	'toast.copyFailed': 'Não foi possível copiar o link — copie manualmente.',
-	'toast.linkGenerated': 'Link de compartilhamento gerado ✓',
+	'toast.linkGenerated': 'Link de compartilhamento gerado',
 	'toast.tokenRotated': 'Novo token gerado — os links antigos foram revogados.',
 
 	// ---------- erros ----------

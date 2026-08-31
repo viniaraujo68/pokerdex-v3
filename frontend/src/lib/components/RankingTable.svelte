@@ -8,7 +8,7 @@
 
 	/** @typedef {import('$lib/types.js').RankingRow} Row */
 
-	const medals = ['🥇', '🥈', '🥉'];
+	const PODIUM = 3;
 
 	/** @type {import('@viniaraujo68/plinth/table').SortState} */
 	let sort = $state({ key: 'total_profit_cents', direction: 'desc' });
@@ -29,14 +29,14 @@
 	]);
 
 	/** @param {number} index */
-	const rankLabel = (index) => medals[index] ?? String(index + 1);
+	const tier = (index) => (index < PODIUM ? String(index + 1) : undefined);
 
 	/** @param {Row} r */
 	const roiText = (r) => (r.roi != null ? (r.roi * 100).toFixed(0) + '%' : '—');
 </script>
 
 {#snippet rankCell(/** @type {Row} */ _r, /** @type {number} */ index)}
-	<span class="rank">{rankLabel(index)}</span>
+	<span class="rank" data-tier={tier(index)}>{index + 1}</span>
 {/snippet}
 
 {#snippet nameCell(/** @type {Row} */ r)}
@@ -61,7 +61,7 @@
 
 {#snippet playerCard(/** @type {Row} */ r, /** @type {number} */ index)}
 	<div class="rcard">
-		<span class="rc-rank">{rankLabel(index)}</span>
+		<span class="rank rc-rank" data-tier={tier(index)}>{index + 1}</span>
 		<div class="rc-mid">
 			<span class="rc-name">{r.name}</span>
 			<span class="rc-sub text-base-content/65">
@@ -101,7 +101,29 @@
 	}
 
 	.rank {
-		font-size: 1rem;
+		display: inline-grid;
+		place-items: center;
+		min-width: 1.55em;
+		min-height: 1.55em;
+		padding: 0 0.3em;
+		border-radius: 999px;
+		font-size: 0.95rem;
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+		color: var(--ink-muted);
+	}
+	.rank[data-tier] {
+		font-weight: 700;
+		color: var(--ink-primary);
+		box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-primary) 32%, transparent);
+	}
+	.rank[data-tier='2'] {
+		background: color-mix(in oklch, var(--color-primary) 15%, transparent);
+	}
+	.rank[data-tier='1'] {
+		background: var(--color-primary);
+		color: var(--color-primary-content);
+		box-shadow: none;
 	}
 	.name {
 		overflow-wrap: anywhere;
@@ -113,10 +135,8 @@
 		gap: 12px;
 	}
 	.rc-rank {
-		font-size: 1.1rem;
-		min-width: 24px;
-		text-align: center;
-		font-variant-numeric: tabular-nums;
+		flex: none;
+		font-size: 1rem;
 	}
 	.rc-mid {
 		display: flex;

@@ -5,6 +5,7 @@
 	import { goto } from '$app/navigation';
 	import { Modal, Skeleton } from '@viniaraujo68/plinth/components';
 	import GroupCard from '$lib/components/GroupCard.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import { t } from '$lib/i18n.svelte.js';
 
 	/** Dashboard once we know who's logged in; the landing (and the skeleton) stay "Pokerdex". */
@@ -103,7 +104,7 @@
 {:else if !auth.user}
 	<!-- Landing -->
 	<section class="hero">
-		<span class="logo-big">♠</span>
+		<span class="logo-big"><Icon name="spade" /></span>
 		<h1 class="hero-title">Pokerdex</h1>
 		<p class="text-lg text-base-content/80">{t('home.tagline')}</p>
 		<div class="mt-2.5 flex items-center gap-3">
@@ -161,7 +162,7 @@
 						onkeydown={onVisKey}
 						onclick={() => (visibility = 'public')}
 					>
-						<span class="text-xl" aria-hidden="true">🌐</span>
+						<Icon name="globe" class="size-5" />
 						<span class="font-semibold">{t('group.public')}</span>
 						<span class="vis-d text-base-content/65">{t('group.publicHint')}</span>
 					</button>
@@ -176,7 +177,7 @@
 						onkeydown={onVisKey}
 						onclick={() => (visibility = 'private')}
 					>
-						<span class="text-xl" aria-hidden="true">🔒</span>
+						<Icon name="lock" class="size-5" />
 						<span class="font-semibold">{t('group.private')}</span>
 						<span class="vis-d text-base-content/65">{t('group.privateHint')}</span>
 					</button>
@@ -203,11 +204,10 @@
 		</div>
 	{:else}
 		{#if groups.length > 3}
-			<input
-				class="input search mb-4.5 w-full"
-				placeholder={t('home.searchPlaceholder')}
-				bind:value={query}
-			/>
+			<label class="input search-field mb-4.5 w-full">
+				<Icon name="search" class="size-4 opacity-55" />
+				<input placeholder={t('home.searchPlaceholder')} bind:value={query} />
+			</label>
 		{/if}
 		{#if filteredGroups.length === 0}
 			<div class="card bg-base-100 px-5 py-12 text-center text-base-content/65">
@@ -287,7 +287,7 @@
 		.head :global(.btn) {
 			width: 100%;
 		}
-		.search {
+		.search-field {
 			max-width: none;
 		}
 	}
@@ -324,11 +324,18 @@
 		border-color: var(--color-primary);
 		background: color-mix(in oklch, var(--color-primary) 12%, transparent);
 	}
+	.vis-opt :global(svg) {
+		margin-bottom: 2px;
+		color: color-mix(in oklch, var(--color-base-content) 55%, transparent);
+	}
+	.vis-opt.sel :global(svg) {
+		color: var(--ink-primary);
+	}
 	.vis-d {
 		font-size: 0.74rem;
 		line-height: 1.3;
 	}
-	.search {
+	.search-field {
 		max-width: 360px;
 	}
 	.groups {

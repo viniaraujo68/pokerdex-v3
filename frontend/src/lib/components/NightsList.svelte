@@ -1,5 +1,6 @@
 <script>
 	import NightCard from './NightCard.svelte';
+	import Icon from './Icon.svelte';
 	import { t } from '$lib/i18n.svelte.js';
 
 	/**
@@ -126,7 +127,7 @@
 					{t('filters.activeCount', { count: activeFilterCount })}
 				</span>
 			{/if}
-			<span class="fs-caret" class:open={filtersOpen} aria-hidden="true">⌄</span>
+			<span class="fs-caret" class:open={filtersOpen}><Icon name="chevron" /></span>
 		</button>
 
 		<div class="fbody" id="nights-filters" class:open={filtersOpen}>
@@ -252,8 +253,10 @@
 			min-width: 0;
 		}
 		.fs-caret {
+			display: grid;
+			place-items: center;
 			flex: 0 0 auto;
-			font-size: 1.3rem;
+			font-size: 1.15rem;
 			line-height: 1;
 			color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 			transition: transform 0.2s ease;

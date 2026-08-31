@@ -19,6 +19,7 @@
 	import { user } from '$lib/user.js';
 	import { auth, loadUser } from '$lib/stores/auth.svelte.js';
 	import { i18n, setLocale, t } from '$lib/i18n.svelte.js';
+	import Icon from '$lib/components/Icon.svelte';
 
 	let { children } = $props();
 
@@ -79,7 +80,7 @@
 
 {#snippet brandMark(collapsed = false)}
 	<a href="/" class="brand">
-		<span class="logo">♠</span>
+		<span class="logo"><Icon name="spade" label={collapsed ? 'Pokerdex' : undefined} /></span>
 		{#if !collapsed}<span class="brand-name">Pokerdex</span>{/if}
 	</a>
 {/snippet}
@@ -105,7 +106,15 @@
 
 {#snippet tagline()}
 	<footer class="foot">
-		<div class="container text-base-content/65">{t('footer.tagline')}</div>
+		<div class="container text-base-content/65">
+			{t('footer.tagline')}
+			<span class="suits">
+				<Icon name="spade" />
+				<Icon name="heart" />
+				<Icon name="club" />
+				<Icon name="diamond" />
+			</span>
+		</div>
 	</footer>
 {/snippet}
 
@@ -373,5 +382,13 @@
 		padding: 20px 0;
 		font-size: 0.82rem;
 		text-align: center;
+	}
+	.suits {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
+		margin-left: 7px;
+		vertical-align: -0.1em;
+		opacity: 0.8;
 	}
 </style>

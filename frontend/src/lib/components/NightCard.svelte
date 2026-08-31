@@ -3,6 +3,7 @@
 	import { errorMessage } from '$lib/http.js';
 	import { settle } from '$lib/settle.js';
 	import { localeTag, t } from '$lib/i18n.svelte.js';
+	import Icon from './Icon.svelte';
 
 	/**
 	 * @type {{
@@ -106,18 +107,28 @@
 		<div>
 			<span class="date">{fmtDate(night.date)}</span>
 			<div class="meta">
-				{#if night.place_name}<span class="badge badge-soft">📍 {night.place_name}</span>{/if}
-				<span class="badge badge-soft">👥 {night.entries.length}</span>
+				{#if night.place_name}
+					<span class="badge badge-soft">
+						<Icon name="place" />
+						{night.place_name}
+					</span>
+				{/if}
+				<span class="badge badge-soft">
+					<Icon name="players" />
+					{night.entries.length}
+				</span>
 				<span class="badge badge-soft badge-warning">
-					💰 {formatMoney(night.total_pot_cents)}
+					<Icon name="pot" />
+					{formatMoney(night.total_pot_cents)}
 				</span>
 			</div>
 		</div>
-		<span class="caret" class:open>⌄</span>
+		<span class="caret" class:open><Icon name="chevron" /></span>
 	</button>
 
 	{#if !balanced}
 		<div class="warn money-warn">
+			<Icon name="warning" />
 			{t('night.potMismatch', { amount: formatSigned(night.balance_cents) })}
 		</div>
 	{/if}
@@ -181,7 +192,7 @@
 									aria-label={t('card.editEntry', { name: e.participant_name })}
 									onclick={() => startEdit(e)}
 								>
-									✎
+									<Icon name="edit" class="size-4" />
 								</button>
 							{:else}
 								<span></span>
@@ -243,7 +254,9 @@
 		margin-top: 8px;
 	}
 	.caret {
-		font-size: 1.4rem;
+		display: grid;
+		place-items: center;
+		font-size: 1.15rem;
 		color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 		transition: transform 0.2s ease;
 		line-height: 1;
@@ -252,8 +265,14 @@
 		transform: rotate(180deg);
 	}
 	.warn {
+		display: flex;
+		align-items: center;
+		gap: 6px;
 		margin-top: 12px;
 		font-size: 0.82rem;
+	}
+	.warn :global(svg) {
+		flex: none;
 	}
 	.entries {
 		margin-top: 14px;
@@ -281,11 +300,13 @@
 		text-align: right;
 	}
 	.pencil {
+		display: inline-grid;
+		place-items: center;
+		justify-self: center;
 		background: none;
 		border: none;
 		color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 		cursor: pointer;
-		font-size: 0.95rem;
 		padding: 8px 4px;
 		line-height: 1;
 	}
