@@ -34,6 +34,19 @@
 
 	const isPublicScoreboard = $derived(page.route.id?.startsWith('/g/') ?? false);
 
+	/** @param {import('@viniaraujo68/plinth/theme').ThemePreference} preference */
+	const themePreferenceLabel = (preference) => t(`theme.${preference}`);
+
+	/**
+	 * @param {import('@viniaraujo68/plinth/theme').ThemePreference} current
+	 * @param {import('@viniaraujo68/plinth/theme').ThemePreference} next
+	 */
+	const themeLabel = (current, next) =>
+		t('theme.switchTo', {
+			current: themePreferenceLabel(current),
+			next: themePreferenceLabel(next)
+		});
+
 	/* ---------- navigation progress ----------
 	   Most navigations here resolve from cache in a few frames, and a bar that flashes on
 	   every click reads as jank. So the bar is armed on a GRACE_MS timer: only a navigation
@@ -106,7 +119,7 @@
 					<a href="/register" class="btn btn-sm btn-primary">{t('nav.register')}</a>
 				{/if}
 				{@render langToggle()}
-				<ThemeToggle iconOnly />
+				<ThemeToggle iconOnly preferenceLabel={themePreferenceLabel} label={themeLabel} />
 			</div>
 		</div>
 	</header>
@@ -164,7 +177,7 @@
 			{#snippet footer()}
 				<div class="shell-controls">
 					{@render langToggle()}
-					<ThemeToggle iconOnly />
+					<ThemeToggle iconOnly preferenceLabel={themePreferenceLabel} label={themeLabel} />
 				</div>
 			{/snippet}
 

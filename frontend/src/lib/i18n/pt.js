@@ -31,6 +31,10 @@ export default {
 	'nav.main': 'Navegação principal',
 	'nav.collapse': 'Recolher o menu lateral',
 	'nav.more': 'Mais',
+	'theme.system': 'Sistema',
+	'theme.light': 'Claro',
+	'theme.dark': 'Escuro',
+	'theme.switchTo': 'Tema: {current}. Mudar para {next}.',
 	'footer.tagline': 'Pokerdex · noites de poker do seu grupo ♠ ♥ ♣ ♦',
 
 	// ---------- títulos das páginas (<title>, um por rota) ----------
