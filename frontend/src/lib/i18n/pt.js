@@ -96,8 +96,6 @@ export default {
 	// ---------- placar público ----------
 	'public.badge': 'placar público ♠',
 	'public.errorPrivate': 'Este grupo é privado. Você precisa de um link com token válido.',
-	'public.cta': 'Quer registrar as noites do seu grupo?',
-	'public.ctaLink': 'Conheça o Pokerdex',
 	// meta description / Open Graph — é o que aparece no card do WhatsApp/Discord
 	'public.metaCounts': '{nights} · {players}',
 	'public.metaTagline': 'Placar público no Pokerdex ♠',
@@ -193,6 +191,13 @@ export default {
 	// ---------- estatísticas ----------
 	'stats.evolution': 'Evolução do lucro',
 	'chart.empty': 'Sem dados para o gráfico ainda.',
+	'chart.series': 'Jogadores',
+	'chart.showAll': 'Todos',
+	'chart.others': {
+		one: 'Outro ({count})',
+		other: 'Outros ({count})'
+	},
+	'chart.allHidden': 'Selecione um jogador para ver o gráfico.',
 	'records.totalNights': 'Noites registradas',
 	'records.bestWin': 'Maior vitória numa noite',
 	'records.worstLoss': 'Maior derrota numa noite',
