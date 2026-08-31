@@ -818,7 +818,6 @@
 	/* Chips double as the primary controls here, so they need a real touch target. */
 	.tap {
 		min-height: 44px;
-		border-radius: 999px;
 		font-size: 0.9rem;
 	}
 	.same-table {

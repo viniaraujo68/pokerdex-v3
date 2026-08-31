@@ -119,11 +119,6 @@
 			<NightsList nights={group.nights} />
 		{/if}
 	</div>
-
-	<p class="mt-10 text-center text-sm text-base-content/65">
-		{t('public.cta')}
-		<a href="/" class="link link-primary font-medium">{t('public.ctaLink')}</a>
-	</p>
 {/if}
 
 <style>
