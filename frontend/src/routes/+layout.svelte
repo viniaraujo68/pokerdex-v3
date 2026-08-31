@@ -19,7 +19,7 @@
 	import { user } from '$lib/user.js';
 	import { auth, loadUser } from '$lib/stores/auth.svelte.js';
 	import { i18n, setLocale, t } from '$lib/i18n.svelte.js';
-	import Icon from '$lib/components/Icon.svelte';
+	import BrandMark from '$lib/components/BrandMark.svelte';
 
 	let { children } = $props();
 
@@ -80,7 +80,7 @@
 
 {#snippet brandMark(collapsed = false)}
 	<a href="/" class="brand">
-		<span class="logo"><Icon name="spade" label={collapsed ? 'Pokerdex' : undefined} /></span>
+		<span class="logo"><BrandMark label={collapsed ? 'Pokerdex' : undefined} /></span>
 		{#if !collapsed}<span class="brand-name">Pokerdex</span>{/if}
 	</a>
 {/snippet}
