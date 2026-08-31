@@ -1,6 +1,7 @@
 <script>
 	import NightCard from './NightCard.svelte';
 	import Icon from './Icon.svelte';
+	import { Select } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
 
 	/**
@@ -22,7 +23,7 @@
 	 */
 	let { nights, editable = false, newNightHref = '', onEdit, onDelete, onQuickEdit } = $props();
 
-	let placeFilter = $state('');
+	let placeFilter = $state(/** @type {string | null} */ (''));
 	let dateFrom = $state('');
 	let dateTo = $state('');
 	/** @type {Set<number>} */
@@ -37,6 +38,12 @@
 		for (const n of nights) if (n.place_id) map.set(n.place_id, n.place_name ?? '');
 		return [...map].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
 	});
+
+	/** @type {import('@viniaraujo68/plinth/components').SelectOption[]} */
+	const placeOptions = $derived([
+		{ value: '', label: t('filters.allPlaces') },
+		...places.map((p) => ({ value: String(p.id), label: p.name }))
+	]);
 
 	// Distinct participants present across the nights.
 	const players = $derived.by(() => {
@@ -133,17 +140,23 @@
 		<div class="fbody" id="nights-filters" class:open={filtersOpen}>
 			<div class="ftop">
 				<div class="frow">
-					<label class="flabel" for="pf">{t('filters.place')}</label>
-					<select id="pf" class="select w-full" bind:value={placeFilter}>
-						<option value="">{t('filters.allPlaces')}</option>
-						{#each places as p (p.id)}<option value={p.id}>{p.name}</option>{/each}
-					</select>
+					<label class="flabel" id="pf-label" for="pf">{t('filters.place')}</label>
+					<Select
+						id="pf"
+						bind:value={placeFilter}
+						options={placeOptions}
+						aria-labelledby="pf-label"
+						placeholder={t('filters.allPlaces')}
+						searchPlaceholder={t('filters.searchPlaces')}
+						emptyLabel={t('filters.noPlaceMatch')}
+						class="w-full"
+					/>
 				</div>
 				<div class="frow">
 					<label class="flabel" for="df">{t('filters.from')}</label>
 					<input
 						id="df"
-						class="input w-full"
+						class="input min-h-11 w-full"
 						type="date"
 						bind:value={dateFrom}
 						max={dateTo || undefined}
@@ -153,7 +166,7 @@
 					<label class="flabel" for="dt">{t('filters.to')}</label>
 					<input
 						id="dt"
-						class="input w-full"
+						class="input min-h-11 w-full"
 						type="date"
 						bind:value={dateTo}
 						min={dateFrom || undefined}

@@ -1,7 +1,7 @@
 <script>
 	import { get, post, patch, del, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
-	import { Modal } from '@viniaraujo68/plinth/components';
+	import { Modal, Select } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
 	import Icon from './Icon.svelte';
 	import { toast } from '@viniaraujo68/plinth/toast';
@@ -50,7 +50,7 @@
 	// svelte-ignore state_referenced_locally
 	let description = $state(group.description);
 	// svelte-ignore state_referenced_locally
-	let visibility = $state(group.visibility);
+	let visibility = $state(/** @type {string | null} */ (group.visibility));
 	let savingGroup = $state(false);
 
 	$effect(() => {
@@ -202,6 +202,12 @@
 		}
 	}
 
+	/** @type {import('@viniaraujo68/plinth/components').SelectOption[]} */
+	const visibilityOptions = $derived([
+		{ value: 'public', label: t('group.public') },
+		{ value: 'private', label: t('group.private') }
+	]);
+
 	const hasInactive = $derived(participants.some((p) => !p.active));
 	/** @type {{ kind: CatalogKind, title: string }[]} */
 	const catalogMeta = $derived([{ kind: 'places', title: t('settings.places') }]);
@@ -215,18 +221,21 @@
 		<h3 class="font-semibold">{t('settings.group')}</h3>
 		<div class="flex flex-col gap-1.5">
 			<label class="slabel" for="s-name">{t('common.name')}</label>
-			<input id="s-name" class="input w-full" bind:value={name} />
+			<input id="s-name" class="input min-h-11 w-full" bind:value={name} />
 		</div>
 		<div class="flex flex-col gap-1.5">
 			<label class="slabel" for="s-desc">{t('common.description')}</label>
-			<input id="s-desc" class="input w-full" bind:value={description} />
+			<input id="s-desc" class="input min-h-11 w-full" bind:value={description} />
 		</div>
 		<div class="flex flex-col gap-1.5">
-			<label class="slabel" for="s-vis">{t('group.visibility')}</label>
-			<select id="s-vis" class="select w-full" bind:value={visibility}>
-				<option value="public">{t('group.public')}</option>
-				<option value="private">{t('group.private')}</option>
-			</select>
+			<label class="slabel" id="s-vis-label" for="s-vis">{t('group.visibility')}</label>
+			<Select
+				id="s-vis"
+				bind:value={visibility}
+				options={visibilityOptions}
+				aria-labelledby="s-vis-label"
+				class="w-full"
+			/>
 		</div>
 		<div>
 			<button class="btn btn-sm btn-primary" disabled={savingGroup} onclick={saveGroup}>
