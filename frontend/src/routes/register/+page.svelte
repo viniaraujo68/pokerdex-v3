@@ -1,6 +1,6 @@
 <script>
 	import { register } from '$lib/stores/auth.svelte.js';
-	import { errorMessage } from '$lib/api.js';
+	import { errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { t } from '$lib/i18n.svelte.js';
@@ -37,24 +37,40 @@
 	<title>{t('title.register')}</title>
 </svelte:head>
 
-<!-- .auth / .auth-alt / .link are shared with /login, so they live in app.css -->
-<div class="auth">
-	<form class="card stack" onsubmit={submit}>
-		<h1>{t('auth.register')}</h1>
-		<p class="muted">{t('auth.registerSubtitle')}</p>
-		{#if error}<div class="toast toast-error">{error}</div>{/if}
-		<div class="field">
-			<label for="u">{t('auth.username')}</label>
-			<input id="u" bind:value={username} autocomplete="username" minlength="3" required />
+<div class="mx-auto mt-[6vh] max-w-[400px]">
+	<form class="card flex flex-col gap-4 bg-base-100 p-5" onsubmit={submit}>
+		<h1 class="text-xl font-semibold tracking-tight">{t('auth.register')}</h1>
+		<p class="-mt-2 text-base-content/80">{t('auth.registerSubtitle')}</p>
+		{#if error}<div class="alert alert-soft alert-error">{error}</div>{/if}
+		<div class="flex flex-col gap-1.5">
+			<label class="text-xs font-medium text-base-content/80" for="u">{t('auth.username')}</label>
+			<input
+				id="u"
+				class="input w-full"
+				bind:value={username}
+				autocomplete="username"
+				minlength="3"
+				required
+			/>
 		</div>
-		<div class="field">
-			<label for="p">{t('auth.password')}</label>
-			<input id="p" type="password" bind:value={password} autocomplete="new-password" minlength="6" required />
+		<div class="flex flex-col gap-1.5">
+			<label class="text-xs font-medium text-base-content/80" for="p">{t('auth.password')}</label>
+			<input
+				id="p"
+				class="input w-full"
+				type="password"
+				bind:value={password}
+				autocomplete="new-password"
+				minlength="6"
+				required
+			/>
 		</div>
-		<button class="btn btn-primary" disabled={busy}>{busy ? t('auth.registering') : t('auth.register')}</button>
-		<p class="muted auth-alt">
+		<button class="btn btn-primary" disabled={busy}>
+			{busy ? t('auth.registering') : t('auth.register')}
+		</button>
+		<p class="text-center text-sm text-base-content/80">
 			{t('auth.hasAccount')}
-			<a href={withNext('/login', next)} class="link">{t('auth.login')}</a>
+			<a href={withNext('/login', next)} class="link link-primary font-medium">{t('auth.login')}</a>
 		</p>
 	</form>
 </div>

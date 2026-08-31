@@ -63,7 +63,7 @@
 <!-- The bar is the fade host; the inner strip is what actually scrolls. -->
 <div class="tabsbar" class:fade={fadeRight}>
 	<div
-		class="tabs"
+		class="tabs tabs-border strip"
 		class:center
 		role="tablist"
 		aria-label={label}
@@ -73,7 +73,6 @@
 		{#each tabs as item (item.id)}
 			<button
 				class="tab"
-				class:active={active === item.id}
 				role="tab"
 				id={tabId(item.id)}
 				aria-selected={active === item.id}
@@ -93,10 +92,9 @@
 		position: relative;
 		margin-bottom: 24px;
 	}
-	.tabs {
-		display: flex;
-		gap: 4px;
-		border-bottom: 1px solid var(--border);
+	.strip {
+		flex-wrap: nowrap;
+		border-bottom: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
 		overflow-x: auto;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none; /* Firefox */
@@ -104,43 +102,37 @@
 	}
 	/* centred while they fit, scrollable (from the left) once they don't — the `safe`
 	   keyword is what keeps the first tab reachable; plain `center` is the fallback */
-	.tabs.center {
+	.strip.center {
 		justify-content: center;
 		justify-content: safe center;
 	}
-	.tabs::-webkit-scrollbar {
+	.strip::-webkit-scrollbar {
 		display: none;
 	}
 	/* Right-edge fade: the only hint that a 4th tab exists at 390px. A mask, not a gradient
-	   overlay — the page background is itself a gradient, so a painted "fade to --bg" would
-	   show as a smudge. Applied only while there's something scrolled off. */
-	.tabsbar.fade .tabs {
+	   overlay, so it works over whatever surface the strip is sitting on. Applied only while
+	   there's something scrolled off. */
+	.tabsbar.fade .strip {
 		-webkit-mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
 		mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent);
 	}
-	.tab {
-		background: none;
-		border: none;
-		border-bottom: 2px solid transparent;
-		color: var(--text-muted);
+	.strip .tab {
 		min-height: 44px;
-		padding: 10px 16px;
-		font-family: inherit;
-		font-size: 0.95rem;
-		font-weight: 600;
-		cursor: pointer;
-		white-space: nowrap;
 		flex: 0 0 auto;
+		white-space: nowrap;
 	}
-	.tab:focus-visible {
+	.strip .tab:focus-visible {
 		/* inside a horizontal scroller an outset ring gets clipped — tuck it in */
 		outline-offset: -2px;
 	}
-	.tab.active {
-		color: var(--felt-bright);
-		border-bottom-color: var(--felt-bright);
+	.strip .tab[aria-selected='true'] {
+		color: var(--color-base-content);
+		font-weight: 600;
 	}
-	.tab:hover {
-		color: var(--text);
+	.strip .tab:not([aria-selected='true']) {
+		color: var(--ink-muted);
+	}
+	.strip .tab:not([aria-selected='true']):hover {
+		color: var(--color-base-content);
 	}
 </style>

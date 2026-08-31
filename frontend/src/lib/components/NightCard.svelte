@@ -1,8 +1,9 @@
 <script>
-	import { formatMoney, formatSigned, moneyClass, centsToInput, validateMoney } from '$lib/money.js';
-	import { errorMessage } from '$lib/api.js';
+	import { formatMoney, formatSigned, moneyClass, centsToInput, validateMoney } from '$lib/money.svelte.js';
+	import { errorMessage } from '$lib/http.js';
 	import { settle } from '$lib/settle.js';
 	import { localeTag, t } from '$lib/i18n.svelte.js';
+	import Icon from './Icon.svelte';
 
 	/**
 	 * @type {{
@@ -95,7 +96,7 @@
 	}
 </script>
 
-<div class="card card-tight night">
+<div class="card bg-base-100 p-4">
 	<button
 		type="button"
 		class="head"
@@ -103,19 +104,33 @@
 		aria-controls={bodyId}
 		onclick={() => (open = !open)}
 	>
-		<div class="head-left">
+		<div>
 			<span class="date">{fmtDate(night.date)}</span>
 			<div class="meta">
-				{#if night.place_name}<span class="chip">📍 {night.place_name}</span>{/if}
-				<span class="chip">👥 {night.entries.length}</span>
-				<span class="chip chip-gold">💰 {formatMoney(night.total_pot_cents)}</span>
+				{#if night.place_name}
+					<span class="badge badge-soft">
+						<Icon name="place" />
+						{night.place_name}
+					</span>
+				{/if}
+				<span class="badge badge-soft">
+					<Icon name="players" />
+					{night.entries.length}
+				</span>
+				<span class="badge badge-soft badge-warning">
+					<Icon name="pot" />
+					{formatMoney(night.total_pot_cents)}
+				</span>
 			</div>
 		</div>
-		<span class="caret" class:open>⌄</span>
+		<span class="caret" class:open><Icon name="chevron" /></span>
 	</button>
 
 	{#if !balanced}
-		<div class="warn">{t('night.potMismatch', { amount: formatSigned(night.balance_cents) })}</div>
+		<div class="warn money-warn">
+			<Icon name="warning" />
+			{t('night.potMismatch', { amount: formatSigned(night.balance_cents) })}
+		</div>
 	{/if}
 
 	{#if open}
@@ -126,20 +141,22 @@
 						<div class="qedit">
 							<span class="ename">{e.participant_name}</span>
 							<div class="qfields">
-								<div class="field">
-									<label for={`qb-${e.id}`}>{t('night.buyInCol')}</label>
+								<div class="flex flex-col gap-1.5">
+									<label class="qlabel" for={`qb-${e.id}`}>{t('night.buyInCol')}</label>
 									<input
 										id={`qb-${e.id}`}
+										class="input w-full"
 										inputmode="decimal"
 										placeholder={t('money.placeholder')}
 										bind:value={buyIn}
 										onkeydown={(ev) => onKey(ev, e)}
 									/>
 								</div>
-								<div class="field">
-									<label for={`qc-${e.id}`}>{t('night.cashOutCol')}</label>
+								<div class="flex flex-col gap-1.5">
+									<label class="qlabel" for={`qc-${e.id}`}>{t('night.cashOutCol')}</label>
 									<input
 										id={`qc-${e.id}`}
+										class="input w-full"
 										inputmode="decimal"
 										placeholder={t('money.placeholder')}
 										bind:value={cashOut}
@@ -149,14 +166,10 @@
 							</div>
 							{#if entryError}<div class="qerr">{entryError}</div>{/if}
 							<div class="qactions">
-								<button
-									class="btn btn-primary btn-sm"
-									disabled={savingEntry}
-									onclick={() => saveEntry(e)}
-								>
+								<button class="btn btn-sm btn-primary" disabled={savingEntry} onclick={() => saveEntry(e)}>
 									{savingEntry ? t('common.saving') : t('common.save')}
 								</button>
-								<button class="btn btn-ghost btn-sm" disabled={savingEntry} onclick={cancelEdit}>
+								<button class="btn btn-sm" disabled={savingEntry} onclick={cancelEdit}>
 									{t('common.cancel')}
 								</button>
 							</div>
@@ -164,10 +177,10 @@
 					{:else}
 						<div class="entry">
 							<span class="ename">{e.participant_name}</span>
-							<span class="ebuy faint">
+							<span class="ebuy text-base-content/65">
 								{t('night.buyInInline', { amount: formatMoney(e.buy_in_cents) })}
 							</span>
-							<span class="ecash faint">
+							<span class="ecash text-base-content/65">
 								{t('night.cashOutInline', { amount: formatMoney(e.cash_out_cents) })}
 							</span>
 							<span class="money {moneyClass(e.profit_cents)}">{formatSigned(e.profit_cents)}</span>
@@ -179,7 +192,7 @@
 									aria-label={t('card.editEntry', { name: e.participant_name })}
 									onclick={() => startEdit(e)}
 								>
-									✎
+									<Icon name="edit" class="size-4" />
 								</button>
 							{:else}
 								<span></span>
@@ -191,7 +204,7 @@
 
 			{#if transfers.length}
 				<div class="settle">
-					<span class="slabel faint">{t('card.settlement')}</span>
+					<span class="slabel text-base-content/65">{t('card.settlement')}</span>
 					<ul class="tlist">
 						{#each transfers as tr (tr.from + '\u2192' + tr.to)}
 							<li>
@@ -205,10 +218,8 @@
 
 			{#if editable}
 				<div class="actions">
-					<button class="btn btn-ghost btn-sm" onclick={() => onEdit?.(night)}>
-						{t('common.edit')}
-					</button>
-					<button class="btn btn-danger btn-sm" onclick={() => onDelete?.(night)}>
+					<button class="btn btn-sm" onclick={() => onEdit?.(night)}>{t('common.edit')}</button>
+					<button class="btn btn-sm btn-soft btn-error" onclick={() => onDelete?.(night)}>
 						{t('common.delete')}
 					</button>
 				</div>
@@ -232,9 +243,9 @@
 		padding: 0;
 	}
 	.date {
-		font-weight: 700;
-		font-family: var(--font-display);
+		font-weight: 600;
 		font-size: 1.05rem;
+		letter-spacing: -0.01em;
 	}
 	.meta {
 		display: flex;
@@ -243,8 +254,10 @@
 		margin-top: 8px;
 	}
 	.caret {
-		font-size: 1.4rem;
-		color: var(--text-faint);
+		display: grid;
+		place-items: center;
+		font-size: 1.15rem;
+		color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 		transition: transform 0.2s ease;
 		line-height: 1;
 	}
@@ -252,13 +265,18 @@
 		transform: rotate(180deg);
 	}
 	.warn {
+		display: flex;
+		align-items: center;
+		gap: 6px;
 		margin-top: 12px;
 		font-size: 0.82rem;
-		color: var(--gold);
+	}
+	.warn :global(svg) {
+		flex: none;
 	}
 	.entries {
 		margin-top: 14px;
-		border-top: 1px solid var(--border-soft);
+		border-top: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
 		padding-top: 10px;
 		display: flex;
 		flex-direction: column;
@@ -269,7 +287,7 @@
 		gap: 10px;
 		align-items: center;
 		padding: 7px 0;
-		border-bottom: 1px solid var(--border-soft);
+		border-bottom: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
 		font-size: 0.9rem;
 	}
 	.entry:last-child {
@@ -282,16 +300,18 @@
 		text-align: right;
 	}
 	.pencil {
+		display: inline-grid;
+		place-items: center;
+		justify-self: center;
 		background: none;
 		border: none;
-		color: var(--text-faint);
+		color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 		cursor: pointer;
-		font-size: 0.95rem;
 		padding: 8px 4px;
 		line-height: 1;
 	}
 	.pencil:hover {
-		color: var(--felt-bright);
+		color: var(--ink-primary);
 	}
 	.qedit {
 		display: flex;
@@ -299,9 +319,14 @@
 		gap: 8px;
 		padding: 10px;
 		margin: 6px 0;
-		border: 1px solid var(--felt);
-		border-radius: var(--radius-sm);
-		background: var(--bg-elev);
+		border: 1px solid color-mix(in oklch, var(--color-primary) 45%, transparent);
+		border-radius: var(--radius-field);
+		background: color-mix(in oklch, var(--color-primary) 6%, var(--color-base-100));
+	}
+	.qlabel {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: color-mix(in oklch, var(--color-base-content) 80%, transparent);
 	}
 	.qfields {
 		display: grid;
@@ -314,21 +339,21 @@
 	}
 	.qerr {
 		font-size: 0.78rem;
-		color: var(--red);
+		color: var(--color-error);
 	}
 	.settle {
 		margin-top: 14px;
-		border-top: 1px solid var(--border-soft);
+		border-top: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
 		padding-top: 10px;
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
 	}
 	.slabel {
-		font-size: 0.72rem;
+		font-size: 0.6875rem;
 		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		font-weight: 600;
+		letter-spacing: 0.06em;
+		font-weight: 500;
 	}
 	.tlist {
 		list-style: none;

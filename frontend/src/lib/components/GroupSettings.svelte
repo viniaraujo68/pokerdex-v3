@@ -1,9 +1,10 @@
 <script>
-	import { get, post, patch, del, errorMessage } from '$lib/api.js';
+	import { get, post, patch, del, errorMessage } from '$lib/http.js';
 	import { goto } from '$app/navigation';
-	import Modal from './Modal.svelte';
+	import { Modal } from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
-	import { toast } from '$lib/toast.svelte.js';
+	import Icon from './Icon.svelte';
+	import { toast } from '@viniaraujo68/plinth/toast';
 	import { unbalancedBadgeEnabled, setUnbalancedBadge } from '$lib/prefs.svelte.js';
 
 	/**
@@ -23,7 +24,9 @@
 	let loadError = $state('');
 
 	// delete-group flow (double confirmation: type the group name)
-	let showDelete = $state(false);
+	let deleteModal = $state(
+		/** @type {import('@viniaraujo68/plinth/components').Modal|undefined} */ (undefined)
+	);
 	let confirmName = $state('');
 	let deleting = $state(false);
 
@@ -35,7 +38,7 @@
 		} catch (e) {
 			toast.error(errorMessage(e));
 			deleting = false;
-			showDelete = false;
+			deleteModal?.close();
 		}
 	}
 
@@ -204,59 +207,64 @@
 	const catalogMeta = $derived([{ kind: 'places', title: t('settings.places') }]);
 </script>
 
-{#if loadError}<div class="toast toast-error">{loadError}</div>{/if}
+{#if loadError}<div class="alert alert-soft alert-error">{loadError}</div>{/if}
 
-<div class="settings stack">
+<div class="flex flex-col gap-4">
 	<!-- Group basics -->
-	<div class="card stack">
-		<h3>{t('settings.group')}</h3>
-		<div class="field">
-			<label for="s-name">{t('common.name')}</label>
-			<input id="s-name" bind:value={name} />
+	<div class="card flex flex-col gap-4 bg-base-100 p-5">
+		<h3 class="font-semibold">{t('settings.group')}</h3>
+		<div class="flex flex-col gap-1.5">
+			<label class="slabel" for="s-name">{t('common.name')}</label>
+			<input id="s-name" class="input w-full" bind:value={name} />
 		</div>
-		<div class="field">
-			<label for="s-desc">{t('common.description')}</label>
-			<input id="s-desc" bind:value={description} />
+		<div class="flex flex-col gap-1.5">
+			<label class="slabel" for="s-desc">{t('common.description')}</label>
+			<input id="s-desc" class="input w-full" bind:value={description} />
 		</div>
-		<div class="field">
-			<label for="s-vis">{t('group.visibility')}</label>
-			<select id="s-vis" bind:value={visibility}>
+		<div class="flex flex-col gap-1.5">
+			<label class="slabel" for="s-vis">{t('group.visibility')}</label>
+			<select id="s-vis" class="select w-full" bind:value={visibility}>
 				<option value="public">{t('group.public')}</option>
 				<option value="private">{t('group.private')}</option>
 			</select>
 		</div>
 		<div>
-			<button class="btn btn-primary btn-sm" disabled={savingGroup} onclick={saveGroup}>
+			<button class="btn btn-sm btn-primary" disabled={savingGroup} onclick={saveGroup}>
 				{savingGroup ? t('common.saving') : t('settings.saveChanges')}
 			</button>
 		</div>
 	</div>
 
 	<!-- Share link — always the saved state, never the draft above -->
-	<div class="card stack">
-		<h3>{t('settings.publicLink')}</h3>
+	<div class="card flex flex-col gap-4 bg-base-100 p-5">
+		<h3 class="font-semibold">{t('settings.publicLink')}</h3>
 		{#if savedPublic}
-			<p class="muted small">{t('settings.publicLinkHint')}</p>
+			<p class="small text-base-content/80">{t('settings.publicLinkHint')}</p>
 		{:else if hasToken}
-			<p class="muted small">{t('settings.privateLinkHint')}</p>
+			<p class="small text-base-content/80">{t('settings.privateLinkHint')}</p>
 		{:else}
-			<p class="muted small">{t('settings.noLinkYet')}</p>
+			<p class="small text-base-content/80">{t('settings.noLinkYet')}</p>
 		{/if}
 
 		{#if visibilityDirty}
-			<p class="toast toast-warn small">{t('settings.linkUnsavedHint')}</p>
+			<p class="alert alert-soft alert-warning small">{t('settings.linkUnsavedHint')}</p>
 		{/if}
 
 		{#if linkReady}
 			<div class="share">
-				<input readonly value={shareUrl} aria-label={t('settings.publicLink')} />
-				<button class="btn btn-ghost btn-sm" onclick={copyShare}>{t('common.copy')}</button>
+				<input
+					class="input w-full text-sm"
+					readonly
+					value={shareUrl}
+					aria-label={t('settings.publicLink')}
+				/>
+				<button class="btn btn-sm" onclick={copyShare}>{t('common.copy')}</button>
 			</div>
 		{/if}
 
 		{#if !savedPublic}
 			<div>
-				<button class="btn btn-ghost btn-sm" disabled={rotating} onclick={rotateToken}>
+				<button class="btn btn-sm" disabled={rotating} onclick={rotateToken}>
 					{hasToken ? t('settings.rotateToken') : t('settings.generateLink')}
 				</button>
 			</div>
@@ -264,146 +272,168 @@
 	</div>
 
 	<!-- Per-group options (device-local) -->
-	<div class="card stack">
-		<h3>{t('settings.options')}</h3>
+	<div class="card flex flex-col gap-4 bg-base-100 p-5">
+		<h3 class="font-semibold">{t('settings.options')}</h3>
 		<label class="opt">
 			<input
 				type="checkbox"
+				class="toggle toggle-primary"
 				checked={showUnbalanced}
 				onchange={(e) => setUnbalancedBadge(group.id, e.currentTarget.checked)}
 			/>
 			<span>
 				<span class="opt-t">{t('settings.unbalancedOption')}</span>
-				<span class="faint opt-d">{t('settings.unbalancedOptionHint')}</span>
+				<span class="opt-d text-base-content/65">{t('settings.unbalancedOptionHint')}</span>
 			</span>
 		</label>
 	</div>
 
 	<!-- Participants -->
-	<div class="card stack">
-		<h3>{t('common.players')}</h3>
+	<div class="card flex flex-col gap-4 bg-base-100 p-5">
+		<h3 class="font-semibold">{t('common.players')}</h3>
 		<div class="adder">
 			<input
+				class="input w-full"
 				placeholder={t('settings.playerPlaceholder')}
 				bind:value={drafts.participant}
 				onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addParticipant())}
 			/>
-			<button class="btn btn-ghost btn-sm" onclick={addParticipant}>{t('common.add')}</button>
+			<button class="btn btn-sm" onclick={addParticipant}>{t('common.add')}</button>
 		</div>
 		<div class="tags">
 			{#each participants as p (p.id)}
-				<span class="chip" class:inactive={!p.active}>
+				<span class="badge badge-soft tag" class:inactive={!p.active}>
 					{p.name}
 					{#if p.active}
 						<button
 							class="chip-x"
 							aria-label={t('common.remove')}
 							title={t('common.remove')}
-							onclick={() => removeParticipant(p)}>✕</button
+							onclick={() => removeParticipant(p)}
 						>
+							<Icon name="close" class="size-3.5" />
+						</button>
 					{:else}
 						<button
 							class="chip-x revive"
 							aria-label={t('settings.reactivate', { name: p.name })}
 							title={t('settings.reactivate', { name: p.name })}
-							onclick={() => reactivateParticipant(p)}>↺</button
+							onclick={() => reactivateParticipant(p)}
 						>
+							<Icon name="restore" class="size-3.5" />
+						</button>
 					{/if}
 				</span>
 			{/each}
-			{#if participants.length === 0}<span class="faint small">{t('settings.noPlayers')}</span>{/if}
+			{#if participants.length === 0}
+				<span class="small text-base-content/65">{t('settings.noPlayers')}</span>
+			{/if}
 		</div>
 		{#if hasInactive}
-			<p class="faint small">{t('settings.inactiveHint')}</p>
+			<p class="small text-base-content/65">{t('settings.inactiveHint')}</p>
 		{/if}
 	</div>
 
 	<!-- Catalogs -->
-	<div class="catalogs grid">
+	<div class="catalogs grid gap-4">
 		{#each catalogMeta as meta (meta.kind)}
-			<div class="card stack">
-				<h3>{meta.title}</h3>
+			<div class="card flex flex-col gap-4 bg-base-100 p-5">
+				<h3 class="font-semibold">{meta.title}</h3>
 				<div class="adder">
 					<input
+						class="input w-full"
 						placeholder={t('settings.addPlaceholder')}
 						bind:value={drafts[meta.kind]}
 						onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addItem(meta.kind))}
 					/>
-					<button class="btn btn-ghost btn-sm" onclick={() => addItem(meta.kind)}>+</button>
+					<button class="btn btn-sm" onclick={() => addItem(meta.kind)}>+</button>
 				</div>
 				<div class="tags">
 					{#each lists[meta.kind] as item (item.id)}
-						<span class="chip">
+						<span class="badge badge-soft tag">
 							{item.name}
 							<button
 								class="chip-x"
 								aria-label={t('common.remove')}
 								title={t('common.remove')}
-								onclick={() => removeItem(meta.kind, item.id)}>✕</button
+								onclick={() => removeItem(meta.kind, item.id)}
 							>
+								<Icon name="close" class="size-3.5" />
+							</button>
 						</span>
 					{/each}
-					{#if lists[meta.kind].length === 0}<span class="faint small">{t('common.emptyList')}</span>{/if}
+					{#if lists[meta.kind].length === 0}
+						<span class="small text-base-content/65">{t('common.emptyList')}</span>
+					{/if}
 				</div>
 			</div>
 		{/each}
 	</div>
 
 	<!-- Danger zone -->
-	<div class="card stack danger">
-		<h3>{t('settings.dangerZone')}</h3>
-		<p class="muted small">
+	<div class="card danger flex flex-col gap-4 bg-base-100 p-5">
+		<h3 class="font-semibold text-error">{t('settings.dangerZone')}</h3>
+		<p class="small text-base-content/80">
 			{t('settings.deleteWarningPre')} <strong>{t('settings.deleteWarningStrong')}</strong>
 			{t('settings.deleteWarningPost')}
 		</p>
 		<div>
-			<button class="btn btn-danger btn-sm" onclick={() => { showDelete = true; confirmName = ''; }}>
+			<button
+				class="btn btn-sm btn-soft btn-error"
+				onclick={() => {
+					confirmName = '';
+					deleteModal?.show();
+				}}
+			>
 				{t('settings.deleteGroup')}
 			</button>
 		</div>
 	</div>
 </div>
 
-{#if showDelete}
-	<Modal title={t('settings.deleteGroup')} onclose={() => (showDelete = false)}>
-		<div class="stack">
-			<p class="muted">
-				{t('settings.deleteConfirmPre')} <strong>{group.name}</strong>
-				{t('settings.deleteConfirmPost')}
-			</p>
-			<input
-				placeholder={group.name}
-				bind:value={confirmName}
-				onkeydown={(e) => e.key === 'Enter' && confirmName === group.name && deleteGroup()}
-			/>
-			<div class="row mactions">
-				<button class="btn btn-ghost" onclick={() => (showDelete = false)}>{t('common.cancel')}</button>
-				<button
-					class="btn btn-danger"
-					disabled={confirmName !== group.name || deleting}
-					onclick={deleteGroup}
-				>
-					{deleting ? t('settings.deleting') : t('settings.deletePermanently')}
-				</button>
-			</div>
-		</div>
-	</Modal>
-{/if}
+<Modal
+	bind:this={deleteModal}
+	title={t('settings.deleteGroup')}
+	closeLabel={t('common.close')}
+	class="max-w-[460px]"
+>
+	<div class="flex flex-col gap-4">
+		<p class="text-base-content/80">
+			{t('settings.deleteConfirmPre')} <strong>{group.name}</strong>
+			{t('settings.deleteConfirmPost')}
+		</p>
+		<input
+			class="input w-full"
+			placeholder={group.name}
+			bind:value={confirmName}
+			onkeydown={(e) => e.key === 'Enter' && confirmName === group.name && deleteGroup()}
+		/>
+	</div>
+
+	{#snippet footer()}
+		<button class="btn" onclick={() => deleteModal?.close()}>{t('common.cancel')}</button>
+		<button
+			class="btn btn-error"
+			disabled={confirmName !== group.name || deleting}
+			onclick={deleteGroup}
+		>
+			{deleting ? t('settings.deleting') : t('settings.deletePermanently')}
+		</button>
+	{/snippet}
+</Modal>
 
 <style>
+	.slabel {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: color-mix(in oklch, var(--color-base-content) 80%, transparent);
+	}
 	.small {
 		font-size: 0.85rem;
 		margin: 0;
 	}
 	.danger {
-		border-color: rgba(240, 88, 106, 0.4);
-	}
-	.danger h3 {
-		color: var(--red);
-	}
-	.mactions {
-		justify-content: flex-end;
-		margin-top: 4px;
+		border-color: color-mix(in oklch, var(--color-error) 40%, transparent);
 	}
 	.adder {
 		display: flex;
@@ -412,10 +442,6 @@
 	.share {
 		display: flex;
 		gap: 8px;
-	}
-	.share input {
-		font-size: 0.85rem;
-		color: var(--text-muted);
 	}
 	/* The whole label toggles, so the row *is* the hit area — negative margin keeps the extra
 	   padding from re-spacing the card. */
@@ -426,17 +452,10 @@
 		cursor: pointer;
 		padding: 8px;
 		margin: -8px;
-		border-radius: var(--radius-sm);
+		border-radius: var(--radius-field);
 	}
 	.opt:hover {
-		background: rgba(124, 58, 237, 0.07);
-	}
-	.opt input {
-		width: 22px;
-		height: 22px;
-		margin: 0;
-		flex: 0 0 auto;
-		accent-color: var(--felt-bright);
+		background: color-mix(in oklch, var(--color-primary) 7%, transparent);
 	}
 	.opt-t {
 		display: block;
@@ -453,16 +472,17 @@
 		flex-wrap: wrap;
 		gap: 8px;
 	}
-	/* The ✕/↺ used to be a ~13px target. Rather than float a 44px overlay that would spill into
-	   the neighbouring chip (the gap is only 8px), the chip grows to 44px tall and the button
-	   fills it: a full-height target with no overlap. */
-	.tags .chip {
+	/* The remove/restore buttons used to be a ~13px target. Rather than float a 44px overlay that
+	   would spill into the neighbouring chip (the gap is only 8px), the chip grows to 44px tall
+	   and the button fills it: a full-height target with no overlap. */
+	.tag {
 		gap: 2px;
+		height: auto;
 		min-height: 44px;
 		/* no right padding: the button itself is the right edge, so it can be a full 44px */
 		padding: 0 0 0 12px;
 	}
-	.chip.inactive {
+	.tag.inactive {
 		opacity: 0.5;
 	}
 	.chip-x {
@@ -473,22 +493,19 @@
 		background: none;
 		border: none;
 		border-radius: 999px;
-		color: var(--text-faint);
+		color: color-mix(in oklch, var(--color-base-content) 65%, transparent);
 		cursor: pointer;
 		padding: 0;
 		font-size: 0.85rem;
 		line-height: 1;
 	}
 	.chip-x:hover {
-		color: var(--text);
-		background: rgba(255, 255, 255, 0.06);
+		color: var(--color-base-content);
+		background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
 	}
 	.revive {
-		color: var(--felt-bright);
+		color: var(--ink-primary);
 		font-size: 1rem;
-	}
-	.revive:hover {
-		color: var(--green-pos);
 	}
 	.catalogs {
 		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
