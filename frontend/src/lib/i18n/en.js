@@ -127,7 +127,7 @@ export default {
 	'night.amounts': 'Amounts',
 	'night.defaultBuyIn': 'Default buy-in',
 	'night.defaultBuyInHint':
-		'Fills players you add and any blank row. Not saved with the night.',
+		'Fills players you add and any blank row.',
 	'night.rebuyTitle': 'One more buy-in of {amount}',
 	'night.rebuyMultiple': '{count}× · {amount}',
 	'night.invalidAmount': 'Invalid amount',

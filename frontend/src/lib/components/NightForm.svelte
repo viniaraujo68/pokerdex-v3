@@ -859,7 +859,7 @@
 			</div>
 			<div class="bactions">
 				<button type="button" class="btn" onclick={() => oncancel()}>{t('common.cancel')}</button>
-				<button class="btn btn-primary save" disabled={saving || submitting || rows.length === 0}>
+				<button class="btn btn-primary" disabled={saving || submitting || rows.length === 0}>
 					{saving || submitting ? t('night.saving') : t('night.save')}
 				</button>
 			</div>
@@ -1082,7 +1082,7 @@
 		display: flex;
 		gap: 8px;
 	}
-	.save {
+	.bactions .btn {
 		min-height: 44px;
 		height: auto;
 	}
