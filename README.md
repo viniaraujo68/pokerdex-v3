@@ -92,36 +92,38 @@ Cada execução usa um SQLite temporário (via `POKERDEX_DATABASE_URL`) migrado 
 igual à produção. `tests/test_queries.py` protege contra N+1: o número de queries de um
 request não pode crescer com a quantidade de noites/grupos.
 
-## Deploy na VPS (Docker Compose + Cloudflare)
+## Deploy na VPS (Docker Compose + Cloudflare Tunnel)
 
-HTTPS é provido pelo **Cloudflare** (proxy laranja, SSL "Flexible"); o origin só fala
-HTTP na porta 80. Um **edge proxy** compartilhado (`deploy/edge`) escuta na 80 e roteia
-por subdomínio, então várias apps convivem na mesma VPS sem conflito de porta.
+O tráfego chega por um **Cloudflare Tunnel** até um **edge proxy** (Caddy) compartilhado por
+todas as apps da VPS. O edge é infra da máquina e mora no repo do
+[Peladex](https://github.com/viniaraujo68/peladex) (`deploy/edge/`); este repo publica só o
+seu pedaço, `deploy/pokerdex.caddy`. A VPS não publica porta HTTP nenhuma.
 
 ```
-Cloudflare (HTTPS) → VPS:80 → edge (Caddy http)
-    ├── pokerdex.seudominio.com → /api/* → backend:8000 · / → frontend:3000
+Visitante ─HTTPS→ Cloudflare ─túnel→ cloudflared → edge (Caddy :80, rede web)
+    ├── pokerdex.seudominio.com → /api/* → pokerdex-backend:8000 · / → pokerdex-frontend:3000
     └── (outras apps por subdomínio)
 ```
 
-**Passos** (Docker já instalado, subdomínio `pokerdex.…` proxied no Cloudflare):
+**Passos** (edge já de pé em `~/edge`, rede `web` já criada):
 
 ```bash
-# rede compartilhada do edge (uma vez só)
-docker network create web
-
-# app Pokerdex (sem portas/TLS próprios — fica atrás do edge)
 git clone https://github.com/viniaraujo68/pokerdex-v3.git
 cd pokerdex-v3
 docker compose up -d --build
 
-# edge proxy (porta 80, roteia os subdomínios)
-cd deploy/edge
-cp .env.example .env     # ajuste POKERDEX_DOMAIN / RASTRO_DOMAIN
-docker compose up -d
+cp deploy/pokerdex.caddy ~/edge/sites/
+echo 'POKERDEX_DOMAIN=pokerdex.seudominio.com' >> ~/edge/.env
+cd ~/edge && docker compose up -d
+docker compose exec edge caddy reload --config /etc/caddy/Caddyfile
 ```
 
-No Cloudflare: registro `pokerdex` (A/CNAME) **proxied (laranja)**, SSL/TLS = **Flexible**.
+No painel do túnel (Zero Trust → Networks → Tunnels → **Public Hostname**), adicione
+`pokerdex.seudominio.com` com serviço **HTTP** → `edge:80`.
+
+O IP do visitante chega ao edge em `Cf-Connecting-IP` e segue para o backend e o frontend como
+um `X-Forwarded-For` de valor único (`header_up X-Forwarded-For {client_ip}`): é o que o rate
+limit e o `XFF_DEPTH: "1"` leem.
 
 O SQLite vive no volume `pokerdex_data`
 (backup = `docker compose cp backend:/data/pokerdex.db ./backup.db`).

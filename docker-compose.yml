@@ -1,5 +1,5 @@
-# Pokerdex app stack. No TLS/ports here — the shared edge proxy (deploy/edge)
-# fronts it on port 80, and Cloudflare provides HTTPS. Both services join the
+# Pokerdex app stack. No TLS/ports here — the shared edge proxy (peladex repo, deploy/edge)
+# fronts it behind a Cloudflare Tunnel, using deploy/pokerdex.caddy. Both services join the
 # external "web" network so the edge can reach them by alias.
 # Create the network once:  docker network create web
 services:
@@ -33,11 +33,9 @@ services:
       # on the internal /api calls, so the backend rate-limits per visitor instead of
       # lumping every server-rendered page view into the frontend container's one bucket.
       ADDRESS_HEADER: x-forwarded-for
-      # Depth counted from the *right* of the chain: 1 = the entry appended by the nearest
-      # trusted proxy, i.e. the shared edge proxy in deploy/edge. Cloudflare fronts that edge
-      # and appends its own entry, so if the edge is ever changed to pass Cloudflare's chain
-      # through untouched this needs to become 2 — as it stands the edge is the last hop that
-      # writes the header, so 1 is the correct (and the un-spoofable) choice.
+      # Depth counted from the *right* of the chain. The edge overwrites X-Forwarded-For with a
+      # single value, the visitor IP it read from Cloudflare's Cf-Connecting-IP
+      # (deploy/pokerdex.caddy), so 1 is the correct (and the un-spoofable) choice.
       XFF_DEPTH: "1"
     depends_on:
       - backend
