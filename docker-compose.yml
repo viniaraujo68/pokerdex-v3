@@ -1,5 +1,5 @@
-# Pokerdex app stack. No TLS/ports here — the shared edge proxy (peladex repo, deploy/edge)
-# fronts it behind a Cloudflare Tunnel, using deploy/pokerdex.caddy. Both services join the
+# Pokerdex app stack. No TLS/ports here — the shared edge proxy (github.com/viniaraujo68/edge)
+# fronts it behind a Cloudflare Tunnel, using its sites/pokerdex.caddy. Both services join the
 # external "web" network so the edge can reach them by alias.
 # Create the network once:  docker network create web
 services:
@@ -35,7 +35,7 @@ services:
       ADDRESS_HEADER: x-forwarded-for
       # Depth counted from the *right* of the chain. The edge overwrites X-Forwarded-For with a
       # single value, the visitor IP it read from Cloudflare's Cf-Connecting-IP
-      # (deploy/pokerdex.caddy), so 1 is the correct (and the un-spoofable) choice.
+      # (sites/pokerdex.caddy in the edge repo), so 1 is the correct (and the un-spoofable) choice.
       XFF_DEPTH: "1"
     depends_on:
       - backend

@@ -94,36 +94,20 @@ request não pode crescer com a quantidade de noites/grupos.
 
 ## Deploy na VPS (Docker Compose + Cloudflare Tunnel)
 
-O tráfego chega por um **Cloudflare Tunnel** até um **edge proxy** (Caddy) compartilhado por
-todas as apps da VPS. O edge é infra da máquina e mora no repo do
-[Peladex](https://github.com/viniaraujo68/peladex) (`deploy/edge/`); este repo publica só o
-seu pedaço, `deploy/pokerdex.caddy`. A VPS não publica porta HTTP nenhuma.
-
-```
-Visitante ─HTTPS→ Cloudflare ─túnel→ cloudflared → edge (Caddy :80, rede web)
-    ├── pokerdex.seudominio.com → /api/* → pokerdex-backend:8000 · / → pokerdex-frontend:3000
-    └── (outras apps por subdomínio)
-```
-
-**Passos** (edge já de pé em `~/edge`, rede `web` já criada):
+O Pokerdex não sobe proxy nem publica porta: entra na rede externa `web` com os aliases
+`pokerdex-backend` e `pokerdex-frontend`. Quem recebe o tráfego é o edge da VPS (Caddy atrás de
+um Cloudflare Tunnel), que mora em [viniaraujo68/edge](https://github.com/viniaraujo68/edge) —
+o bloco do Pokerdex é o `sites/pokerdex.caddy` de lá, e o README dele cobre Cloudflare,
+firewall e como acrescentar uma app.
 
 ```bash
-git clone https://github.com/viniaraujo68/pokerdex-v3.git
-cd pokerdex-v3
+git clone https://github.com/viniaraujo68/pokerdex-v3.git /opt/pokerdex-v3
+cd /opt/pokerdex-v3
 docker compose up -d --build
-
-cp deploy/pokerdex.caddy ~/edge/sites/
-echo 'POKERDEX_DOMAIN=pokerdex.seudominio.com' >> ~/edge/.env
-cd ~/edge && docker compose up -d
-docker compose exec edge caddy reload --config /etc/caddy/Caddyfile
 ```
 
-No painel do túnel (Zero Trust → Networks → Tunnels → **Public Hostname**), adicione
-`pokerdex.seudominio.com` com serviço **HTTP** → `edge:80`.
-
-O IP do visitante chega ao edge em `Cf-Connecting-IP` e segue para o backend e o frontend como
-um `X-Forwarded-For` de valor único (`header_up X-Forwarded-For {client_ip}`): é o que o rate
-limit e o `XFF_DEPTH: "1"` leem.
+O IP do visitante chega como um `X-Forwarded-For` de valor único, montado pelo edge a partir
+do `Cf-Connecting-IP`: é o que o rate limit e o `XFF_DEPTH: "1"` leem.
 
 O SQLite vive no volume `pokerdex_data`
 (backup = `docker compose cp backend:/data/pokerdex.db ./backup.db`).
