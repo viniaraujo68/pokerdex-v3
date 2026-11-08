@@ -25,3 +25,4 @@ dist/
 # Personal legacy data (contains real names/amounts — keep out of the public repo)
 players.json
 nights.json
+.venv-test/

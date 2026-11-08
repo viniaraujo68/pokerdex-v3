@@ -6,3 +6,4 @@ alembic==1.19.1
 pydantic-settings==2.15.0
 python-slugify==8.0.4
 slowapi==0.1.10
+psycopg2-binary==2.9.10
