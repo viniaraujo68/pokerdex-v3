@@ -11,10 +11,6 @@ services:
       POKERDEX_COOKIE_SECURE: "true"
       POKERDEX_CORS_ORIGINS: ""
       POKERDEX_SESSION_TTL_DAYS: "30"
-    # Volume antigo do SQLite. Mantido só até confirmar a migração dos dados pro
-    # Postgres (pgloader) — depois disso pode remover este mount e o volume abaixo.
-    volumes:
-      - pokerdex_data:/data
     networks:
       web:
         aliases:
@@ -52,6 +48,3 @@ networks:
     external: true
   data:
     external: true
-
-volumes:
-  pokerdex_data:
