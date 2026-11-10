@@ -1,7 +1,14 @@
 <script>
 	import NightCard from './NightCard.svelte';
 	import Icon from './Icon.svelte';
-	import { Combobox } from '@viniaraujo68/plinth/components';
+	import {
+		Combobox,
+		DateRangePicker,
+		allTime,
+		lastMonth,
+		lastMonths,
+		thisMonth
+	} from '@viniaraujo68/plinth/components';
 	import { t } from '$lib/i18n.svelte.js';
 
 	/**
@@ -26,6 +33,8 @@
 	let placeFilter = $state('');
 	let dateFrom = $state('');
 	let dateTo = $state('');
+	/* The period picker keeps its own selection, so clearing the filters remounts it. */
+	let periodKey = $state(0);
 	/** @type {Set<number>} */
 	let selectedPlayers = $state(new Set());
 
@@ -68,8 +77,7 @@
 
 	const activeFilterCount = $derived(
 		(placeFilter !== '' ? 1 : 0) +
-			(dateFrom !== '' ? 1 : 0) +
-			(dateTo !== '' ? 1 : 0) +
+			(dateFrom !== '' || dateTo !== '' ? 1 : 0) +
 			selectedPlayers.size
 	);
 	const hasFilters = $derived(activeFilterCount > 0);
@@ -103,10 +111,19 @@
 		selectedPlayers = next;
 	}
 
+	const periodPresets = $derived([
+		allTime(t('filters.periodAll'), 'all'),
+		thisMonth(t('filters.periodMonth'), 'month'),
+		lastMonth(t('filters.periodLastMonth'), 'lastMonth'),
+		lastMonths(6, t('filters.period6m'), '6m'),
+		lastMonths(12, t('filters.period12m'), '12m')
+	]);
+
 	function clearFilters() {
 		placeFilter = '';
 		dateFrom = '';
 		dateTo = '';
+		periodKey += 1;
 		selectedPlayers = new Set();
 	}
 </script>
@@ -153,26 +170,26 @@
 						class="w-full"
 					/>
 				</div>
-				<div class="frow">
-					<label class="flabel" for="df">{t('filters.from')}</label>
-					<input
-						id="df"
-						class="input min-h-11 w-full"
-						type="date"
-						bind:value={dateFrom}
-						max={dateTo || undefined}
+			</div>
+
+			<div class="frow">
+				<span class="flabel">{t('filters.period')}</span>
+				{#key periodKey}
+					<DateRangePicker
+						mode="date"
+						presets={periodPresets}
+						value={{ from: dateFrom, to: dateTo }}
+						label={t('filters.period')}
+						customLabel={t('filters.periodCustom')}
+						fromLabel={t('filters.from')}
+						toLabel={t('filters.to')}
+						invalidRangeLabel={t('filters.invalidRange')}
+						onchange={(range) => {
+							dateFrom = range.from;
+							dateTo = range.to;
+						}}
 					/>
-				</div>
-				<div class="frow">
-					<label class="flabel" for="dt">{t('filters.to')}</label>
-					<input
-						id="dt"
-						class="input min-h-11 w-full"
-						type="date"
-						bind:value={dateTo}
-						min={dateFrom || undefined}
-					/>
-				</div>
+				{/key}
 			</div>
 
 			<div class="frow players">
